@@ -4,10 +4,9 @@ shortDescription: "Securing IoT data unlearning pipelines using quantum cryptogr
 venue: "IEEE GLOBECOM 2025"
 year: 2025
 researchAreas: ["Machine Unlearning", "Cybersecurity", "XAI"]
-status: "published"
-pdfUrl: "https://arxiv.org/abs/example1"
+status: "accepted"
 relatedProjects: ["petbot"]
-order: 1
+order: 5
 abstract: "Proposes a quantum-secured machine unlearning framework that enables IoT devices to selectively forget phishing-related training data while maintaining detection accuracy, using explainability techniques to audit the unlearning process."
 ---
 

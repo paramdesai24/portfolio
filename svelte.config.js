@@ -26,6 +26,10 @@ const config = {
 			rehypePlugins: [rehypeSlug, [rehypeAutolinkHeadings, { behavior: 'wrap' }]],
 			highlight: {
 				highlighter: async (code, lang) => {
+					if (lang === 'mermaid') {
+						const safeCode = escapeSvelte(code).replace(/`/g, '\\`').replace(/\$/g, '\\$');
+						return `{@html \`<pre class="language-mermaid"><code class="language-mermaid">${safeCode}</code></pre>\`}`;
+					}
 					if (!highlighter) {
 						highlighter = await createHighlighter({
 							themes: ['github-light'],

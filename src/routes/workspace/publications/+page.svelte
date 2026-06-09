@@ -32,7 +32,7 @@
   let expandedPapers = $state<Record<string, boolean>>({});
 
   function toggleAbstract(id: string) {
-    expandedPapers[id] = !expandedPapers[id];
+    expandedPapers = { ...expandedPapers, [id]: !expandedPapers[id] };
   }
 
   // Filtered publications derived state
@@ -106,10 +106,7 @@
           {#each ['All', '2025', '2026'] as yOption}
             <button
               onclick={() => selectedYear = yOption as any}
-              class="px-3 py-1 rounded-full font-sans text-[10px] transition-all duration-150 border cursor-pointer
-              {selectedYear === yOption
-                ? 'bg-[--color-accent] text-[--color-surface] border-[--color-accent] shadow-2xs'
-                : 'bg-[--color-surface] text-[--color-muted] border-[--color-border] hover:text-[--color-text] hover:bg-[--color-accent-dim]'}"
+              class="filter-pill {selectedYear === yOption ? 'selected' : ''}"
             >
               {yOption}
             </button>
@@ -124,10 +121,7 @@
           {#each ['All', 'XAI', 'Cybersecurity', 'Machine Unlearning', 'Quantum Security'] as aOption}
             <button
               onclick={() => selectedArea = aOption as any}
-              class="px-3 py-1 rounded-full font-sans text-[10px] transition-all duration-150 border cursor-pointer
-              {selectedArea === aOption
-                ? 'bg-[--color-accent] text-[--color-surface] border-[--color-accent] shadow-2xs'
-                : 'bg-[--color-surface] text-[--color-muted] border-[--color-border] hover:text-[--color-text] hover:bg-[--color-accent-dim]'}"
+              class="filter-pill {selectedArea === aOption ? 'selected' : ''}"
             >
               {aOption}
             </button>
@@ -251,3 +245,27 @@
     </div>
   {/if}
 </div>
+
+<style>
+  .filter-pill {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-family: var(--font-sans);
+    font-size: 10px;
+    transition: all 150ms ease;
+    border: 1px solid var(--color-border);
+    cursor: pointer;
+    background-color: var(--color-surface);
+    color: var(--color-muted);
+  }
+  .filter-pill:hover {
+    color: var(--color-text);
+    background-color: var(--color-accent-dim);
+  }
+  .filter-pill.selected {
+    background-color: var(--color-text) !important;
+    color: var(--color-surface) !important;
+    border-color: var(--color-text) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+</style>

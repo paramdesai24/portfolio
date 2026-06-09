@@ -18,20 +18,45 @@
     return () => clearTimeout(timer);
   });
 
-  // Dynamically group publications by year for the timeline view
-  let timelineData = $derived.by(() => {
-    const grouped: Record<string, { year: string; publications: { venue: string; title: string }[] }> = {};
-    for (const pub of publications) {
-      const yearStr = pub.year.toString();
-      if (!grouped[yearStr]) {
-        grouped[yearStr] = { year: yearStr, publications: [] };
-      }
-      grouped[yearStr].publications.push({
-        venue: pub.venue,
-        title: pub.title
-      });
+  // Sort publications by order for a linear timeline
+  let orderedPublications = $derived.by(() => {
+    return [...publications].sort((a, b) => (a.order || 99) - (b.order || 99));
+  });
+
+  let timelineContainer = $state<HTMLDivElement | null>(null);
+
+  // Autoscroll timeline back and forth (pauses on hover)
+  $effect(() => {
+    if (timelineContainer && orderedPublications.length > 0) {
+      let direction = 1;
+      const scrollSpeed = 1.2;
+      let scrollPosition = 0;
+      
+      const scrollTimeline = () => {
+        if (!timelineContainer) return;
+        
+        if (timelineContainer.matches(':hover')) {
+          scrollPosition = timelineContainer.scrollLeft;
+          return;
+        }
+        
+        scrollPosition += direction * scrollSpeed;
+        const maxScroll = timelineContainer.scrollWidth - timelineContainer.clientWidth;
+        
+        if (scrollPosition >= maxScroll) {
+          scrollPosition = maxScroll;
+          direction = -1;
+        } else if (scrollPosition <= 0) {
+          scrollPosition = 0;
+          direction = 1;
+        }
+        
+        timelineContainer.scrollLeft = scrollPosition;
+      };
+      
+      const interval = setInterval(scrollTimeline, 30);
+      return () => clearInterval(interval);
     }
-    return Object.values(grouped).sort((a, b) => b.year.localeCompare(a.year));
   });
 </script>
 
@@ -100,9 +125,6 @@
             <span class="text-[--color-muted]">
               {area.publicationCount} publications &bull; {area.projectCount} projects
             </span>
-            <a href="/workspace/projects" class="text-[--color-accent] hover:underline inline-flex items-center gap-0.5 font-medium">
-              Explore <ArrowRight size={12} />
-            </a>
           </div>
         </div>
       {/each}
@@ -112,39 +134,35 @@
   <!-- Section 4: Research Timeline -->
   <section class="flex flex-col gap-6 anim-item delay-800">
     <h3 class="font-serif text-2xl text-[--color-text] border-b border-[--color-border] pb-3">Publication Timeline</h3>
-    <div class="flex overflow-x-auto gap-8 pb-4 scrollbar-none snap-x snap-mandatory">
-      {#each timelineData as column}
-        <div class="flex-shrink-0 w-72 snap-align-start flex flex-col gap-4 bg-[--color-surface] border border-[--color-border] p-5 rounded-xl shadow-card">
-          <span class="font-serif text-lg font-semibold border-b border-[--color-border] pb-1.5 text-[--color-accent] inline-block transform rotate-[-2deg]">{column.year}</span>
-          <div class="flex flex-col gap-3">
-            {#each column.publications as pub}
-              <div class="bg-[--color-bg] p-3 rounded-lg border border-[--color-border]/50 flex flex-col gap-2">
-                <span class="self-start text-[9px] font-mono bg-[--color-accent-dim] text-[--color-accent] px-1.5 py-0.5 rounded uppercase font-semibold">
-                  {pub.venue}
-                </span>
-                <p class="text-xs text-[--color-text] font-sans font-medium leading-snug line-clamp-2">
-                  {pub.title}
-                </p>
-              </div>
-            {/each}
+    <div class="relative w-full">
+      <!-- Horizontal line running behind cards -->
+      <div class="absolute top-[80px] left-0 right-0 h-[1.5px] bg-[--color-border] z-0 hidden md:block"></div>
+      
+      <div 
+        bind:this={timelineContainer}
+        class="flex overflow-x-auto gap-6 pb-4 scrollbar-none snap-x snap-mandatory relative z-10"
+      >
+        {#each orderedPublications as pub, idx}
+          <div class="flex-shrink-0 w-72 snap-align-start flex flex-col gap-3 bg-[--color-surface] border border-[--color-border] p-5 rounded-xl shadow-card hover:border-[--color-accent] transition-all duration-300">
+            <div class="flex justify-between items-center border-b border-[--color-border] pb-2">
+              <span class="font-serif text-lg font-semibold text-[--color-accent] inline-block transform rotate-[-2deg]">{pub.year}</span>
+              <span class="font-mono text-[10px] text-[--color-muted]">#{idx + 1}</span>
+            </div>
+            <div class="flex flex-col gap-2">
+              <span class="self-start text-[9px] font-mono bg-[--color-accent-dim] text-[--color-accent] px-1.5 py-0.5 rounded uppercase font-semibold">
+                {pub.venue}
+              </span>
+              <p class="text-xs text-[--color-text] font-sans font-medium leading-snug line-clamp-3">
+                {pub.title}
+              </p>
+            </div>
           </div>
-        </div>
-      {/each}
+        {/each}
+      </div>
     </div>
   </section>
 
-  <!-- Section 5: Current Focus Note (Sticky Note Style) -->
-  <section class="anim-item delay-900 flex justify-center py-4">
-    <div class="sticky-note max-w-lg w-full bg-[--color-sticky-bg] border border-[--color-sticky-border] rounded-lg p-6 shadow-md transform rotate-[-0.5deg] hover:rotate-0 transition-transform duration-300">
-      <div class="flex items-center gap-2 mb-3">
-        <span class="w-2.5 h-2.5 rounded-full bg-[--color-sticky-text]"></span>
-        <span class="font-mono text-xs text-[--color-sticky-text] font-bold uppercase tracking-wider">Current Focus</span>
-      </div>
-      <p class="font-serif italic text-[15px] text-[--color-sticky-text] leading-relaxed">
-        "Currently focused on Machine Unlearning and Trustworthy AI — particularly how models can forget selectively while remaining accurate, auditable, and compliant with privacy regulations."
-      </p>
-    </div>
-  </section>
+
 </div>
 
 <style>

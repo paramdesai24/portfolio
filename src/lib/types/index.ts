@@ -36,11 +36,3 @@ export interface Publication {
   abstract: string;
 }
 
-export interface ResearchIdea {
-  id: string;
-  title: string;
-  problem: string;
-  whyItMatters: string;
-  directions: string[];
-  status: 'active' | 'exploring' | 'on-radar' | string;
-}

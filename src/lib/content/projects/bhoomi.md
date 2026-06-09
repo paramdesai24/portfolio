@@ -1,11 +1,14 @@
 ---
 title: "BHOOMI"
 shortDescription: "Satellite-Based Environmental Intelligence Platform"
-techStack: ["Python", "FastAPI", "React", "LSTM", "Prophet", "SARIMA", "PostgreSQL"]
+techStack: ["React", "Leaflet", "NodeJS", "Express", "Flask", "PostgreSQL", "Prophet", "PyTorch", "XGBoost", "SHAP"]
 researchThemes: ["Climate AI", "Intelligent Systems", "Time Series Forecasting"]
 status: "live"
 achievements: ["Runner-Up, AETRIX 2026"]
-githubUrl: "https://github.com/paramdesai24"
+githubUrl: "https://github.com/paramdesai24/bhoomi-satellite"
+demoUrl: "https://bhoomi-satellite.vercel.app/"
+featured: true
+order: 1
 ---
 
 ## Overview

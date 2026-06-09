@@ -5,9 +5,9 @@ venue: "IEEE VTC Spring 2025"
 year: 2025
 researchAreas: ["Quantum Security", "Cybersecurity"]
 status: "published"
-pdfUrl: "https://arxiv.org/abs/example2"
+pdfUrl: "https://ieeexplore.ieee.org/document/11174381/"
 relatedProjects: ["bhoomi"]
-order: 2
+order: 3
 abstract: "Introduces a continuous-variable quantum key distribution framework for securing V2X communications in autonomous vehicle networks against eavesdropping and quantum-level adversarial attacks."
 ---
 

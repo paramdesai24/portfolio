@@ -11,7 +11,7 @@
   --color-accent-dim: var(--color-accent-dim);
 
   --font-serif: "Instrument Serif", serif;
-  --font-sans: "Inter", sans-serif;
+  --font-sans: "Instrument Sans", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
   --shadow-card: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);

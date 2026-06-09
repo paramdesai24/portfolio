@@ -163,7 +163,7 @@
           <div>
             <div class="flex justify-between items-start mb-3">
               <h4 class="font-serif text-2xl text-[--color-text]">FC Analytics</h4>
-              <span class="text-xs font-mono text-[--color-muted] uppercase px-2 py-0.5 bg-[--color-border] rounded">Archived</span>
+              <span class="text-xs font-mono text-[--color-muted] uppercase px-2 py-0.5 bg-[--color-border] rounded">Active</span>
             </div>
             <p class="text-sm text-[--color-muted] mb-6 line-clamp-3">
               An advanced sports analytics and simulation platform tailored for the FIFA World Cup 2026, predicting matches and simulating team formations.

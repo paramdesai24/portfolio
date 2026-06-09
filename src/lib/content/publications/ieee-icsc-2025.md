@@ -6,7 +6,9 @@ year: 2025
 status: "presented"
 note: "Presented in person at Tampa, Florida, USA"
 researchAreas: ["XAI", "Cybersecurity"]
+pdfUrl: "https://ieeexplore.ieee.org/document/11139950/"
 relatedProjects: ["bhoomi"]
+order: 2
 abstract: "Develops a deep learning pipeline with integrated SHAP-based explainability for detecting false data injection attacks in autonomous vehicle sensor networks, providing both accuracy and interpretable model decisions."
 ---
 

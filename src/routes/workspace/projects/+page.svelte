@@ -57,10 +57,7 @@
     {#each ['All', 'AI Systems', 'Probabilistic Modelling', 'LLMs', 'Climate AI'] as FilterOption}
       <button
         onclick={() => activeFilter = FilterOption as FilterTheme}
-        class="px-4 py-1.5 rounded-full font-sans text-xs transition-all duration-200 border cursor-pointer
-        {activeFilter === FilterOption 
-          ? 'bg-[--color-accent] text-[--color-surface] border-[--color-accent] shadow-xs' 
-          : 'bg-[--color-surface] text-[--color-muted] border-[--color-border] hover:text-[--color-text] hover:bg-[--color-accent-dim]'}"
+        class="filter-pill {activeFilter === FilterOption ? 'selected' : ''}"
       >
         {FilterOption}
       </button>
@@ -203,3 +200,27 @@
     </div>
   {/if}
 </div>
+
+<style>
+  .filter-pill {
+    padding: 0.35rem 0.9rem;
+    border-radius: 9999px;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    transition: all 150ms ease;
+    border: 1px solid var(--color-border);
+    cursor: pointer;
+    background-color: var(--color-surface);
+    color: var(--color-muted);
+  }
+  .filter-pill:hover {
+    color: var(--color-text);
+    background-color: var(--color-accent-dim);
+  }
+  .filter-pill.selected {
+    background-color: var(--color-text) !important;
+    color: var(--color-surface) !important;
+    border-color: var(--color-text) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+</style>

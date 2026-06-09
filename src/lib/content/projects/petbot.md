@@ -1,11 +1,11 @@
 ---
 title: "PetBot"
-shortDescription: "LLM-powered RAG system with NL-to-SQL capabilities and conversational voice-assisted workflows."
-techStack: ["LangChain", "PostgreSQL", "FastAPI", "React", "Whisper", "OpenAI"]
+shortDescription: "AI Restaurant Revenue Intelligence Platform using LLM-powered RAG and NL-to-SQL workflows."
+techStack: ["LangChain", "LangGraph", "FastAPI", "React", "PostgreSQL", "Whisper", "OpenAI"]
 researchThemes: ["LLMs", "RAG", "NL-to-SQL", "Conversational AI"]
 status: "prototype"
 achievements: ["Runner-Up, HACKaMINeD 2026"]
-githubUrl: "https://github.com/paramdesai24/petbot"
+githubUrl: "https://github.com/paramdesai24/voice-copilot"
 featured: true
 order: 3
 ---

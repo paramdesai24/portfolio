@@ -9,7 +9,6 @@
     FolderOpen, 
     FileText, 
     Lightbulb, 
-    Network, 
     User, 
     Download, 
     Mail, 
@@ -30,8 +29,6 @@
     { id: "research",       label: "Research Overview",  category: "Pages", icon: "BookOpen",     href: "/workspace/research" },
     { id: "projects",       label: "Projects",           category: "Pages", icon: "FolderOpen",   href: "/workspace/projects" },
     { id: "publications",   label: "Publications",       category: "Pages", icon: "FileText",     href: "/workspace/publications" },
-    { id: "research-ideas", label: "Research Ideas",     category: "Pages", icon: "Lightbulb",    href: "/workspace/research-ideas" },
-    { id: "mind-map",       label: "Mind Map",           category: "Pages", icon: "Network",      href: "/workspace/mind-map" },
     { id: "resume",         label: "Resume",             category: "Pages", icon: "User",         href: "/workspace/resume" },
 
     // Research Areas
@@ -220,7 +217,6 @@
       case 'FolderOpen': return FolderOpen;
       case 'FileText': return FileText;
       case 'Lightbulb': return Lightbulb;
-      case 'Network': return Network;
       case 'User': return User;
       case 'Download': return Download;
       case 'Mail': return Mail;

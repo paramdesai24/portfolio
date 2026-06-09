@@ -1,11 +1,10 @@
 import type { Component } from 'svelte';
-import type { Project, Publication, ResearchIdea, ResearchArea } from '$lib/types';
+import type { Project, Publication, ResearchArea } from '$lib/types';
 
 // Dynamic glob modules of markdown content using Vite glob imports
 const projectModules = import.meta.glob('/src/lib/content/projects/*.md');
 const publicationModules = import.meta.glob('/src/lib/content/publications/*.md');
 const researchAreaModules = import.meta.glob('/src/lib/content/research-areas/*.md');
-const researchIdeaModules = import.meta.glob('/src/lib/content/research-ideas/*.md');
 
 // Core helper to resolve multiple dynamic markdown modules and extract metadata
 async function resolveModules<T>(modules: Record<string, () => Promise<any>>): Promise<T[]> {
@@ -108,21 +107,7 @@ export async function getPublication(slug: string): Promise<Publication & { cont
   };
 }
 
-// Get all research ideas sorted by active -> exploring -> on-radar
-export async function getResearchIdeas(): Promise<ResearchIdea[]> {
-  const list = await resolveModules<ResearchIdea>(researchIdeaModules);
-  const statusPriority: Record<string, number> = {
-    'active': 0,
-    'active interest': 0,
-    'exploring': 1,
-    'on-radar': 2
-  };
-  return list.sort((a, b) => {
-    const pA = statusPriority[a.status.toLowerCase()] ?? 99;
-    const pB = statusPriority[b.status.toLowerCase()] ?? 99;
-    return pA - pB;
-  });
-}
+
 
 // Get all research areas sorted by publicationCount descending
 export async function getResearchAreas(): Promise<ResearchArea[]> {

@@ -5,9 +5,9 @@ venue: "Springer CML 2025"
 year: 2025
 researchAreas: ["XAI", "Quantum Security", "Cybersecurity"]
 status: "published"
-pdfUrl: "https://arxiv.org/abs/example5"
+pdfUrl: "https://link.springer.com/chapter/10.1007/978-981-95-2878-3_23"
 relatedProjects: ["petbot"]
-order: 5
+order: 1
 abstract: "Combines explainable AI techniques with quantum cryptographic primitives for classifying and interpreting network attacks in smart home IoT environments."
 ---
 

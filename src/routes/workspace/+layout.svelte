@@ -9,8 +9,6 @@
   import { 
     BookOpen, 
     Award, 
-    Lightbulb, 
-    Network, 
     Briefcase, 
     FileText, 
     ArrowLeft, 
@@ -35,9 +33,7 @@
       title: 'Research',
       items: [
         { name: 'Research Overview', href: '/workspace/research', icon: BookOpen },
-        { name: 'Publications', href: '/workspace/publications', icon: Award },
-        { name: 'Research Ideas', href: '/workspace/research-ideas', icon: Lightbulb },
-        { name: 'Mind Map', href: '/workspace/mind-map', icon: Network }
+        { name: 'Publications', href: '/workspace/publications', icon: Award }
       ]
     },
     {
@@ -89,12 +85,10 @@
   <aside class="hidden lg:flex flex-col w-64 fixed inset-y-0 left-0 bg-[--color-surface] border-r border-[--color-border] z-30 select-none" style="box-shadow: 1px 0 0 var(--color-border);">
     <!-- Top profile section -->
     <div class="p-6 flex items-center gap-3 border-b border-[--color-border]">
-      <div class="w-8 h-8 rounded-full bg-[--color-accent] text-[--color-surface] flex items-center justify-center font-sans font-semibold text-xs select-none">
-        PD
-      </div>
+      <img src="/avatar.png" alt="Param Desai" class="w-8 h-8 rounded-full object-cover border border-[--color-border] select-none" />
       <div class="flex flex-col">
         <span class="font-sans text-sm font-semibold text-[--color-text] leading-tight">Param Desai</span>
-        <span class="font-sans text-[11px] text-[--color-muted]">AI Researcher</span>
+        <span class="font-sans text-[11px] text-[--color-muted]">i do what i gotta do</span>
       </div>
     </div>
 
@@ -135,9 +129,6 @@
       >
         <span class="pulse-hint">⌘K to search</span>
       </button>
-      <span class="font-mono text-[9px] text-[--color-muted] opacity-60 select-none">
-        Last updated: June 2025
-      </span>
     </div>
   </aside>
 
@@ -176,12 +167,10 @@
       <!-- Top Section -->
       <div class="p-6 flex items-center justify-between border-b border-[--color-border]">
         <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full bg-[--color-accent] text-[--color-surface] flex items-center justify-center font-sans font-semibold text-xs select-none">
-            PD
-          </div>
+          <img src="/avatar.png" alt="Param Desai" class="w-8 h-8 rounded-full object-cover border border-[--color-border] select-none" />
           <div class="flex flex-col">
             <span class="font-sans text-sm font-semibold text-[--color-text] leading-tight">Param Desai</span>
-            <span class="font-sans text-[11px] text-[--color-muted]">AI Researcher</span>
+            <span class="font-sans text-[11px] text-[--color-muted]">i do what i gotta do</span>
           </div>
         </div>
         <button onclick={closeDrawer} class="text-[--color-muted] hover:text-[--color-text] p-1" aria-label="Close menu">
@@ -226,9 +215,6 @@
         >
           <span class="pulse-hint">⌘K to search</span>
         </button>
-        <span class="font-mono text-[9px] text-[--color-muted] opacity-60 select-none">
-          Last updated: June 2025
-        </span>
       </div>
     </aside>
   {/if}

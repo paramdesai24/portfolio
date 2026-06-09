@@ -131,10 +131,7 @@
       {metadata.title}
     </h1>
 
-    <!-- Authors Citations -->
-    <p class="font-sans text-sm text-[--color-text] font-medium mb-3">
-      Param Desai, <span class="text-[--color-muted]">[et al.]</span>
-    </p>
+
 
     <!-- Special Note -->
     {#if metadata.note}

@@ -99,7 +99,11 @@
         startOnLoad: false,
         theme: 'neutral',
         securityLevel: 'loose',
-        fontFamily: 'Inter, system-ui, sans-serif',
+        flowchart: {
+          htmlLabels: true,
+          useMaxWidth: true
+        },
+        fontFamily: 'Instrument Sans, system-ui, sans-serif',
         themeVariables: {
           fontSize: '11px',
           primaryColor: surfaceColor,
@@ -109,13 +113,20 @@
         }
       });
 
-      const codeBlocks = contentContainer.querySelectorAll('pre.language-mermaid, pre > code.language-mermaid');
+      const codeBlocks = Array.from(contentContainer.querySelectorAll('pre.language-mermaid, pre:has(code.language-mermaid), code.language-mermaid'));
+      const processedElements = new Set<Element>();
       
       for (let i = 0; i < codeBlocks.length; i++) {
         const block = codeBlocks[i];
+        const targetElement = block.closest('pre') || block;
+        if (processedElements.has(targetElement)) {
+          continue;
+        }
+
         const code = block.textContent || '';
         if (!code) continue;
 
+        processedElements.add(targetElement);
         const uniqueId = `mermaid-render-${i}-${Math.random().toString(36).substring(2, 7)}`;
         const { svg } = await mermaid.render(uniqueId, code.trim());
 
@@ -123,12 +134,7 @@
         container.className = 'my-8 flex justify-center bg-[--color-surface] border border-[--color-border] rounded-xl p-6 overflow-x-auto shadow-2xs select-none w-full';
         container.innerHTML = `<div class="w-full flex justify-center">${svg}</div>`;
 
-        const parentPre = block.closest('pre');
-        if (parentPre) {
-          parentPre.replaceWith(container);
-        } else {
-          block.replaceWith(container);
-        }
+        targetElement.replaceWith(container);
       }
     } catch (err) {
       console.error('Mermaid render error on projects slug page:', err);

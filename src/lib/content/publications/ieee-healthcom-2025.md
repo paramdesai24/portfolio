@@ -5,9 +5,9 @@ venue: "IEEE HealthCom 2025"
 year: 2025
 researchAreas: ["Quantum Security", "Intelligent Systems", "IoT"]
 status: "published"
-pdfUrl: "https://arxiv.org/abs/example3"
+pdfUrl: "https://ieeexplore.ieee.org/document/11342726/"
 relatedProjects: ["petbot"]
-order: 3
+order: 4
 abstract: "Presents a quantum-assisted edge computing framework for real-time anomaly detection and secure data processing in IoT-enabled healthcare environments."
 ---
 
