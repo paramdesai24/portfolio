@@ -1,0 +1,188 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-border: var(--color-border);
+  --color-text: var(--color-text);
+  --color-muted: var(--color-muted);
+  --color-accent: var(--color-accent);
+  --color-accent-dim: var(--color-accent-dim);
+
+  --font-serif: "Instrument Serif", serif;
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --shadow-card: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
+}
+
+@layer base {
+  :root {
+    --color-bg: #F7F3EA;
+    --color-surface: #FFFCF5;
+    --color-border: #E8E2D6;
+    --color-text: #222222;
+    --color-muted: #6B6357; /* Darkened from #7A7567 for WCAG AA (4.5:1+) contrast compliance */
+    --color-accent: #6B7FA5;
+    --color-accent-dim: #E8EDF5;
+
+    /* Status badge color variables */
+    --color-status-live-bg: #E8EDF5;
+    --color-status-live-text: #6B7FA5;
+    --color-status-live-border: #6B7FA5;
+
+    --color-status-active-bg: #E8F5E9;
+    --color-status-active-text: #2E7D32;
+    --color-status-active-border: #81C784;
+
+    --color-status-exploring-bg: #FFF8E1;
+    --color-status-exploring-text: #B7791F;
+    --color-status-exploring-border: #F6AD55;
+
+    --color-status-prototype-bg: #FFF3E0;
+    --color-status-prototype-text: #E65100;
+    --color-status-prototype-border: #FFB74D;
+
+    /* Achievement badge variables */
+    --color-achievement-bg: #FFF8E1;
+    --color-achievement-text: #F57F17;
+    --color-achievement-border: #FFE082;
+
+    /* Sticky note variables */
+    --color-sticky-bg: #FEFCE8;
+    --color-sticky-border: #FEF08A;
+    --color-sticky-text: #713F12;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+  }
+
+  /* Paper texture overlay via very low opacity SVG noise filter */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
+
+  /* Selection highlight */
+  ::selection {
+    background-color: var(--color-accent-dim);
+    color: var(--color-accent);
+  }
+
+  /* Keyboard focus outlines for accessibility */
+  :focus-visible {
+    outline: 2px solid var(--color-accent) !important;
+    outline-offset: 2px !important;
+  }
+
+  /* Active tap scaling micro-interaction for buttons */
+  button:active, a.button:active, [role="button"]:active {
+    transform: scale(0.97) !important;
+    transition: transform 100ms ease-out !important;
+  }
+
+  /* Thin custom scrollbar using accent color */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-accent);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in srgb, var(--color-accent) 80%, black);
+  }
+}
+
+/* Global Layout Primitives */
+@layer utilities {
+  .container-narrow {
+    @apply max-w-2xl mx-auto px-6;
+  }
+  .container-wide {
+    @apply max-w-5xl mx-auto px-6;
+  }
+  .section-spacing {
+    @apply py-16;
+  }
+  .card {
+    background-color: var(--color-surface);
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--color-border);
+    padding: 1.5rem;
+  }
+}
+
+/* prose-academic Custom Typography */
+.prose-academic {
+  @apply prose;
+  
+  --tw-prose-body: var(--color-text);
+  --tw-prose-headings: var(--color-text);
+  --tw-prose-lead: var(--color-muted);
+  --tw-prose-links: var(--color-accent);
+  --tw-prose-bold: var(--color-text);
+  --tw-prose-counters: var(--color-muted);
+  --tw-prose-bullets: var(--color-muted);
+  --tw-prose-hr: var(--color-border);
+  --tw-prose-quotes: var(--color-text);
+  --tw-prose-quote-borders: var(--color-border);
+  --tw-prose-captions: var(--color-muted);
+  --tw-prose-code: var(--color-text);
+  --tw-prose-pre-code: var(--color-text);
+  --tw-prose-pre-bg: var(--color-surface);
+  --tw-prose-th-borders: var(--color-border);
+  --tw-prose-td-borders: var(--color-border);
+
+  line-height: 1.8;
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+  }
+}
+
+/* ⌘K command palette hint scale pulse animation loop */
+@keyframes scalePulseOnce {
+  0%, 85%, 100% {
+    transform: scale(1);
+  }
+  92.5% {
+    transform: scale(1.06);
+  }
+}
+.pulse-hint {
+  animation: scalePulseOnce 8s infinite ease-in-out;
+  display: inline-block;
+}
+
+/* Global prefers-reduced-motion styling */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
