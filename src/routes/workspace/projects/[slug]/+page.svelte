@@ -310,7 +310,9 @@
         class="prose prose-neutral prose-sm max-w-none text-[--color-text] leading-[1.7] text-justify font-sans"
       >
         {#if Content}
-          <Content />
+          {#key $theme}
+            <Content />
+          {/key}
         {/if}
       </div>
 

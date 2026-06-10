@@ -300,9 +300,9 @@
               <h3 class="font-sans font-semibold text-xs text-[--color-text] mb-2 uppercase tracking-wide select-none">
                 {group.category}
               </h3>
-              <div class="grid grid-cols-4 gap-1.5 w-fit">
+              <div class="flex flex-wrap gap-1.5 max-w-[200px]">
                 {#each group.items as item}
-                  <span class="h-8 w-8 rounded-sm bg-[--color-accent-dim] text-[--color-accent] border border-transparent flex items-center justify-center transition-transform duration-200 hover:scale-105">
+                  <span class="px-2 py-0.5 rounded-sm text-[10px] font-mono bg-[--color-accent-dim] text-[--color-accent] border border-transparent font-medium flex items-center gap-1.5 transition-transform duration-200 hover:scale-105">
                     <TechLogo tech={item} size={16} />
                   </span>
                 {/each}

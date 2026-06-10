@@ -117,6 +117,13 @@
                 stroke 450ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  /* Faster transition for mobile devices (viewport < 768px) */
+  @media (max-width: 767px) {
+    *, *::before, *::after {
+      transition-duration: 150ms !important;
+    }
+  }
+
   html {
     scroll-behavior: smooth;
   }
@@ -219,21 +226,33 @@
 
   line-height: 1.8;
   color: var(--color-text) !important;
+}
 
-  h1, h2, h3, h4, h5, h6 {
-    color: var(--color-text) !important;
-    font-family: var(--font-serif);
-    font-weight: 400;
-  }
+.prose-academic h1, 
+.prose-academic h2, 
+.prose-academic h3, 
+.prose-academic h4, 
+.prose-academic h5, 
+.prose-academic h6 {
+  color: var(--color-text) !important;
+  font-family: var(--font-serif);
+  font-weight: 400;
+}
 
-  p, li, ul, ol, strong, em, code, blockquote {
-    color: var(--color-text) !important;
-  }
+.prose-academic p, 
+.prose-academic li, 
+.prose-academic ul, 
+.prose-academic ol, 
+.prose-academic strong, 
+.prose-academic em, 
+.prose-academic code, 
+.prose-academic blockquote {
+  color: var(--color-text) !important;
+}
 
-  a {
-    color: var(--color-accent) !important;
-    text-decoration-color: var(--color-accent) !important;
-  }
+.prose-academic a {
+  color: var(--color-accent) !important;
+  text-decoration-color: var(--color-accent) !important;
 }
 
 /* ⌘K command palette hint scale pulse animation loop */
