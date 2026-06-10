@@ -38,9 +38,11 @@
     { id: "quantum",    label: "Quantum Security",      category: "Research Areas", href: "/workspace/research" },
 
     // Projects
-    { id: "bhoomi",   label: "BHOOMI",       category: "Projects", href: "/workspace/projects/bhoomi" },
-    { id: "fc",       label: "FC Analytics", category: "Projects", href: "/workspace/projects/fc-analytics" },
-    { id: "petbot",   label: "PetBot",       category: "Projects", href: "/workspace/projects/petbot" },
+    { id: "bhoomi",             label: "BHOOMI",             category: "Projects", href: "/workspace/projects/bhoomi" },
+    { id: "fc",                 label: "FC Analytics",       category: "Projects", href: "/workspace/projects/fc-analytics" },
+    { id: "petbot",             label: "PetBot",             category: "Projects", href: "/workspace/projects/petbot" },
+    { id: "research-assistant", label: "Research Assistant", category: "Projects", href: "/workspace/projects/research-assistant" },
+    { id: "portfolio-website",  label: "Developer Portfolio", category: "Projects", href: "/workspace/projects/portfolio-website" },
 
     // Publications
     { id: "pub_globecom",   label: "Quantum-Secured Explainable Machine Unlearning for Phishing Detection in IoT",  category: "Publications", href: "/workspace/publications/pub-globecom" },

@@ -288,7 +288,7 @@
       <div class="card hover:translate-y-[-2px] transition-transform duration-300 flex flex-col justify-between">
         <div>
           <span class="text-xs font-mono text-[--color-muted] uppercase tracking-wider">Engineering</span>
-          <h3 class="font-serif text-4xl text-[--color-accent] mt-3 mb-1">4 Projects</h3>
+          <h3 class="font-serif text-4xl text-[--color-accent] mt-3 mb-1">5 Projects</h3>
         </div>
         <p class="text-sm text-[--color-muted] font-sans mt-2">
           Applications across Climate AI (BHOOMI), Sports Analytics (FC Analytics), LLM/RAG (PetBot), and Local-first NLP (Research Assistant).

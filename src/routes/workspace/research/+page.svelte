@@ -84,7 +84,7 @@
       <span class="w-[1px] h-3 bg-[--color-border]"></span>
       <div class="flex items-center gap-1.5">
         <BookOpen size={14} class="text-[--color-accent]" />
-        <span>4 Active Projects</span>
+        <span>5 Active Projects</span>
       </div>
       <span class="w-[1px] h-3 bg-[--color-border]"></span>
       <div class="flex items-center gap-1.5">

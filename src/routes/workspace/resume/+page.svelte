@@ -239,6 +239,13 @@
             </a>
             <span class="text-[--color-muted]">&mdash; An offline, local-first paper assistant that automatically extracts and processes PDFs to generate section-aware summaries, simplified drafts, PPT decks, and podcast audio.</span>
           </li>
+          <li>
+            <a href="/workspace/projects/portfolio-website" class="font-semibold text-xs text-[--color-text] hover:text-[--color-accent] hover:underline inline-flex items-center gap-1">
+              Developer Portfolio
+              <ExternalLink size={10} class="opacity-60" />
+            </a>
+            <span class="text-[--color-muted]">&mdash; An interactive, high-performance academic and engineering portfolio website featuring smooth dark mode transitions, Supabase realtime guestbook components, and reactive theme-based diagram rendering.</span>
+          </li>
         </ul>
       </section>
 
