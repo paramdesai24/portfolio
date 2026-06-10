@@ -38,7 +38,7 @@
         const query = debouncedSearchQuery.toLowerCase();
         const matchesTitle = pub.title.toLowerCase().includes(query);
         const matchesVenue = pub.venue.toLowerCase().includes(query);
-        const matchesAreas = pub.researchArea.some((a) => a.toLowerCase().includes(query));
+        const matchesAreas = (pub.researchArea || []).some((a) => a.toLowerCase().includes(query));
         if (!matchesTitle && !matchesVenue && !matchesAreas) {
           return false;
         }
@@ -53,7 +53,7 @@
 
       // 3. Area Filter
       if (selectedArea !== 'All') {
-        const areas = pub.researchArea.map((a) => a.toLowerCase());
+        const areas = (pub.researchArea || []).map((a) => a.toLowerCase());
         if (!areas.includes(selectedArea.toLowerCase())) {
           return false;
         }

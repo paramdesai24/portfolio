@@ -23,7 +23,7 @@
 
   // Extract h2 headings on content render for scroll spy
   $effect(() => {
-    if (contentContainer && Content) {
+    if (contentContainer && data.content !== undefined) {
       tick().then(() => {
         if (!contentContainer) return;
         const headings = contentContainer.querySelectorAll('h2');

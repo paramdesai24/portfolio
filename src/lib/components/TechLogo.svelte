@@ -37,15 +37,10 @@
         };
       case 'postgresql':
         return { path: icons.siPostgresql.path, hex: icons.siPostgresql.hex, title: 'PostgreSQL' };
-      case 'dynamodb':
-        return { path: icons.siAmazondynamodb.path, hex: icons.siAmazondynamodb.hex, title: 'DynamoDB' };
       case 'docker':
         return { path: icons.siDocker.path, hex: icons.siDocker.hex, title: 'Docker' };
       case 'git':
         return { path: icons.siGit.path, hex: icons.siGit.hex, title: 'Git' };
-      case 'aws':
-      case 'aws ecr & lambda':
-        return { path: icons.siAmazonwebservices.path, hex: icons.siAmazonwebservices.hex, title: 'AWS' };
       case 'redis':
         return { path: icons.siRedis.path, hex: icons.siRedis.hex, title: 'Redis' };
       case 'supabase':
@@ -93,7 +88,6 @@
       width={size}
       height={size}
       fill="#{iconData.hex}"
-      title={iconData.title}
       class="transition-transform duration-200 group-hover:scale-110"
     >
       <title>{iconData.title}</title>

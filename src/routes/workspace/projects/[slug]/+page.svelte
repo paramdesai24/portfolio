@@ -27,7 +27,7 @@
 
   // Extract h2 headings on content render
   $effect(() => {
-    if (contentContainer && Content) {
+    if (contentContainer && data.content !== undefined) {
       tick().then(() => {
         if (!contentContainer) return;
         const headings = contentContainer.querySelectorAll('h2');
@@ -73,7 +73,7 @@
 
   // Client-side Mermaid diagrams compilation
   $effect(() => {
-    if (contentContainer && Content) {
+    if (contentContainer && data.content !== undefined) {
       tick().then(() => {
         renderMermaidDiagrams();
       });

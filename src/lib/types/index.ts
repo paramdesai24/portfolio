@@ -33,6 +33,7 @@ export interface Publication {
   pdfUrl?: string;
   relatedProjects?: string[];
   order?: number;
+  featured?: boolean;
   abstract: string;
 }
 
