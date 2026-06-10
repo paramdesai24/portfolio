@@ -96,14 +96,14 @@
 
 <svelte:window onkeydown={handleWindowKeydown} />
 
-<div class="min-h-screen bg-[--color-bg] text-[--color-text] flex flex-col md:flex-row relative">
+<div class="min-h-screen bg-[--color-bg] text-[--color-text] flex relative">
   <!-- Skip to main content accessibility link -->
   <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[--color-accent] focus:text-[--color-surface] focus:border focus:border-[--color-border] focus:rounded-lg select-none">
     Skip to content
   </a>
 
   <!-- MOBILE HEADER -->
-  <header class="md:hidden sticky top-0 w-full h-14 border-b border-[--color-border] flex items-center justify-between px-6 z-50 select-none shadow-2xs" style="background-color: var(--color-surface); opacity: 1;">
+  <header class="md:hidden mobile-header border-b border-[--color-border] flex items-center justify-between px-6 select-none shadow-2xs" style="background-color: var(--color-surface); opacity: 1;">
     <a href="/" class="flex items-center">
       <img src="/avatar.png" alt="Param Desai" class="w-6 h-6 rounded-full object-cover border border-[--color-border] select-none" />
     </a>
@@ -281,7 +281,7 @@
   </aside>
 
   <!-- MAIN CONTENT AREA -->
-  <div class="flex-1 pl-0 pt-0 md:pt-0 md:pl-16 lg:pl-64 flex flex-col min-h-screen min-w-0">
+  <div class="flex-1 pl-0 pt-14 md:pt-0 md:pl-16 lg:pl-64 flex flex-col min-h-screen min-w-0">
     {#key $page.url.pathname}
       <main 
         id="main-content"
