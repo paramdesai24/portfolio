@@ -65,6 +65,58 @@
     --color-sticky-text: #713F12;
   }
 
+  :root.dark {
+    --bg-primary:    #151311; /* Very dark warm charcoal */
+    --bg-secondary:  #1D1B18; /* Warm dark gray-brown */
+    --bg-card:       #262320; /* Slightly lighter warm card background */
+    --text-primary:  #F2EFE9; /* Warm cream */
+    --text-secondary:#ACA497; /* Warm muted gray */
+    --text-tertiary: #7D766C; /* Warm dim gray */
+    --border:        rgba(255, 255, 255, 0.08);
+    --accent:        #F5F2EC; /* Light warm cream */
+
+    /* Dark status variables */
+    --color-status-live-bg: #222B3D;
+    --color-status-live-text: #A3B8E0;
+    --color-status-live-border: #4F6285;
+
+    --color-status-active-bg: #1B2E1C;
+    --color-status-active-text: #81C784;
+    --color-status-active-border: #3E6B40;
+
+    --color-status-exploring-bg: #362E1D;
+    --color-status-exploring-text: #F6AD55;
+    --color-status-exploring-border: #7B5C2B;
+
+    --color-status-prototype-bg: #3D2314;
+    --color-status-prototype-text: #FFB74D;
+    --color-status-prototype-border: #8A4E29;
+
+    --color-achievement-bg: #3D2D10;
+    --color-achievement-text: #FFB74D;
+    --color-achievement-border: #7A5722;
+
+    --color-sticky-bg: #29281C;
+    --color-sticky-border: #4A462B;
+    --color-sticky-text: #FEF08A;
+  }
+
+  /* Prevent load theme transition flash */
+  html.no-transition, html.no-transition * {
+    transition: none !important;
+  }
+
+  /* Smooth buttery theme transition */
+  html, body, aside, main, header, footer, a, button, svg, input, textarea, select, div, span, h1, h2, h3, h4, h5, h6, p, li, ol, ul {
+    transition: background-color 450ms cubic-bezier(0.4, 0, 0.2, 1), 
+                color 450ms cubic-bezier(0.4, 0, 0.2, 1), 
+                border-color 450ms cubic-bezier(0.4, 0, 0.2, 1), 
+                box-shadow 450ms cubic-bezier(0.4, 0, 0.2, 1), 
+                text-decoration-color 450ms cubic-bezier(0.4, 0, 0.2, 1),
+                fill 450ms cubic-bezier(0.4, 0, 0.2, 1),
+                stroke 450ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
   html {
     scroll-behavior: smooth;
   }

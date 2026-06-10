@@ -1,10 +1,15 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { ChevronDown, Mail, ArrowRight, Download } from '@lucide/svelte';
+  import { ChevronDown, Mail, ArrowRight, Download, Sun, Moon } from '@lucide/svelte';
   import TechLogo from '$lib/components/TechLogo.svelte';
   import { supabase } from '$lib/supabase';
+  import { theme } from '$lib/stores/theme';
 
   let mounted = $state(false);
+
+  function toggleTheme() {
+    theme.update(t => t === 'light' ? 'dark' : 'light');
+  }
 
   const phrases = [
     "I research quantum security.",
@@ -188,7 +193,23 @@
   <meta name="twitter:image" content="https://paramdesai24.me/avatar.png" />
 </svelte:head>
 
-<div class="landing-container min-h-screen flex flex-col" class:animate-in={mounted}>
+<div class="landing-container min-h-screen flex flex-col relative" class:animate-in={mounted}>
+  <!-- Floating Theme Toggle in Top Right -->
+  <div class="absolute top-6 right-6 z-50">
+    <button 
+      onclick={toggleTheme}
+      class="p-2.5 rounded-lg bg-[--color-surface] border border-[--color-border] text-[--color-muted] hover:text-[--color-text] hover:bg-[--color-accent-dim] transition-all duration-200 cursor-pointer shadow-2xs focus:outline-hidden"
+      aria-label="Toggle theme"
+      title="Toggle Theme"
+    >
+      {#if $theme === 'dark'}
+        <Sun size={18} />
+      {:else}
+        <Moon size={18} />
+      {/if}
+    </button>
+  </div>
+
   <!-- Section 1: Hero Section -->
   <section class="min-h-screen flex flex-col justify-between py-12 relative">
     <!-- Empty top spacer for centering alignment -->
