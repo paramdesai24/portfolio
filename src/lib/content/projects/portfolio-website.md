@@ -4,7 +4,7 @@ shortDescription: "Interactive academic and engineering portfolio built with Sve
 techStack: ["Svelte", "SvelteKit", "TailwindCSS", "Supabase", "TypeScript", "Vite"]
 researchThemes: ["Web Architectures", "Realtime Databases", "Micro-Animations"]
 status: "live"
-achievements: ["Automated Deployment"]
+achievements: []
 githubUrl: "https://github.com/paramdesai24/portfolio"
 demoUrl: "https://paramdesai24.me"
 featured: true

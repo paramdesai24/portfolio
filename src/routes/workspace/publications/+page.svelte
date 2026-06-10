@@ -133,7 +133,7 @@
         <!-- Publication Item Card -->
         <div
           in:fade={{ duration: 150 }}
-          class="group relative flex flex-col sm:flex-row gap-4 sm:gap-6 p-6 bg-[--color-surface] border border-[--color-border] rounded-xl transition-all duration-300 hover:shadow-xs border-l-[3px] border-l-transparent hover:border-l-[--color-accent]"
+          class="group relative flex flex-col sm:flex-row gap-4 sm:gap-6 p-6 bg-[--color-surface] border border-[--color-border] rounded-xl transition-all duration-300 hover:shadow-xs hover:border-[--color-accent]"
         >
           <!-- Left Year Column -->
           <div class="flex sm:flex-col items-center justify-center sm:justify-start shrink-0 sm:w-14 font-mono text-sm sm:text-lg font-bold text-[--color-accent] tracking-wider sm:py-1 border-b sm:border-b-0 sm:border-r border-[--color-border] pb-2 sm:pb-0 sm:pr-4 select-none">
