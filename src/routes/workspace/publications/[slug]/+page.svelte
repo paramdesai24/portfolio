@@ -2,7 +2,7 @@
   import { onMount, tick } from 'svelte';
   import { browser } from '$app/environment';
   import { currentPageTitle } from '$lib/stores/workspace';
-  import { FileText, Share2, Star } from 'lucide-svelte';
+  import { FileText, Share2, Star } from '@lucide/svelte';
 
   // Svelte 5 props
   let { data } = $props();

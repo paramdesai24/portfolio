@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { currentPageTitle } from '$lib/stores/workspace';
-  import { Briefcase, Calendar, MapPin } from 'lucide-svelte';
+  import { Briefcase, Calendar, MapPin } from '@lucide/svelte';
   import TechLogo from '$lib/components/TechLogo.svelte';
 
   // Svelte 5 props

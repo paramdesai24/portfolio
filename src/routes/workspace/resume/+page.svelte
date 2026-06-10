@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { currentPageTitle } from '$lib/stores/workspace';
-  import { Mail, Download, ExternalLink } from 'lucide-svelte';
+  import { Mail, Download, ExternalLink } from '@lucide/svelte';
   import TechLogo from '$lib/components/TechLogo.svelte';
 
   onMount(() => {

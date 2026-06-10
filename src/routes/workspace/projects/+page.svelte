@@ -3,7 +3,7 @@
   import { fade } from 'svelte/transition';
   import { currentPageTitle } from '$lib/stores/workspace';
   import type { Project } from '$lib/types';
-  import { ExternalLink, Star } from 'lucide-svelte';
+  import { ExternalLink, Star } from '@lucide/svelte';
   import TechLogo from '$lib/components/TechLogo.svelte';
   import { tilt } from '$lib/actions/tilt';
 

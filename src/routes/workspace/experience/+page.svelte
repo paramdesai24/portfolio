@@ -3,7 +3,7 @@
   import { fade } from 'svelte/transition';
   import { currentPageTitle } from '$lib/stores/workspace';
   import type { Experience } from '$lib/types';
-  import { ArrowRight, MapPin } from 'lucide-svelte';
+  import { ArrowRight, MapPin } from '@lucide/svelte';
   import TechLogo from '$lib/components/TechLogo.svelte';
 
   onMount(() => {

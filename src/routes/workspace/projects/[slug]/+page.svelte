@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, tick } from 'svelte';
   import { browser } from '$app/environment';
-  import { ExternalLink, Star } from 'lucide-svelte';
+  import { ExternalLink, Star } from '@lucide/svelte';
   import TechLogo from '$lib/components/TechLogo.svelte';
 
   // Svelte 5 props

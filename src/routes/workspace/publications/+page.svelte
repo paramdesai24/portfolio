@@ -3,7 +3,7 @@
   import { fade } from 'svelte/transition';
   import { currentPageTitle } from '$lib/stores/workspace';
   import type { Publication } from '$lib/types';
-  import { FileText, Star, Search } from 'lucide-svelte';
+  import { FileText, Star, Search } from '@lucide/svelte';
 
   onMount(() => {
     currentPageTitle.set('Publications');

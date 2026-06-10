@@ -29,6 +29,18 @@
     drawerOpen = false;
   });
 
+  // Lock body scroll when drawer is open
+  $effect(() => {
+    if (drawerOpen) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+    };
+  });
+
   const navGroups = [
     {
       title: 'Research',
@@ -155,7 +167,7 @@
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
     <div 
       transition:fade={{ duration: 150 }}
-      class="fixed inset-0 z-[80] bg-black/25 backdrop-blur-xs lg:hidden"
+      class="fixed inset-0 h-[100dvh] z-[80] bg-black/25 backdrop-blur-xs lg:hidden"
       onclick={closeDrawer}
       role="presentation"
     ></div>
@@ -163,7 +175,7 @@
     <!-- Drawer Content -->
     <aside 
       transition:fly={{ x: -256, duration: 200, easing: cubicOut }}
-      class="fixed inset-y-0 left-0 z-[90] w-64 border-r border-[--color-border] flex flex-col justify-between lg:hidden"
+      class="fixed top-0 bottom-0 left-0 h-[100dvh] z-[90] w-64 border-r border-[--color-border] flex flex-col justify-between lg:hidden"
       style="background-color: #FDFAF5; box-shadow: 1px 0 0 var(--color-border);"
     >
       <!-- Top Section -->

@@ -13,7 +13,7 @@
     Download, 
     Mail, 
     Search
-  } from 'lucide-svelte';
+  } from '@lucide/svelte';
 
   interface PaletteItem {
     id: string;
