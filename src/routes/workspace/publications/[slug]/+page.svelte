@@ -161,7 +161,7 @@
   <div class="w-full max-w-[760px] min-w-0">
     <div 
       bind:this={contentContainer} 
-      class="prose prose-neutral prose-sm max-w-none text-[--color-text] leading-[1.7] text-justify font-sans"
+      class="prose-academic prose-sm max-w-none text-[--color-text] leading-[1.7] text-justify font-sans"
     >
       {#if Content}
         {#key $theme}

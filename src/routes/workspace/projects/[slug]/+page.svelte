@@ -307,7 +307,7 @@
     <div class="w-full lg:flex-1 min-w-0">
       <div 
         bind:this={contentContainer} 
-        class="prose prose-neutral prose-sm max-w-none text-[--color-text] leading-[1.7] text-justify font-sans"
+        class="prose-academic prose-sm max-w-none text-[--color-text] leading-[1.7] text-justify font-sans"
       >
         {#if Content}
           {#key $theme}
@@ -403,5 +403,9 @@
     font-family: 'Instrument Sans', system-ui, sans-serif !important;
     font-size: 11px !important;
     line-height: normal !important;
+  }
+  :global(.mermaid-diagram .nodeLabel, .mermaid-diagram .edgeLabel, .mermaid-diagram text) {
+    color: var(--color-text) !important;
+    fill: var(--color-text) !important;
   }
 </style>
