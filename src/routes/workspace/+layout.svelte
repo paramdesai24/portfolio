@@ -103,8 +103,10 @@
   </a>
 
   <!-- MOBILE HEADER -->
-  <header class="md:hidden fixed top-0 left-0 right-0 h-14 border-b border-[--color-border] flex items-center justify-between px-6 z-50 select-none bg-[--color-surface] shadow-2xs">
-    <a href="/" class="font-serif italic font-semibold text-lg text-[--color-text]">PD</a>
+  <header class="md:hidden fixed top-0 left-0 right-0 h-14 border-b border-[--color-border] flex items-center justify-between px-6 z-50 select-none shadow-2xs" style="background-color: var(--color-surface); opacity: 1;">
+    <a href="/" class="flex items-center">
+      <img src="/avatar.png" alt="Param Desai" class="w-6 h-6 rounded-full object-cover border border-[--color-border] select-none" />
+    </a>
     <span class="font-sans text-sm font-semibold text-[--color-text] truncate px-4">{$currentPageTitle}</span>
     <div class="flex items-center gap-2">
       <!-- Dark Mode Toggle for Mobile Header -->
@@ -149,7 +151,8 @@
 
     <div 
       transition:slide={{ duration: 220, easing: cubicOut }}
-      class="md:hidden fixed top-14 left-0 right-0 border-b border-[--color-border] bg-[--color-surface] z-40 shadow-lg overflow-y-auto max-h-[calc(100vh-3.5rem)] select-none flex flex-col p-5 gap-6"
+      class="md:hidden fixed top-14 left-0 right-0 border-b border-[--color-border] z-40 shadow-lg overflow-y-auto max-h-[calc(100vh-3.5rem)] select-none flex flex-col p-5 gap-6"
+      style="background-color: var(--color-surface); opacity: 1;"
     >
       {#each navGroups as group}
         <div class="flex flex-col gap-1.5">

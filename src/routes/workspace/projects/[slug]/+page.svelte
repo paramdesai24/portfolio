@@ -3,6 +3,7 @@
   import { browser } from '$app/environment';
   import { ExternalLink, Star } from '@lucide/svelte';
   import TechLogo from '$lib/components/TechLogo.svelte';
+  import { theme } from '$lib/stores/theme';
 
   // Svelte 5 props
   let { data } = $props();
@@ -73,6 +74,7 @@
 
   // Client-side Mermaid diagrams compilation
   $effect(() => {
+    const activeTheme = $theme;
     if (contentContainer && data.content !== undefined) {
       tick().then(() => {
         renderMermaidDiagrams();
@@ -114,6 +116,7 @@
         }
       });
 
+      // 1. Process new (unprocessed) code blocks
       const codeBlocks = Array.from(contentContainer.querySelectorAll('pre.language-mermaid, pre:has(code.language-mermaid), code.language-mermaid'));
       const processedElements = new Set<Element>();
       
@@ -133,9 +136,22 @@
 
         const container = document.createElement('div');
         container.className = 'mermaid-diagram my-8 flex justify-center bg-[--color-surface] border border-[--color-border] rounded-xl p-6 overflow-x-auto shadow-2xs select-none w-full';
+        container.setAttribute('data-mermaid-code', code.trim());
         container.innerHTML = `<div class="w-full flex justify-center">${svg}</div>`;
 
         targetElement.replaceWith(container);
+      }
+
+      // 2. Re-render existing diagrams on theme change
+      const existingContainers = Array.from(contentContainer.querySelectorAll('div.mermaid-diagram[data-mermaid-code]'));
+      for (let i = 0; i < existingContainers.length; i++) {
+        const container = existingContainers[i];
+        const code = container.getAttribute('data-mermaid-code') || '';
+        if (!code) continue;
+
+        const uniqueId = `mermaid-render-update-${i}-${Math.random().toString(36).substring(2, 7)}`;
+        const { svg } = await mermaid.render(uniqueId, code);
+        container.innerHTML = `<div class="w-full flex justify-center">${svg}</div>`;
       }
     } catch (err) {
       console.error('Mermaid render error on projects slug page:', err);

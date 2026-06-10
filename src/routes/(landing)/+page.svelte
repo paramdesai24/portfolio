@@ -248,10 +248,10 @@
         <a href="/workspace/research" class="px-5 py-2.5 bg-[--color-accent] text-[--color-surface] rounded-lg font-medium text-sm border border-[--color-accent] hover:bg-opacity-90 transition-all duration-200 shadow-sm">
           Explore Research
         </a>
-        <a href="/workspace/projects" class="px-5 py-2.5 bg-[--color-surface] text-[--color-text] rounded-lg font-medium text-sm border border-[--color-border] hover:bg-white transition-all duration-200 shadow-sm">
+        <a href="/workspace/projects" class="px-5 py-2.5 bg-[--color-surface] text-[--color-text] rounded-lg font-medium text-sm border border-[--color-border] hover:bg-[--color-accent-dim] transition-all duration-200 shadow-sm">
           Browse Projects
         </a>
-        <a href="https://efptwclmybikeaahtciz.supabase.co/storage/v1/object/public/Resume/PARAM_DESAI_Resume.pdf" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 bg-[--color-surface] text-[--color-text] rounded-lg font-medium text-sm border border-[--color-border] hover:bg-white transition-all duration-200 shadow-sm inline-flex items-center gap-2">
+        <a href="https://efptwclmybikeaahtciz.supabase.co/storage/v1/object/public/Resume/PARAM_DESAI_Resume.pdf" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 bg-[--color-surface] text-[--color-text] rounded-lg font-medium text-sm border border-[--color-border] hover:bg-[--color-accent-dim] transition-all duration-200 shadow-sm inline-flex items-center gap-2">
           <Download size={14} />
           <span>Download Resume</span>
         </a>
