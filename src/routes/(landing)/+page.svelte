@@ -17,10 +17,8 @@
   let phraseIdx = $state(0);
   let isDeleting = $state(false);
 
-  // Presence & Reviews States
-  let viewers = $state<any[]>([]);
-  const viewerCount = $derived(viewers.length);
-  let nthViewer = $state<number | null>(null);
+  // Visitor Count & Reviews States
+  let visitorCount = $state<number | null>(null);
 
   interface Review {
     id: string;
@@ -50,15 +48,7 @@
     return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
   }
 
-  function formatNthViewer(n: number | null): string {
-    if (n === null) return 'connecting...';
-    const j = n % 10, k = n % 100;
-    let suffix = 'th';
-    if (j === 1 && k !== 11) suffix = 'st';
-    else if (j === 2 && k !== 12) suffix = 'nd';
-    else if (j === 3 && k !== 13) suffix = 'rd';
-    return `${n}${suffix}`;
-  }
+
 
   async function fetchReviews() {
     try {
@@ -125,31 +115,20 @@
     // Fetch initial reviews
     fetchReviews();
 
-    // Supabase Presence setup
-    const myPresenceKey = Math.random().toString(36).substring(2);
-    const channel = supabase.channel('landing-page', {
-      config: {
-        presence: {
-          key: myPresenceKey
+    async function registerAndFetchViews() {
+      try {
+        await supabase.from('page_views').insert([{}]);
+        const { count, error } = await supabase
+          .from('page_views')
+          .select('*', { count: 'exact', head: true });
+        if (!error && count !== null) {
+          visitorCount = count;
         }
+      } catch (e) {
+        console.error('Failed to log visitor view:', e);
       }
-    });
-
-    channel
-      .on('presence', { event: 'sync' }, () => {
-        const state = channel.presenceState();
-        const keys = Object.keys(state).sort();
-        const idx = keys.indexOf(myPresenceKey);
-        if (idx !== -1) {
-          nthViewer = idx + 1;
-        }
-        viewers = Object.values(state).flat();
-      })
-      .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          await channel.track({ online_at: new Date().toISOString() });
-        }
-      });
+    }
+    registerAndFetchViews();
 
     // Small delay to trigger the CSS transition cascade smoothly after mount
     const entryTimer = setTimeout(() => {
@@ -192,7 +171,6 @@
     return () => {
       clearTimeout(entryTimer);
       clearTimeout(typeTimer);
-      channel.unsubscribe();
     };
   });
 </script>
@@ -429,14 +407,11 @@
           <p class="text-xs text-[--color-muted] font-sans m-0 leading-normal">Leave an anonymous review or comment about my projects and research.</p>
         </div>
         
-        <!-- Feature 1: Live Viewer Count Pill -->
-        {#if nthViewer !== null}
+        <!-- Feature 1: Total Visitor Count Pill -->
+        {#if visitorCount !== null}
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[--color-accent-dim] border border-[--color-border] text-[10px] font-mono text-[--color-accent] select-none shadow-2xs sm:self-center self-start">
             <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>you are the {formatNthViewer(nthViewer)} viewer</span>
-            {#if viewerCount > 1}
-              <span class="opacity-60">({viewerCount} active)</span>
-            {/if}
+            <span>you are visitor #{visitorCount}</span>
           </div>
         {/if}
       </div>
