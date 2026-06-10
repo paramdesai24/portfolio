@@ -94,13 +94,14 @@
       };
 
       const surfaceColor = getCSSVar('--color-surface', '#FFFCF5');
+      const bgColor = getCSSVar('--color-bg', '#EEEAE2');
       const textColor = getCSSVar('--color-text', '#222222');
       const accentColor = getCSSVar('--color-accent', '#6B7FA5');
       const mutedColor = getCSSVar('--color-muted', '#6B6357');
 
       mermaid.initialize({
         startOnLoad: false,
-        theme: 'neutral',
+        theme: 'base',
         securityLevel: 'loose',
         flowchart: {
           htmlLabels: true,
@@ -109,10 +110,16 @@
         fontFamily: 'Instrument Sans, system-ui, sans-serif',
         themeVariables: {
           fontSize: '11px',
-          primaryColor: surfaceColor,
+          primaryColor: bgColor,
           primaryTextColor: textColor,
           primaryBorderColor: accentColor,
-          lineColor: mutedColor
+          lineColor: mutedColor,
+          nodeBorder: accentColor,
+          nodeTextColor: textColor,
+          mainBkg: bgColor,
+          edgeLabelBackground: surfaceColor,
+          clusterBkg: surfaceColor,
+          clusterBorder: accentColor
         }
       });
 
