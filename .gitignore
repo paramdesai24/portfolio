@@ -24,3 +24,4 @@ vite.config.ts.timestamp-*
 
 # Personal Data (Sensitive PDFs/Photos)
 /personal data/
+/static/*.pdf

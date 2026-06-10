@@ -51,7 +51,7 @@
     { id: "pub_tb",         label: "Machine Unlearning-based Privacy-First Medical Imaging Framework for TB Detection", category: "Publications", href: "/workspace/publications/pub-tb" },
 
     // Actions
-    { id: "download-resume", label: "Download Resume", category: "Actions", icon: "Download", href: "/resume.pdf", download: "Param_Desai_Resume.pdf" },
+    { id: "download-resume", label: "Download Resume", category: "Actions", icon: "Download", href: "https://efptwclmybikeaahtciz.supabase.co/storage/v1/object/public/Resume/PARAM_DESAI_Resume.pdf" },
     { id: "email",           label: "Send Email",      category: "Actions", icon: "Mail",     href: "mailto:desaiparam24@gmail.com" },
     { id: "github",          label: "GitHub Profile",  category: "Actions", icon: "Github",   href: "https://github.com/paramdesai24" }
   ];

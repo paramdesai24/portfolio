@@ -244,7 +244,7 @@
         <a href="/workspace/projects" class="px-5 py-2.5 bg-[--color-surface] text-[--color-text] rounded-lg font-medium text-sm border border-[--color-border] hover:bg-white transition-all duration-200 shadow-sm">
           Browse Projects
         </a>
-        <a href="/PARAM_DESAI_Resume.pdf" download="PARAM_DESAI_Resume.pdf" class="px-5 py-2.5 bg-[--color-surface] text-[--color-text] rounded-lg font-medium text-sm border border-[--color-border] hover:bg-white transition-all duration-200 shadow-sm inline-flex items-center gap-2">
+        <a href="https://efptwclmybikeaahtciz.supabase.co/storage/v1/object/public/Resume/PARAM_DESAI_Resume.pdf" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 bg-[--color-surface] text-[--color-text] rounded-lg font-medium text-sm border border-[--color-border] hover:bg-white transition-all duration-200 shadow-sm inline-flex items-center gap-2">
           <Download size={14} />
           <span>Download Resume</span>
         </a>

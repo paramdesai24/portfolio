@@ -19,13 +19,23 @@
 
 @layer base {
   :root {
-    --color-bg: #F7F3EA;
-    --color-surface: #FFFCF5;
-    --color-border: #E8E2D6;
-    --color-text: #222222;
-    --color-muted: #6B6357; /* Darkened from #7A7567 for WCAG AA (4.5:1+) contrast compliance */
-    --color-accent: #6B7FA5;
-    --color-accent-dim: #E8EDF5;
+    --bg-primary:    #EEEAE2;
+    --bg-secondary:  #F5F2EC;
+    --bg-card:       #FDFAF5;
+    --text-primary:  #1A1814;
+    --text-secondary:#5C5849;
+    --text-tertiary: #8C8578;
+    --border:        rgba(0,0,0,0.10);
+    --accent:        #3D3A34;
+
+    /* Design system mappings */
+    --color-bg: var(--bg-primary);
+    --color-surface: var(--bg-card);
+    --color-border: var(--border);
+    --color-text: var(--text-primary);
+    --color-muted: var(--text-secondary);
+    --color-accent: var(--accent);
+    --color-accent-dim: var(--bg-secondary);
 
     /* Status badge color variables */
     --color-status-live-bg: #E8EDF5;

@@ -101,8 +101,9 @@
 
         <!-- Download Button -->
         <a 
-          href="/resume.pdf"
-          download="Param_Desai_Resume.pdf"
+          href="https://efptwclmybikeaahtciz.supabase.co/storage/v1/object/public/Resume/PARAM_DESAI_Resume.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
           class="no-print shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[--color-accent] text-[--color-surface] text-xs font-sans font-medium hover:bg-opacity-90 transition-all shadow-xs cursor-pointer select-none"
         >
           <Download size={14} />
