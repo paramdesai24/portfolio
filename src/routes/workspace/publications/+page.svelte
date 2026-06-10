@@ -28,12 +28,7 @@
     return () => clearTimeout(timer);
   });
 
-  // Track abstract expansions
-  let expandedPapers = $state<Record<string, boolean>>({});
 
-  function toggleAbstract(id: string) {
-    expandedPapers = { ...expandedPapers, [id]: !expandedPapers[id] };
-  }
 
   // Filtered publications derived state
   let filteredPublications = $derived(
@@ -156,9 +151,11 @@
                 </span>
 
                 <!-- Status Chip -->
-                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-mono border border-[--color-border] text-[--color-muted] uppercase tracking-wider font-semibold">
-                  {paper.status === 'presented' ? 'Presented' : 'Published'}
-                </span>
+                {#if paper.status}
+                  <span class="px-2.5 py-0.5 rounded-full text-[9px] font-mono border border-[--color-border] text-[--color-muted] uppercase tracking-wider font-semibold">
+                    {paper.status.charAt(0).toUpperCase() + paper.status.slice(1)}
+                  </span>
+                {/if}
 
                 <!-- Featured Person Badge -->
                 {#if paper.featured}
@@ -177,17 +174,13 @@
               </h2>
 
               <!-- Abstract Block -->
-              <div class="mt-2.5">
-                <p class="font-sans text-xs text-[--color-muted] leading-relaxed text-justify {expandedPapers[paper.id] ? '' : 'line-clamp-2'}">
-                  {paper.abstract}
-                </p>
-                <button
-                  onclick={() => toggleAbstract(paper.id)}
-                  class="font-mono text-[9px] text-[--color-accent] hover:text-[--color-text] transition-colors mt-1.5 text-left font-bold uppercase tracking-wide cursor-pointer focus:outline-hidden"
-                >
-                  {expandedPapers[paper.id] ? 'Collapse Abstract' : 'Read Abstract'}
-                </button>
-              </div>
+              {#if paper.abstract}
+                <div class="mt-2.5">
+                  <p class="font-sans text-xs text-[--color-muted] leading-relaxed text-justify">
+                    {paper.abstract}
+                  </p>
+                </div>
+              {/if}
 
               <!-- Italic Note -->
               {#if paper.note}

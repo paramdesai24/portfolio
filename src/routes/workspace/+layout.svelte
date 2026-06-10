@@ -13,7 +13,8 @@
     FileText, 
     ArrowLeft, 
     Menu, 
-    X 
+    X,
+    ClipboardList
   } from '@lucide/svelte';
 
   // Svelte 5 snippet props
@@ -39,7 +40,8 @@
     {
       title: 'Work',
       items: [
-        { name: 'Projects', href: '/workspace/projects', icon: Briefcase }
+        { name: 'Projects', href: '/workspace/projects', icon: Briefcase },
+        { name: 'Experience', href: '/workspace/experience', icon: ClipboardList }
       ]
     },
     {
@@ -82,7 +84,7 @@
   </a>
   
   <!-- DESKTOP SIDEBAR -->
-  <aside class="hidden lg:flex flex-col w-64 fixed inset-y-0 left-0 bg-[--color-surface] border-r border-[--color-border] z-30 select-none" style="box-shadow: 1px 0 0 var(--color-border);">
+  <aside class="hidden lg:flex flex-col w-64 fixed inset-y-0 left-0 border-r border-[--color-border] z-50 select-none" style="background-color: #FDFAF5; box-shadow: 1px 0 0 var(--color-border);">
     <!-- Top profile section -->
     <div class="p-6 flex items-center gap-3 border-b border-[--color-border]">
       <img src="/avatar.png" alt="Param Desai" class="w-8 h-8 rounded-full object-cover border border-[--color-border] select-none" />
@@ -133,7 +135,7 @@
   </aside>
 
   <!-- MOBILE HEADER -->
-  <header class="lg:hidden sticky top-0 z-40 flex items-center justify-between h-14 bg-[--color-bg] border-b border-[--color-border] px-6 select-none w-full">
+  <header class="lg:hidden sticky top-0 z-[60] flex items-center justify-between h-14 border-b border-[--color-border] px-6 select-none w-full" style="background-color: #EEEAE2;">
     <a href="/" class="font-serif italic font-semibold text-lg text-[--color-text]">PD</a>
     <span class="font-sans text-sm font-semibold text-[--color-text] truncate px-4">{$currentPageTitle}</span>
     <button 
@@ -153,7 +155,7 @@
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
     <div 
       transition:fade={{ duration: 150 }}
-      class="fixed inset-0 z-50 bg-black/25 backdrop-blur-xs lg:hidden"
+      class="fixed inset-0 z-[80] bg-black/25 backdrop-blur-xs lg:hidden"
       onclick={closeDrawer}
       role="presentation"
     ></div>
@@ -161,8 +163,8 @@
     <!-- Drawer Content -->
     <aside 
       transition:fly={{ x: -256, duration: 200, easing: cubicOut }}
-      class="fixed inset-y-0 left-0 z-50 w-64 bg-[--color-surface] border-r border-[--color-border] flex flex-col justify-between lg:hidden"
-      style="box-shadow: 1px 0 0 var(--color-border);"
+      class="fixed inset-y-0 left-0 z-[90] w-64 border-r border-[--color-border] flex flex-col justify-between lg:hidden"
+      style="background-color: #FDFAF5; box-shadow: 1px 0 0 var(--color-border);"
     >
       <!-- Top Section -->
       <div class="p-6 flex items-center justify-between border-b border-[--color-border]">

@@ -1,9 +1,9 @@
 ---
 title: "FC Analytics"
 shortDescription: "Football World Cup 2026 Platform with real-time forecasting, simulations, and live auctions."
-techStack: ["React", "TypeScript", "Vite", "FastAPI", "WebSockets", "PostgreSQL", "SQLite", "SQLAlchemy", "Monte Carlo"]
+techStack: ["React", "TypeScript", "Vite", "FastAPI", "WebSockets", "Supabase", "PostgreSQL", "SQLite", "SQLAlchemy", "Monte Carlo"]
 researchThemes: ["Probabilistic Modelling", "Simulation", "Sports Analytics"]
-status: "active"
+status: "live"
 achievements: []
 githubUrl: "https://github.com/paramdesai24/football_wc_platform"
 demoUrl: "https://fc-analytics.vercel.app/"

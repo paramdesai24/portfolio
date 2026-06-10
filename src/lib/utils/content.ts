@@ -1,10 +1,11 @@
 import type { Component } from 'svelte';
-import type { Project, Publication, ResearchArea } from '$lib/types';
+import type { Project, Publication, ResearchArea, Experience } from '$lib/types';
 
 // Dynamic glob modules of markdown content using Vite glob imports
 const projectModules = import.meta.glob('/src/lib/content/projects/*.md');
 const publicationModules = import.meta.glob('/src/lib/content/publications/*.md');
 const researchAreaModules = import.meta.glob('/src/lib/content/research-areas/*.md');
+const experienceModules = import.meta.glob('/src/lib/content/experiences/*.md');
 
 // Core helper to resolve multiple dynamic markdown modules and extract metadata
 async function resolveModules<T>(modules: Record<string, () => Promise<any>>): Promise<T[]> {
@@ -112,4 +113,62 @@ export async function getPublication(slug: string): Promise<Publication & { cont
 // Get all research areas sorted by publicationCount descending
 export async function getResearchAreas(): Promise<ResearchArea[]> {
   return resolveModules<ResearchArea>(researchAreaModules);
+}
+
+// Get all experiences sorted by order ascending
+export async function getExperiences(): Promise<Experience[]> {
+  const list = await resolveModules<Experience>(experienceModules);
+  const result: Experience[] = [];
+  for (const exp of list) {
+    if (exp.id === 'csi-student-chapter') {
+      // Treasurer
+      result.push({
+        ...exp,
+        role: "Treasurer",
+        period: "Aug 2025 – Present",
+        order: 3,
+        shortDescription: "Managing financial operations, sponsorships, and budgeting for the Computer Society of India student chapter. Managed a budget pool of INR 4.5 Lakhs and sponsor relations for HACKaMINeD 2026. Handled operations and logistics serving 2500+ national student registrations."
+      });
+      // Core Committee
+      result.push({
+        ...exp,
+        id: 'csi-student-chapter-core',
+        role: "Core Committee Member",
+        period: "Jan – Aug 2025",
+        order: 4,
+        shortDescription: "Co-organized national-level hackathons and technical symposiums like HackNUThon 6.0 and CUBIX 2025. Led a volunteer team of 30+ students handling participant onboarding and evaluation logistics. Structured competitive programming and algorithmic design events."
+      });
+    } else {
+      result.push(exp);
+    }
+  }
+  return result.sort((a, b) => (a.order || 0) - (b.order || 0));
+}
+
+// Get single experience including Svelte component
+export async function getExperience(slug: string): Promise<Experience & { content: Component }> {
+  const realSlug = slug === 'csi-student-chapter-core' ? 'csi-student-chapter' : slug;
+  const path = `/src/lib/content/experiences/${realSlug}.md`;
+  if (!experienceModules[path]) {
+    throw new Error(`Experience "${realSlug}" not found`);
+  }
+  const resolver = experienceModules[path] as () => Promise<any>;
+  const module = await resolver();
+  
+  let metadata = { ...module.metadata };
+  if (slug === 'csi-student-chapter') {
+    metadata.role = "Treasurer";
+    metadata.period = "Aug 2025 – Present";
+    metadata.shortDescription = "Managing financial operations, sponsorships, and budgeting for the Computer Society of India student chapter. Managed a budget pool of INR 4.5 Lakhs and sponsor relations for HACKaMINeD 2026. Handled operations and logistics serving 2500+ national student registrations.";
+  } else if (slug === 'csi-student-chapter-core') {
+    metadata.role = "Core Committee Member";
+    metadata.period = "Jan – Aug 2025";
+    metadata.shortDescription = "Co-organized national-level hackathons and technical symposiums like HackNUThon 6.0 and CUBIX 2025. Led a volunteer team of 30+ students handling participant onboarding and evaluation logistics. Structured competitive programming and algorithmic design events.";
+  }
+
+  return {
+    id: slug,
+    content: module.default,
+    ...metadata
+  };
 }

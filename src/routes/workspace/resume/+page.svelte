@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { currentPageTitle } from '$lib/stores/workspace';
   import { Mail, Download, ExternalLink } from 'lucide-svelte';
+  import TechLogo from '$lib/components/TechLogo.svelte';
 
   onMount(() => {
     currentPageTitle.set('Resume');
@@ -15,15 +16,15 @@
   const skillGroups: SkillCategory[] = [
     {
       category: 'Frameworks',
-      items: ['FastAPI', 'React', 'SvelteKit', 'LangChain', 'LangGraph']
+      items: ['FastAPI', 'React', 'LangChain', 'LangGraph', 'Flask', 'Express.js', 'Vite']
     },
     {
       category: 'ML/AI',
-      items: ['Monte Carlo (MC)', 'RAG', 'NLP', 'LSTM', 'Prophet', 'SARIMA']
+      items: ['Monte Carlo (MC)', 'RAG', 'NLP', 'Prophet', 'SARIMA', 'SQLAlchemy', 'LightGBM']
     },
     {
       category: 'Tools',
-      items: ['PostgreSQL', 'Docker', 'Git', 'AWS', 'Jupyter', 'Cytoscape.js']
+      items: ['PostgreSQL', 'DynamoDB', 'Docker', 'Git', 'AWS ECR & Lambda', 'WebSockets', 'Supabase']
     },
     {
       category: 'Research Areas',
@@ -33,10 +34,10 @@
 
   const publications = [
     {
-      citation: "\"Machine Unlearning-based Privacy-First Medical Imaging Framework for TB Detection.\" In Proceedings of the Scientific Workshop on AI for Medicine (AI2M4RI 2026), 2026."
+      citation: "\"Machine Unlearning-based Privacy-First Medical Imaging Framework for TB Detection.\" In Proceedings of the Scientific Workshop on AI for Medicine (AI2M4RI 2026), 2026. (Accepted)"
     },
     {
-      citation: "\"Quantum-Secured Explainable Machine Unlearning for Phishing Detection in IoT.\" In Proceedings of the IEEE GLOBECOM 2025, 2025."
+      citation: "\"Quantum-Secured Explainable Machine Unlearning for Phishing Detection in IoT.\" In Proceedings of the IEEE GLOBECOM 2025, 2025. (Accepted)"
     },
     {
       citation: "\"Q-ShielD: CV-QKD Framework for Secure Autonomous Vehicle Communications.\" In Proceedings of the IEEE Vehicular Technology Conference (VTC Spring 2025), 2025."
@@ -230,6 +231,13 @@
             </a>
             <span class="text-[--color-muted]">&mdash; An LLM-powered RAG system with natural language to SQL capabilities, revenue analytics pipelines, and voice-assisted conversational workflows.</span>
           </li>
+          <li>
+            <a href="/workspace/projects/research-assistant" class="font-semibold text-xs text-[--color-text] hover:text-[--color-accent] hover:underline inline-flex items-center gap-1">
+              Research Assistant
+              <ExternalLink size={10} class="opacity-60" />
+            </a>
+            <span class="text-[--color-muted]">&mdash; An offline, local-first paper assistant that automatically extracts and processes PDFs to generate section-aware summaries, simplified drafts, PPT decks, and podcast audio.</span>
+          </li>
         </ul>
       </section>
 
@@ -293,8 +301,8 @@
               </h3>
               <div class="flex flex-wrap gap-1.5">
                 {#each group.items as item}
-                  <span class="px-2 py-0.5 rounded-sm text-[10px] font-mono bg-[--color-accent-dim] text-[--color-accent] border border-transparent font-medium">
-                    {item}
+                  <span class="px-2 py-0.5 rounded-sm text-[10px] font-mono bg-[--color-accent-dim] text-[--color-accent] border border-transparent font-medium flex items-center gap-1.5">
+                    <TechLogo tech={item} size={16} />
                   </span>
                 {/each}
               </div>

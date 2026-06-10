@@ -1,15 +1,199 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { ChevronDown, Mail, ArrowRight } from '@lucide/svelte';
+  import { ChevronDown, Mail, ArrowRight, Download } from '@lucide/svelte';
+  import TechLogo from '$lib/components/TechLogo.svelte';
+  import { supabase } from '$lib/supabase';
 
   let mounted = $state(false);
 
+  const phrases = [
+    "I research quantum security.",
+    "I build AI systems.",
+    "I simulate the world with data.",
+    "I ship full-stack products."
+  ];
+
+  let currentText = $state("");
+  let phraseIdx = $state(0);
+  let isDeleting = $state(false);
+
+  // Presence & Reviews States
+  let viewers = $state<any[]>([]);
+  const viewerCount = $derived(viewers.length);
+  let nthViewer = $state<number | null>(null);
+
+  interface Review {
+    id: string;
+    name: string | null;
+    message: string;
+    rating: number;
+    created_at: string;
+  }
+  let reviews = $state<Review[]>([]);
+  let newName = $state('');
+  let newMessage = $state('');
+  let newRating = $state(5);
+  let isSubmitting = $state(false);
+  let submitSuccess = $state(false);
+
+  function getRelativeTime(dateString: string): string {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMins < 1) return 'just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+  }
+
+  function formatNthViewer(n: number | null): string {
+    if (n === null) return 'connecting...';
+    const j = n % 10, k = n % 100;
+    let suffix = 'th';
+    if (j === 1 && k !== 11) suffix = 'st';
+    else if (j === 2 && k !== 12) suffix = 'nd';
+    else if (j === 3 && k !== 13) suffix = 'rd';
+    return `${n}${suffix}`;
+  }
+
+  async function fetchReviews() {
+    try {
+      const { data, error } = await supabase
+        .from('reviews')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (!error && data) {
+        reviews = data;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function handleSubmit(e: SubmitEvent) {
+    e.preventDefault();
+    if (!newMessage.trim() || isSubmitting) return;
+    isSubmitting = true;
+
+    const newReview = {
+      name: newName.trim() || null,
+      message: newMessage.trim(),
+      rating: newRating,
+      created_at: new Date().toISOString()
+    };
+
+    const optimisticId = Math.random().toString(36).substring(2);
+    reviews = [{ id: optimisticId, ...newReview }, ...reviews];
+
+    try {
+      const { data, error } = await supabase
+        .from('reviews')
+        .insert([newReview])
+        .select();
+
+      isSubmitting = false;
+
+      if (!error) {
+        submitSuccess = true;
+        newName = '';
+        newMessage = '';
+        newRating = 5;
+        
+        if (data && data[0]) {
+          reviews = reviews.map(r => r.id === optimisticId ? data[0] : r);
+        }
+        
+        setTimeout(() => {
+          submitSuccess = false;
+        }, 3000);
+      } else {
+        reviews = reviews.filter(r => r.id !== optimisticId);
+        console.error('Failed to submit review:', error);
+      }
+    } catch (err) {
+      isSubmitting = false;
+      reviews = reviews.filter(r => r.id !== optimisticId);
+      console.error(err);
+    }
+  }
+
   onMount(() => {
+    // Fetch initial reviews
+    fetchReviews();
+
+    // Supabase Presence setup
+    const myPresenceKey = Math.random().toString(36).substring(2);
+    const channel = supabase.channel('landing-page', {
+      config: {
+        presence: {
+          key: myPresenceKey
+        }
+      }
+    });
+
+    channel
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        const keys = Object.keys(state).sort();
+        const idx = keys.indexOf(myPresenceKey);
+        if (idx !== -1) {
+          nthViewer = idx + 1;
+        }
+        viewers = Object.values(state).flat();
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await channel.track({ online_at: new Date().toISOString() });
+        }
+      });
+
     // Small delay to trigger the CSS transition cascade smoothly after mount
-    const timer = setTimeout(() => {
+    const entryTimer = setTimeout(() => {
       mounted = true;
     }, 50);
-    return () => clearTimeout(timer);
+
+    let typeTimer: any;
+    const typeSpeed = 65;
+    const deleteSpeed = 35;
+    const pauseEnd = 1800;
+    const pauseStart = 300;
+
+    function tick() {
+      const fullPhrase = phrases[phraseIdx];
+      
+      if (isDeleting) {
+        currentText = fullPhrase.slice(0, currentText.length - 1);
+        
+        if (currentText.length === 0) {
+          isDeleting = false;
+          phraseIdx = (phraseIdx + 1) % phrases.length;
+          typeTimer = setTimeout(tick, pauseStart);
+        } else {
+          typeTimer = setTimeout(tick, deleteSpeed);
+        }
+      } else {
+        currentText = fullPhrase.slice(0, currentText.length + 1);
+        
+        if (currentText === fullPhrase) {
+          isDeleting = true;
+          typeTimer = setTimeout(tick, pauseEnd);
+        } else {
+          typeTimer = setTimeout(tick, typeSpeed);
+        }
+      }
+    }
+
+    typeTimer = setTimeout(tick, typeSpeed);
+
+    return () => {
+      clearTimeout(entryTimer);
+      clearTimeout(typeTimer);
+      channel.unsubscribe();
+    };
   });
 </script>
 
@@ -36,8 +220,8 @@
       </h1>
 
       <!-- Tagline -->
-      <p class="anim-item font-serif italic text-xl md:text-2xl text-[--color-muted] mt-3 delay-300">
-        Researching and building intelligent systems.
+      <p class="anim-item font-serif italic text-xl md:text-2xl text-[--color-muted] mt-3 delay-300 typewriter-container">
+        {currentText}<span class="typewriter-cursor"></span>
       </p>
 
       <!-- Staggered Verb Phrase -->
@@ -52,14 +236,17 @@
         <span class="anim-item inline-block delay-1000">and</span>
         <span class="anim-item inline-block text-[--color-accent] font-medium delay-1100">adapt.</span>
       </h2>
-
       <!-- CTAs -->
       <div class="anim-item flex flex-row flex-wrap justify-center md:justify-start gap-4 mt-10 delay-1200">
         <a href="/workspace/research" class="px-5 py-2.5 bg-[--color-accent] text-[--color-surface] rounded-lg font-medium text-sm border border-[--color-accent] hover:bg-opacity-90 transition-all duration-200 shadow-sm">
-          Explore Research Workspace
+          Explore Research
         </a>
-        <a href="/workspace/publications" class="px-5 py-2.5 bg-[--color-surface] text-[--color-text] rounded-lg font-medium text-sm border border-[--color-border] hover:bg-white transition-all duration-200 shadow-sm">
-          View Publications
+        <a href="/workspace/projects" class="px-5 py-2.5 bg-[--color-surface] text-[--color-text] rounded-lg font-medium text-sm border border-[--color-border] hover:bg-white transition-all duration-200 shadow-sm">
+          Browse Projects
+        </a>
+        <a href="/PARAM_DESAI_Resume.pdf" download="PARAM_DESAI_Resume.pdf" class="px-5 py-2.5 bg-[--color-surface] text-[--color-text] rounded-lg font-medium text-sm border border-[--color-border] hover:bg-white transition-all duration-200 shadow-sm inline-flex items-center gap-2">
+          <Download size={14} />
+          <span>Download Resume</span>
         </a>
       </div>
     </div>
@@ -94,10 +281,10 @@
       <div class="card hover:translate-y-[-2px] transition-transform duration-300 flex flex-col justify-between">
         <div>
           <span class="text-xs font-mono text-[--color-muted] uppercase tracking-wider">Engineering</span>
-          <h3 class="font-serif text-4xl text-[--color-accent] mt-3 mb-1">3 Projects</h3>
+          <h3 class="font-serif text-4xl text-[--color-accent] mt-3 mb-1">4 Projects</h3>
         </div>
         <p class="text-sm text-[--color-muted] font-sans mt-2">
-          Practical applications across Environmental Intelligence (BHOOMI), Sports Analytics (FC Analytics), and LLM/RAG (PetBot).
+          Applications across Climate AI (BHOOMI), Sports Analytics (FC Analytics), LLM/RAG (PetBot), and Local-first NLP (Research Assistant).
         </p>
       </div>
 
@@ -138,7 +325,7 @@
           <div>
             <div class="flex justify-between items-start mb-3">
               <h4 class="font-serif text-2xl text-[--color-text]">BHOOMI</h4>
-              <span class="text-xs font-mono text-[--color-accent] uppercase px-2 py-0.5 bg-[--color-accent-dim] rounded">Active</span>
+              <span class="text-xs font-mono text-[--color-status-live-text] uppercase px-2 py-0.5 bg-[--color-status-live-bg] border border-[--color-status-live-border]/20 rounded">Live</span>
             </div>
             <p class="text-sm text-[--color-muted] mb-6 line-clamp-3">
               A satellite-based environmental intelligence platform providing real-time multi-spectral imagery analysis, climate indicator tracking, and ecological risk modeling.
@@ -146,13 +333,13 @@
           </div>
           <div>
             <div class="flex flex-wrap gap-1.5 mb-6">
-              {#each ['Python', 'PyTorch', 'GIS', 'Sentinel-2'] as tech}
-                <span class="text-[10px] font-mono bg-[--color-bg] text-[--color-muted] border border-[--color-border] px-2 py-0.5 rounded">
-                  {tech}
+              {#each ['React', 'Leaflet', 'FastAPI', 'PyTorch'] as tech}
+                <span class="text-[10px] font-mono bg-[--color-bg] text-[--color-muted] border border-[--color-border] px-2 py-0.5 rounded flex items-center gap-1">
+                  <TechLogo tech={tech} size={14} />
                 </span>
               {/each}
             </div>
-            <a href="/workspace/projects" class="text-sm font-medium text-[--color-accent] hover:underline inline-flex items-center gap-1">
+            <a href="/workspace/projects/bhoomi" class="text-sm font-medium text-[--color-accent] hover:underline inline-flex items-center gap-1">
               Read case study <ArrowRight size={14} />
             </a>
           </div>
@@ -163,7 +350,7 @@
           <div>
             <div class="flex justify-between items-start mb-3">
               <h4 class="font-serif text-2xl text-[--color-text]">FC Analytics</h4>
-              <span class="text-xs font-mono text-[--color-muted] uppercase px-2 py-0.5 bg-[--color-border] rounded">Active</span>
+              <span class="text-xs font-mono text-[--color-status-live-text] uppercase px-2 py-0.5 bg-[--color-status-live-bg] border border-[--color-status-live-border]/20 rounded">Live</span>
             </div>
             <p class="text-sm text-[--color-muted] mb-6 line-clamp-3">
               An advanced sports analytics and simulation platform tailored for the FIFA World Cup 2026, predicting matches and simulating team formations.
@@ -171,17 +358,201 @@
           </div>
           <div>
             <div class="flex flex-wrap gap-1.5 mb-6">
-              {#each ['React', 'TypeScript', 'Python', 'XGBoost'] as tech}
-                <span class="text-[10px] font-mono bg-[--color-bg] text-[--color-muted] border border-[--color-border] px-2 py-0.5 rounded">
-                  {tech}
+              {#each ['React', 'FastAPI', 'WebSockets', 'Supabase', 'Monte Carlo'] as tech}
+                <span class="text-[10px] font-mono bg-[--color-bg] text-[--color-muted] border border-[--color-border] px-2 py-0.5 rounded flex items-center gap-1">
+                  <TechLogo tech={tech} size={14} />
                 </span>
               {/each}
             </div>
-            <a href="/workspace/projects" class="text-sm font-medium text-[--color-accent] hover:underline inline-flex items-center gap-1">
+            <a href="/workspace/projects/fc-analytics" class="text-sm font-medium text-[--color-accent] hover:underline inline-flex items-center gap-1">
               Read case study <ArrowRight size={14} />
             </a>
           </div>
         </div>
+
+        <!-- IEEE GLOBECOM 2025 Card -->
+        <div class="card flex flex-col justify-between hover:translate-y-[-2px] transition-transform duration-300">
+          <div>
+            <div class="flex justify-between items-start mb-3">
+              <h4 class="font-serif text-2xl text-[--color-text] line-clamp-1">Machine Unlearning for IoT</h4>
+              <span class="text-xs font-mono text-[--color-status-active-text] uppercase px-2 py-0.5 bg-[--color-status-active-bg] border border-[--color-status-active-border]/20 rounded">Accepted</span>
+            </div>
+            <p class="text-sm text-[--color-muted] mb-6 line-clamp-3">
+              Quantum-Secured Explainable Machine Unlearning for Phishing Detection in IoT: Selective data unlearning verified via SHAP.
+            </p>
+          </div>
+          <div>
+            <div class="flex flex-wrap gap-1.5 mb-6">
+              {#each ['Machine Unlearning', 'CV-QKD', 'SHAP', 'IoT Security'] as tag}
+                <span class="text-[10px] font-mono bg-[--color-bg] text-[--color-muted] border border-[--color-border] px-2 py-0.5 rounded">
+                  {tag}
+                </span>
+              {/each}
+            </div>
+            <a href="/workspace/publications/pub-globecom" class="text-sm font-medium text-[--color-accent] hover:underline inline-flex items-center gap-1">
+              Read paper details <ArrowRight size={14} />
+            </a>
+          </div>
+        </div>
+
+        <!-- IEEE VTC Spring 2025 Card -->
+        <div class="card flex flex-col justify-between hover:translate-y-[-2px] transition-transform duration-300">
+          <div>
+            <div class="flex justify-between items-start mb-3">
+              <h4 class="font-serif text-2xl text-[--color-text] line-clamp-1">Q-ShielD V2X Communications</h4>
+              <span class="text-xs font-mono text-[--color-status-live-text] uppercase px-2 py-0.5 bg-[--color-status-live-bg] border border-[--color-status-live-border]/20 rounded">Published</span>
+            </div>
+            <p class="text-sm text-[--color-muted] mb-6 line-clamp-3">
+              Q-ShielD: CV-QKD Framework for Secure Autonomous Vehicle Communications against quantum-level adversarial attacks.
+            </p>
+          </div>
+          <div>
+            <div class="flex flex-wrap gap-1.5 mb-6">
+              {#each ['V2X', 'CV-QKD', 'Quantum Security', 'NS-3'] as tag}
+                <span class="text-[10px] font-mono bg-[--color-bg] text-[--color-muted] border border-[--color-border] px-2 py-0.5 rounded">
+                  {tag}
+                </span>
+              {/each}
+            </div>
+            <a href="/workspace/publications/pub-vtc" class="text-sm font-medium text-[--color-accent] hover:underline inline-flex items-center gap-1">
+              Read paper details <ArrowRight size={14} />
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Feature 2: Anonymous Reviews Panel -->
+    <section class="flex flex-col gap-8 anim-item delay-1700 mt-16 border-t border-[--color-border] pt-16">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-[--color-border]">
+        <div class="flex flex-col gap-0.5">
+          <h3 class="font-serif text-2xl text-[--color-text] m-0 leading-tight">Guestbook & Reviews</h3>
+          <p class="text-xs text-[--color-muted] font-sans m-0 leading-normal">Leave an anonymous review or comment about my projects and research.</p>
+        </div>
+        
+        <!-- Feature 1: Live Viewer Count Pill -->
+        {#if nthViewer !== null}
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[--color-accent-dim] border border-[--color-border] text-[10px] font-mono text-[--color-accent] select-none shadow-2xs sm:self-center self-start">
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>you are the {formatNthViewer(nthViewer)} viewer</span>
+            {#if viewerCount > 1}
+              <span class="opacity-60">({viewerCount} active)</span>
+            {/if}
+          </div>
+        {/if}
+      </div>
+
+      <!-- Reviews list -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {#if reviews.length > 0}
+          {#each reviews as review (review.id)}
+            <div class="card flex flex-col justify-between hover:translate-y-[-1px] transition-transform duration-300">
+              <div>
+                <!-- Rating Stars -->
+                <div class="flex items-center gap-0.5 text-amber-500 mb-2">
+                  {#each Array.from({ length: review.rating }) as _}
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  {/each}
+                  {#each Array.from({ length: 5 - review.rating }) as _}
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-3.5 h-3.5">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  {/each}
+                </div>
+                <!-- Review Message -->
+                <p class="text-xs text-[--color-text] font-sans leading-relaxed text-justify mb-4">
+                  {review.message}
+                </p>
+              </div>
+
+              <!-- Author name & time metadata -->
+              <div class="flex justify-between items-center text-[10px] text-[--color-muted] font-mono border-t border-[--color-border]/30 pt-3">
+                <span class="font-bold text-[--color-accent]">{review.name || 'Anonymous'}</span>
+                <span>{getRelativeTime(review.created_at)}</span>
+              </div>
+            </div>
+          {/each}
+        {:else}
+          <div class="md:col-span-2 text-center py-12 text-xs text-[--color-muted] font-sans border border-dashed border-[--color-border] rounded-xl bg-[--color-surface]/50">
+            No reviews yet. Be the first to share your thoughts!
+          </div>
+        {/if}
+      </div>
+
+      <!-- Submission Form -->
+      <div class="w-full max-w-xl mx-auto mt-6 bg-[--color-surface] border border-[--color-border] rounded-xl p-6 shadow-2xs">
+        <h4 class="font-serif text-lg text-[--color-text] mb-1 select-none">Write a Review</h4>
+        <p class="text-[10px] text-[--color-muted] font-sans mb-4 select-none">Your email is not collected. Reviews are public.</p>
+        
+        <form onsubmit={handleSubmit} class="flex flex-col gap-4">
+          <!-- Name field -->
+          <div class="flex flex-col gap-1.5">
+            <label for="review-name" class="text-[10px] font-mono uppercase tracking-wider text-[--color-muted] select-none">Name (Optional)</label>
+            <input
+              type="text"
+              id="review-name"
+              bind:value={newName}
+              placeholder="Your name (optional)"
+              class="w-full px-3 py-2 rounded-lg bg-[--color-bg] border border-[--color-border] text-xs font-sans text-[--color-text] focus:outline-hidden"
+              maxlength="50"
+            />
+          </div>
+
+          <!-- Message textarea -->
+          <div class="flex flex-col gap-1.5">
+            <label for="review-message" class="text-[10px] font-mono uppercase tracking-wider text-[--color-muted] select-none">Comment / Feedback</label>
+            <textarea
+              id="review-message"
+              bind:value={newMessage}
+              placeholder="Type your message here..."
+              required
+              rows="4"
+              class="w-full px-3 py-2 rounded-lg bg-[--color-bg] border border-[--color-border] text-xs font-sans text-[--color-text] focus:outline-hidden resize-y"
+              maxlength="1000"
+            ></textarea>
+          </div>
+
+          <!-- Star Picker & Submit -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
+            <div class="flex items-center gap-3">
+              <span class="text-[10px] font-mono uppercase tracking-wider text-[--color-muted] select-none">Rating:</span>
+              <div class="flex items-center gap-1 select-none">
+                {#each [1, 2, 3, 4, 5] as star}
+                  <button
+                    type="button"
+                    onclick={() => newRating = star}
+                    class="text-amber-500 hover:scale-110 transition-transform cursor-pointer bg-transparent border-none p-0 focus:outline-hidden"
+                    aria-label="Rate {star} stars"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill={star <= newRating ? "currentColor" : "none"}
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      class="w-5 h-5"
+                    >
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  </button>
+                {/each}
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              class="px-5 py-2 bg-[--color-accent] text-[--color-surface] rounded-lg font-medium text-xs border border-[--color-accent] hover:bg-opacity-90 transition-all cursor-pointer shadow-xs disabled:opacity-50 select-none"
+            >
+              {#if isSubmitting}
+                Sending...
+              {:else}
+                {submitSuccess ? 'Sent ✓' : 'Submit Review'}
+              {/if}
+            </button>
+          </div>
+        </form>
       </div>
     </section>
   </main>
@@ -279,5 +650,24 @@
     .bounce-anim {
       animation: none !important;
     }
+  }
+
+  /* Typewriter specific classes */
+  .typewriter-container {
+    min-height: 1.6em;
+    display: block;
+  }
+  .typewriter-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background-color: currentColor;
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: blink 0.8s step-end infinite;
+  }
+  @keyframes blink {
+    from, to { background-color: transparent }
+    50% { background-color: currentColor }
   }
 </style>

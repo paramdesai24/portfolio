@@ -2,6 +2,7 @@
   import { onMount, tick } from 'svelte';
   import { browser } from '$app/environment';
   import { ExternalLink, Star } from 'lucide-svelte';
+  import TechLogo from '$lib/components/TechLogo.svelte';
 
   // Svelte 5 props
   let { data } = $props();
@@ -131,7 +132,7 @@
         const { svg } = await mermaid.render(uniqueId, code.trim());
 
         const container = document.createElement('div');
-        container.className = 'my-8 flex justify-center bg-[--color-surface] border border-[--color-border] rounded-xl p-6 overflow-x-auto shadow-2xs select-none w-full';
+        container.className = 'mermaid-diagram my-8 flex justify-center bg-[--color-surface] border border-[--color-border] rounded-xl p-6 overflow-x-auto shadow-2xs select-none w-full';
         container.innerHTML = `<div class="w-full flex justify-center">${svg}</div>`;
 
         targetElement.replaceWith(container);
@@ -249,8 +250,8 @@
           <h3 class="font-mono text-[10px] uppercase tracking-wider text-[--color-muted] font-bold mb-2.5">Tech Stack</h3>
           <div class="flex flex-wrap gap-1.5">
             {#each metadata.techStack as tech}
-              <span class="px-2 py-0.5 rounded-sm text-[10px] font-mono bg-[--color-bg] border border-[--color-border] text-[--color-muted]">
-                {tech}
+              <span class="px-2 py-0.5 rounded-sm text-[10px] font-mono bg-[--color-bg] border border-[--color-border] text-[--color-muted] flex items-center gap-1">
+                <TechLogo tech={tech} size={14} />
               </span>
             {/each}
           </div>
@@ -377,5 +378,12 @@
     padding: 0.15rem 0.35rem;
     border-radius: 4px;
     border: 1px solid var(--color-border);
+  }
+
+  /* Ensure Mermaid text doesn't inherit prose font size/family overrides */
+  :global(.mermaid-diagram, .mermaid-diagram *) {
+    font-family: 'Instrument Sans', system-ui, sans-serif !important;
+    font-size: 11px !important;
+    line-height: normal !important;
   }
 </style>

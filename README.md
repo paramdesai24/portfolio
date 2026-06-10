@@ -36,7 +36,7 @@ A premium, high-performance academic and engineering portfolio website built for
 - Interactive abstracts with toggle expansions ("Read Abstract" / "Collapse Abstract") that render without server-side layout shifts.
 
 ### 5. Projects Portfolio (`/workspace/projects`)
-- Showcases engineering projects (BHOOMI, FC Analytics, PetBot).
+- Showcases engineering projects (BHOOMI, FC Analytics, PetBot, Research Assistant).
 - Categorized status badges (`Live`, `Active`, `Prototype`) and first-hand achievements highlight cards.
 - **Architecture Diagrams**: Project details pages compile raw Markdown Mermaid blocks into visual SVG/HTML diagrams safely.
 
