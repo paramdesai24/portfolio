@@ -176,8 +176,16 @@
 </script>
 
 <svelte:head>
-  <title>Param Desai | Personal Research Portfolio</title>
+  <title>Param Desai | AI & Full Stack Builder</title>
   <meta name="description" content="Research portfolio of Param Desai, B.Tech CSE student and researcher in Explainable AI, Cybersecurity, and Machine Unlearning." />
+  <meta property="og:title" content="Param Desai | AI & Full Stack Builder" />
+  <meta property="og:description" content="Research portfolio of Param Desai, B.Tech CSE student and researcher in Explainable AI, Cybersecurity, and Machine Unlearning." />
+  <meta property="og:image" content="https://paramdesai24.me/avatar.png" />
+  <meta property="og:url" content="https://paramdesai24.me" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Param Desai | AI & Full Stack Builder" />
+  <meta name="twitter:image" content="https://paramdesai24.me/avatar.png" />
 </svelte:head>
 
 <div class="landing-container min-h-screen flex flex-col" class:animate-in={mounted}>
