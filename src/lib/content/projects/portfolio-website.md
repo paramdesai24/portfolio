@@ -1,6 +1,6 @@
 ---
 title: "Developer Portfolio"
-shortDescription: "Interactive academic and engineering portfolio built with Svelte 5, Tailwind CSS v4, and Supabase integration."
+shortDescription: "Interactive academic and engineering portfolio with a command palette, custom Markdown blog system, and real-time reviews, built with Svelte 5, Tailwind CSS v4, and Supabase."
 techStack: ["Svelte", "SvelteKit", "TailwindCSS", "Supabase", "TypeScript", "Vite"]
 researchThemes: ["Web Architectures", "Realtime Databases", "Micro-Animations"]
 status: "live"
@@ -12,7 +12,7 @@ order: 5
 ---
 
 ## Overview
-This portfolio is an interactive developer, research, and engineering showcase website. It is designed to host project case studies, publication timelines, and live viewer interactions using a premium "academic-sepia" design system. The architecture integrates Svelte 5's reactivity model, Tailwind CSS v4, MDSvex markdown processing, and a serverless Supabase backend for real-time presence and feedback.
+This portfolio is an interactive developer, research, and engineering showcase website. It is designed to host project case studies, publications, a custom research blog, and live viewer interactions using a premium "academic-sepia" design system. The architecture integrates Svelte 5's reactivity model, Tailwind CSS v4, MDSvex markdown processing, and a serverless Supabase backend for real-time presence and feedback.
 
 ## Problem
 Modern developer portfolios often require heavy framework resources or fall back to static text templates that feel unresponsive. The challenge was to construct a fast, lightweight, keyboard-navigable portfolio that parses markdown case studies, renders live guestbook comments, tracks real-time concurrent user presence securely, and automatically updates inline architecture diagrams (Mermaid.js flowcharts) to match active light/dark theme variables.
@@ -22,6 +22,7 @@ To address these requirements, the portfolio utilizes:
 1. **Fine-Grained Reactivity**: Leverages Svelte 5 runes (`$state`, `$derived`, `$effect`) for instant client-side state synchronization, including search actions in the Command Palette.
 2. **Supabase Realtime Sync**: Subscribes clients to a realtime Presence channel (`landing-page`) to display the live viewer count and user join order, while writing guestbook submissions directly to PostgreSQL database tables with optimistic UI state changes.
 3. **Keyed Component Remounting**: Dynamically destroys and re-mounts the compiled markdown templates using a `{#key $theme}` block when the dark-light theme is toggled. This forces client-side Mermaid compilation to run fresh queries of active CSS variables and output highly legible SVGs.
+4. **Dynamic Blog System**: Renders self-contained MDSvex research articles from Markdown files, featuring search filters and dynamic routing.
 
 ## Architecture
 ```mermaid

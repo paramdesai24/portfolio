@@ -277,10 +277,10 @@
       <div class="card hover:translate-y-[-2px] transition-transform duration-300 flex flex-col justify-between">
         <div>
           <span class="text-xs font-mono text-[--color-muted] uppercase tracking-wider">Academic Record</span>
-          <h3 class="font-serif text-4xl text-[--color-accent] mt-3 mb-1">6 Publications</h3>
+          <h3 class="font-serif text-4xl text-[--color-accent] mt-3 mb-1">7 Publications</h3>
         </div>
         <p class="text-sm text-[--color-muted] font-sans mt-2">
-          Peer-reviewed research featured in IEEE GLOBECOM, VTC Spring, HealthCom, ICSC, and Springer CML.
+          Peer-reviewed research featured in IEEE GLOBECOM, VTC, HealthCom, ICSC, CITS, and Springer CML.
         </p>
       </div>
 

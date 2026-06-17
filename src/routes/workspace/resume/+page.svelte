@@ -247,7 +247,7 @@
               Developer Portfolio
               <ExternalLink size={10} class="opacity-60" />
             </a>
-            <span class="text-[--color-muted]">&mdash; An interactive, high-performance academic and engineering portfolio website featuring smooth dark mode transitions, Supabase realtime guestbook components, and reactive theme-based diagram rendering.</span>
+            <span class="text-[--color-muted]">&mdash; An interactive, high-performance academic and engineering portfolio website featuring smooth dark mode transitions, a custom Markdown blog, a command palette, Supabase realtime guestbook components, and reactive theme-based diagram rendering.</span>
           </li>
         </ul>
       </section>
