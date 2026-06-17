@@ -12,7 +12,7 @@ relatedPapers:
   - "quantum-edge-health-2025"
   - "q-phishnet-globecom-2025"
 featured: true
-publishedDate: 2025-05-15
+publishedDate: 2025-12-11
 status: "published"
 ---
 

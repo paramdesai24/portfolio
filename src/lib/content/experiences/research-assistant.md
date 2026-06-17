@@ -1,6 +1,6 @@
 ---
 role: "Research Assistant"
-company: "Sudeep Tanwar's Research Lab"
+company: "Sudeep Tanwar's Research Group"
 period: "Jan – Dec 2025"
 location: "Ahmedabad, India"
 skills: ["Explainable AI", "Cybersecurity", "IoT Systems", "SHAP", "LIME", "Intrusion Detection", "Machine Learning"]

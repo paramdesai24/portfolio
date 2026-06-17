@@ -3,7 +3,7 @@ role: "AI/ML Intern"
 company: "DYU Labs"
 period: "May – Jul 2026"
 location: "Ahmedabad, India"
-skills: ["LangGraph", "DynamoDB", "LightGBM", "AWS Fargate", "Copernicus ERA5", "RAG", "pgvector", "LangSmith", "Time-Series Forecasting"]
+skills: ["Python", "LightGBM", "Pandas", "NumPy", "XArray", "LangGraph", "LangChain", "OpenAI GPT Models", "OpenAI Whisper", "pgvector", "LangSmith", "AWS Lambda", "AWS Fargate", "AWS EventBridge", "AWS ECR", "DynamoDB", "PostgreSQL", "Supabase", "RAG", "Time-Series Forecasting", "Copernicus ERA5"]
 order: 1
 shortDescription: "Technical lead for a summer intern team at DYU Labs (clients: ISRO, NTPC, Aditya Birla Group), building production solar forecasting pipelines and a LangGraph-powered conversational analytics assistant across 75 inverter devices and 15 solar plants."
 ---
@@ -33,13 +33,3 @@ Key responsibilities:
 * **RAG pipelines** using OpenAI embeddings, pgvector, and Supabase vector search
 * **NL-to-Database Query (NL2DBQ)** for operational analytics and Modbus/register-based telemetry decoding
 * **Observability** via LangSmith; secure tool execution with authorization guardrails
-
-## Technologies
-
-**ML & Data:** Python, LightGBM, Pandas, NumPy, XArray
-
-**LLM & Agents:** LangGraph, LangChain, OpenAI GPT Models, OpenAI Whisper, pgvector, LangSmith
-
-**Cloud & Infrastructure:** AWS Lambda, Fargate, EventBridge, ECR, DynamoDB
-
-**Databases:** PostgreSQL, Supabase, DynamoDB

@@ -10,7 +10,7 @@ themes:
 relatedPapers:
   - "fides-federated-finance-2026"
 featured: false
-publishedDate: 2026-02-01
+publishedDate: 2026-06-15
 status: "published"
 ---
 

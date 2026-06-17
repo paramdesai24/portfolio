@@ -148,15 +148,10 @@ export async function getExperiences(): Promise<Experience[]> {
   return result.sort((a, b) => (a.order || 0) - (b.order || 0));
 }
 
-// Get all blog posts sorted by publishedDate descending (featured first)
+// Get all blog posts sorted by publishedDate descending
 export async function getBlogPosts(): Promise<BlogPost[]> {
   const list = await resolveModules<BlogPost>(blogModules);
   return list.sort((a, b) => {
-    // Featured posts first
-    if (a.featured !== b.featured) {
-      return a.featured ? -1 : 1;
-    }
-    // Then by publishedDate descending
     const dateA = a.publishedDate ? new Date(a.publishedDate).getTime() : 0;
     const dateB = b.publishedDate ? new Date(b.publishedDate).getTime() : 0;
     return dateB - dateA;

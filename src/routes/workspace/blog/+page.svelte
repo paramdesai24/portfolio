@@ -76,7 +76,7 @@
 
   <!-- Header -->
   <section class="anim-item delay-100 mb-8">
-    <h1 class="font-serif text-[32px] text-[--color-text] tracking-tight">Writing</h1>
+    <h1 class="font-serif text-[32px] text-[--color-text] tracking-tight">Research Blog</h1>
     <p class="font-sans text-sm text-[--color-muted] mt-1.5 max-w-[520px] leading-relaxed">
       Technical essays at the intersection of ML security, explainability, and the gap between what a model proves and what a system can deploy.
     </p>

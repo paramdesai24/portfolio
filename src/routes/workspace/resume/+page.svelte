@@ -34,6 +34,9 @@
 
   const publications = [
     {
+      citation: "\"FIDES: Federated Intelligence and Detection with Quantum Security for Financial Institutions.\" In Proceedings of the International Conference on Computer, Information and Telecommunication Systems (CITS 2026), 2026. (Accepted)"
+    },
+    {
       citation: "\"Machine Unlearning-based Privacy-First Medical Imaging Framework for TB Detection.\" In Proceedings of the Scientific Workshop on AI for Medicine (AI2M4RI 2026), 2026. (Accepted)"
     },
     {
@@ -153,9 +156,9 @@
         <div class="flex flex-col sm:flex-row sm:justify-between items-start gap-1">
           <div class="flex-1">
             <h3 class="font-sans font-semibold text-sm text-[--color-text]">Research Assistant</h3>
-            <p class="font-sans text-xs text-[--color-accent] font-medium mt-0.5">Research Group of Prof. Sudeep Tanwar & Prof. Rajesh Gupta</p>
+            <p class="font-sans text-xs text-[--color-accent] font-medium mt-0.5">Sudeep Tanwar's Research Group</p>
             <ul class="font-sans text-xs text-[--color-muted] space-y-1.5 list-disc pl-4 mt-3 leading-relaxed">
-              <li>Undergraduate research focusing on Explainable AI (XAI), Adversarial Machine Learning, Cybersecurity, and IoT Systems.</li>
+              <li>Undergraduate research focusing on Explainable AI (XAI), Adversarial Machine Learning, Cybersecurity, and IoT Systems under the guidance of Prof. Sudeep Tanwar and Prof. Rajesh Gupta.</li>
               <li>Designed and evaluated ML/DL-based intrusion and false data injection attack detection frameworks for connected vehicle environments.</li>
               <li>Applied model interpretability methods (SHAP, LIME) to analyze feature importances and audit decision metrics.</li>
               <li>Contributed to modeling, experiment validation, and publishing of 5 peer-reviewed papers at IEEE and Springer venues.</li>
@@ -175,10 +178,10 @@
             <h3 class="font-sans font-semibold text-sm text-[--color-text]">AI/ML Intern</h3>
             <p class="font-sans text-xs text-[--color-accent] font-medium mt-0.5">DYU Labs</p>
             <ul class="font-sans text-xs text-[--color-muted] space-y-1.5 list-disc pl-4 mt-3 leading-relaxed">
-              <li>Built AI-powered renewable energy solutions focusing on predictive solar analytics.</li>
-              <li>Developed conversational AI pipelines and natural language processing solutions leveraging LangGraph agent structures.</li>
-              <li>Engineered statistical and deep learning-based forecasting models for time-series environmental data.</li>
-              <li>Contributed to deployment of production AI modules serving institutional clients including ISRO, NTPC, Kohler, and Bata.</li>
+              <li>Technical lead for a summer intern team building production solar forecasting pipelines and a conversational analytics assistant.</li>
+              <li>Developed end-to-end day-ahead time-series forecasting models using LightGBM for 75 production inverter devices across 15 solar plants.</li>
+              <li>Designed conversational AI workflows leveraging multi-agent LangGraph architectures, RAG (pgvector), and natural language databases.</li>
+              <li>Deployed automated ingestion and ML pipeline components on AWS (Lambda, Fargate, DynamoDB) for clients including ISRO, NTPC, and Aditya Birla Group.</li>
             </ul>
           </div>
           <span class="font-mono text-xs text-[--color-muted] shrink-0 mt-0.5 select-none">May 2026 &ndash; Jul 2026</span>
