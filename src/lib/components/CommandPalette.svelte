@@ -18,7 +18,7 @@
   interface PaletteItem {
     id: string;
     label: string;
-    category: 'Pages' | 'Research Areas' | 'Projects' | 'Publications' | 'Actions';
+    category: 'Pages' | 'Research Areas' | 'Projects' | 'Publications' | 'Blog' | 'Actions';
     icon?: string;
     href?: string;
     download?: string;
@@ -29,6 +29,7 @@
     { id: "research",       label: "Research Overview",  category: "Pages", icon: "BookOpen",     href: "/workspace/research" },
     { id: "projects",       label: "Projects",           category: "Pages", icon: "FolderOpen",   href: "/workspace/projects" },
     { id: "publications",   label: "Publications",       category: "Pages", icon: "FileText",     href: "/workspace/publications" },
+    { id: "blog",           label: "Blog",               category: "Pages", icon: "Lightbulb",   href: "/workspace/blog" },
     { id: "resume",         label: "Resume",             category: "Pages", icon: "User",         href: "/workspace/resume" },
 
     // Research Areas
@@ -45,12 +46,20 @@
     { id: "portfolio-website",  label: "Developer Portfolio", category: "Projects", href: "/workspace/projects/portfolio-website" },
 
     // Publications
+    { id: "pub_fides",      label: "FIDES: Federated Intelligence and Detection with Quantum Security",              category: "Publications", href: "/workspace/publications/pub-fides" },
     { id: "pub_globecom",   label: "Quantum-Secured Explainable Machine Unlearning for Phishing Detection in IoT",  category: "Publications", href: "/workspace/publications/pub-globecom" },
     { id: "pub_vtc",        label: "Q-ShielD: CV-QKD Framework for Secure Autonomous Vehicle Communications",     category: "Publications", href: "/workspace/publications/pub-vtc" },
     { id: "pub_healthcom",  label: "Quantum-Based Edge Intelligence Framework for IoT Healthcare Systems",         category: "Publications", href: "/workspace/publications/pub-healthcom" },
     { id: "pub_icsc",       label: "Deep Learning and Explainable AI Framework for False Data Injection Attacks",  category: "Publications", href: "/workspace/publications/pub-icsc" },
     { id: "pub_cml",        label: "Explainable AI and Quantum Security for Smart Homes Network Attack Classification", category: "Publications", href: "/workspace/publications/pub-cml" },
     { id: "pub_tb",         label: "Machine Unlearning-based Privacy-First Medical Imaging Framework for TB Detection", category: "Publications", href: "/workspace/publications/pub-tb" },
+
+    // Blog Posts
+    { id: "blog_tampa",         label: "What happened when I presented at IEEE ICSC in Tampa",         category: "Blog", href: "/workspace/blog/tampa-icsc-2025" },
+    { id: "blog_lime",          label: "What LIME actually explains — and what it hides",              category: "Blog", href: "/workspace/blog/what-lime-actually-explains" },
+    { id: "blog_forensics",     label: "Why I started treating explainability as a forensic tool",    category: "Blog", href: "/workspace/blog/explainability-as-forensics" },
+    { id: "blog_federated",     label: "Federated learning is not privacy-preserving by default",     category: "Blog", href: "/workspace/blog/federated-learning-not-private" },
+    { id: "blog_unlearning",    label: "The machine unlearning verification problem",                 category: "Blog", href: "/workspace/blog/unlearning-verification-problem" },
 
     // Actions
     { id: "download-resume", label: "Download Resume", category: "Actions", icon: "Download", href: "https://efptwclmybikeaahtciz.supabase.co/storage/v1/object/public/Resume/PARAM_DESAI_Resume.pdf" },
@@ -129,11 +138,12 @@
   });
 
   // Category sorting order
-  const categoryOrder: ('Pages' | 'Research Areas' | 'Projects' | 'Publications' | 'Actions')[] = [
+  const categoryOrder: ('Pages' | 'Research Areas' | 'Projects' | 'Publications' | 'Blog' | 'Actions')[] = [
     'Pages',
     'Research Areas',
     'Projects',
     'Publications',
+    'Blog',
     'Actions'
   ];
 

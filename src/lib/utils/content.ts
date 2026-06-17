@@ -1,11 +1,12 @@
 import type { Component } from 'svelte';
-import type { Project, Publication, ResearchArea, Experience } from '$lib/types';
+import type { Project, Publication, ResearchArea, Experience, BlogPost } from '$lib/types';
 
 // Dynamic glob modules of markdown content using Vite glob imports
 const projectModules = import.meta.glob('/src/lib/content/projects/*.md');
 const publicationModules = import.meta.glob('/src/lib/content/publications/*.md');
 const researchAreaModules = import.meta.glob('/src/lib/content/research-areas/*.md');
 const experienceModules = import.meta.glob('/src/lib/content/experiences/*.md');
+const blogModules = import.meta.glob('/src/lib/content/blog/*.md');
 
 // Core helper to resolve multiple dynamic markdown modules and extract metadata
 async function resolveModules<T>(modules: Record<string, () => Promise<any>>): Promise<T[]> {
@@ -84,6 +85,8 @@ export async function getPublication(slug: string): Promise<Publication & { cont
     filename = 'springer-cml-2025';
   } else if (slug === 'pub-tb') {
     filename = 'ai2m4ri-2026';
+  } else if (slug === 'pub-fides') {
+    filename = 'fides-cits-2026';
   }
 
   const path = `/src/lib/content/publications/${filename}.md`;
@@ -143,6 +146,36 @@ export async function getExperiences(): Promise<Experience[]> {
     }
   }
   return result.sort((a, b) => (a.order || 0) - (b.order || 0));
+}
+
+// Get all blog posts sorted by publishedDate descending (featured first)
+export async function getBlogPosts(): Promise<BlogPost[]> {
+  const list = await resolveModules<BlogPost>(blogModules);
+  return list.sort((a, b) => {
+    // Featured posts first
+    if (a.featured !== b.featured) {
+      return a.featured ? -1 : 1;
+    }
+    // Then by publishedDate descending
+    const dateA = a.publishedDate ? new Date(a.publishedDate).getTime() : 0;
+    const dateB = b.publishedDate ? new Date(b.publishedDate).getTime() : 0;
+    return dateB - dateA;
+  });
+}
+
+// Get single blog post including Svelte component
+export async function getBlogPost(slug: string): Promise<BlogPost & { content: Component }> {
+  const path = `/src/lib/content/blog/${slug}.md`;
+  if (!blogModules[path]) {
+    throw new Error(`Blog post "${slug}" not found`);
+  }
+  const resolver = blogModules[path] as () => Promise<any>;
+  const module = await resolver();
+  return {
+    id: slug,
+    content: module.default,
+    ...module.metadata
+  };
 }
 
 // Get single experience including Svelte component

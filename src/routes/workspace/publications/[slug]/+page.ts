@@ -8,6 +8,7 @@ export const load: PageLoad = async ({ params }) => {
 
     // Dynamic mapping for prev/next timeline navigation
     const uniqueOrder = [
+      { slug: 'pub-fides', title: 'CITS 2026' },
       { slug: 'pub-globecom', title: 'IEEE GLOBECOM 2025' },
       { slug: 'pub-vtc', title: 'IEEE VTC Spring 2025' },
       { slug: 'pub-healthcom', title: 'IEEE HealthCom 2025' },

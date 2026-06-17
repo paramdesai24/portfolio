@@ -79,7 +79,7 @@
     <div class="flex items-center gap-4 text-xs font-mono text-[--color-muted] select-none border-b border-[--color-border] pb-6">
       <div class="flex items-center gap-1.5">
         <Award size={14} class="text-[--color-accent]" />
-        <span>6 Publications</span>
+        <span>7 Publications</span>
       </div>
       <span class="w-[1px] h-3 bg-[--color-border]"></span>
       <div class="flex items-center gap-1.5">
@@ -131,7 +131,15 @@
     </div>
   </section>
 
-  <!-- Section 4: Research Timeline -->
+  <!-- Section 4: Research Journey -->
+  <section class="anim-item delay-800 max-w-[680px]">
+    <h3 class="font-serif text-2xl text-[--color-text] border-b border-[--color-border] pb-3 mb-5">Research Journey</h3>
+    <p class="font-sans text-sm text-[--color-muted] leading-[1.85] text-justify">
+      My research began in early 2025 under the supervision of Prof. Sudeep Tanwar and Prof. Rajesh Gupta, initially exploring how explainability tools like LIME could make intrusion detection systems legible. What started as a question about smart-home security quickly expanded: if you could explain a prediction, could you also diagnose a poisoned training set? That forensic inversion became a thread connecting four papers across cybersecurity, autonomous vehicles, and healthcare AI. At IEEE ICSC in Tampa, presenting in person to a room of practitioners taught me something no peer review ever had — that correctness and deployability are different standards. I came back asking the deployment engineer's questions about every paper I write. The FIDES work on federated learning, and the unlearning verification problem it surfaced, are where that thinking has landed for now. Seven papers in eighteen months, and the questions are still getting harder.
+    </p>
+  </section>
+
+  <!-- Section 5: Research Timeline -->
   <section class="flex flex-col gap-6 anim-item delay-800">
     <h3 class="font-serif text-2xl text-[--color-text] border-b border-[--color-border] pb-3">Publication Timeline</h3>
     <div class="relative w-full">

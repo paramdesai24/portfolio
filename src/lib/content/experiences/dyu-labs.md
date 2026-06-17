@@ -3,14 +3,43 @@ role: "AI/ML Intern"
 company: "DYU Labs"
 period: "May – Jul 2026"
 location: "Ahmedabad, India"
-skills: ["LangGraph", "DynamoDB", "LightGBM", "Copernicus CDS", "Time-Series Forecasting", "AWS Fargate", "Drift Detection"]
+skills: ["LangGraph", "DynamoDB", "LightGBM", "AWS Fargate", "Copernicus ERA5", "RAG", "pgvector", "LangSmith", "Time-Series Forecasting"]
 order: 1
-shortDescription: "Building production solar analytics pipelines, telemetry health metrics, and a LangGraph chatbot integrated with DynamoDB. Designed daily automated weather and generation forecasting pipelines on AWS Fargate. Engineered stateful multi-agent conversational systems for real-time querying."
+shortDescription: "Technical lead for a summer intern team at DYU Labs (clients: ISRO, NTPC, Aditya Birla Group), building production solar forecasting pipelines and a LangGraph-powered conversational analytics assistant across 75 inverter devices and 15 solar plants."
 ---
 
 ## Overview
-As an AI/ML Intern at DYU Labs in Ahmedabad, India, I am building production-grade renewable energy intelligence solutions and conversational agents.
 
-## Core Work
-* **Solar Forecasting & Telemetry Pipeline**: Built an end-to-end solar forecasting and sensor health diagnostics system. An orchestrator AWS Lambda daily triggers a Python ML pipeline inside AWS Fargate. It queries inverter telemetry from Amazon DynamoDB and weather forecasts from the Copernicus CDS API, preprocesses the data, trains personalized LightGBM Regressors, and writes predictions back to DynamoDB. The system computes a 100-point Device Health Score to detect telemetry outages, performance degradation, and data drift using Kolmogorov-Smirnov tests.
-* **LangGraph Telemetry Chatbot**: Designed and built a conversational AI assistant using LangGraph connected directly to the DynamoDB telemetry tables. It translates natural language questions (e.g., about degraded devices or generation forecasts) into query operations to fetch telemetry records and return context-aware reports.
+As an AI/ML Intern at DYU Labs (Ahmedabad, India), I served as technical lead for a summer intern team developing production-grade renewable energy intelligence systems. Our work was deployed for enterprise and government clients including ISRO, NTPC, and Aditya Birla Group.
+
+## Solar Forecasting & MLOps
+
+Built an end-to-end forecasting pipeline for 75 production inverter devices across 15 solar plants, generating 15-minute interval day-ahead forecasts.
+
+Key responsibilities:
+
+* **Telemetry ingestion** from AWS DynamoDB, combined with weather forecasts from ECMWF and Copernicus ERA5 climate datasets
+* **Preprocessing** for inverter telemetry normalization, outage-aware cleaning, and temporal/meteorological feature engineering
+* **Per-device LightGBM models** with automated retraining, lifecycle management, and fleet-wide monitoring (MAE, MAPE, drift detection via Kolmogorov-Smirnov tests)
+* **Cloud deployment** via AWS Lambda, EventBridge, ECR, and Fargate for fully automated pipeline execution
+
+## LangGraph-Powered Conversational AI Assistant
+
+Led development of a LangGraph-powered assistant enabling solar plant operators to interact with telemetry systems using natural language and voice.
+
+Key responsibilities:
+
+* **Multi-agent LangGraph workflows** for query understanding, tool selection, validation, and response synthesis
+* **RAG pipelines** using OpenAI embeddings, pgvector, and Supabase vector search
+* **NL-to-Database Query (NL2DBQ)** for operational analytics and Modbus/register-based telemetry decoding
+* **Observability** via LangSmith; secure tool execution with authorization guardrails
+
+## Technologies
+
+**ML & Data:** Python, LightGBM, Pandas, NumPy, XArray
+
+**LLM & Agents:** LangGraph, LangChain, OpenAI GPT Models, OpenAI Whisper, pgvector, LangSmith
+
+**Cloud & Infrastructure:** AWS Lambda, Fargate, EventBridge, ECR, DynamoDB
+
+**Databases:** PostgreSQL, Supabase, DynamoDB

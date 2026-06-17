@@ -48,3 +48,16 @@ export interface Experience {
   shortDescription: string;
 }
 
+export interface BlogPost {
+  id: string;
+  title: string;
+  description: string;
+  category: 'Research' | 'Explainer' | 'Narrative' | string;
+  targetAudience?: string;
+  readingTime?: string;
+  themes?: string[];
+  relatedPapers?: string[];
+  featured?: boolean;
+  publishedDate?: string;
+  status?: 'published' | 'draft' | string;
+}

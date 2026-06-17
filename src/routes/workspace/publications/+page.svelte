@@ -73,7 +73,7 @@
     </p>
     <!-- Stats Row -->
     <div class="mt-3.5 font-mono text-[10px] text-[--color-accent] uppercase tracking-wider font-semibold">
-      6 papers · 5 IEEE venues · 2025–2026
+      7 papers · 5 IEEE venues · 2025–2026
     </div>
   </div>
 
