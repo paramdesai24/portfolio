@@ -1,12 +1,16 @@
 ---
-title: "Deep Learning and Explainable AI Framework for False Data Injection Attack Detection in Autonomous Vehicles"
+title: "Quantum-Assisted XAI-Driven DL Framework for FDI Detection in Connected Autonomous Electric Vehicles Underlying 6G"
 shortDescription: "XAI-driven cybersecurity pipeline protecting sensor feeds in connected vehicle networks"
 venue: "IEEE ICSC 2025"
 year: 2025
-status: "presented"
+status: "Published"
 note: "Presented in person at Tampa, Florida, USA"
 researchAreas: ["XAI", "Cybersecurity"]
-pdfUrl: "https://ieeexplore.ieee.org/document/11139950/"
+pdfUrl: "https://ieeexplore.ieee.org/document/11139950"
+doi: "10.1109/ICSC65596.2025.11139950"
+location: "Tampa, FL, USA"
+publisher: "IEEE"
+dateAdded: "September 2, 2025"
 relatedProjects: ["bhoomi"]
 order: 2
 abstract: "Develops a deep learning pipeline with integrated SHAP-based explainability for detecting false data injection attacks in autonomous vehicle sensor networks, providing both accuracy and interpretable model decisions."
