@@ -385,12 +385,12 @@
               <span class="text-xs font-mono text-[--color-status-live-text] uppercase px-2 py-0.5 bg-[--color-status-live-bg] border border-[--color-status-live-border]/20 rounded">Published</span>
             </div>
             <p class="text-sm text-[--color-muted] mb-6 line-clamp-3">
-              Quantum-Secured Explainable Machine Unlearning for Phishing Detection in IoT: Selective data unlearning verified via SHAP.
+              Quantum-Secured Explainable Machine Unlearning for Phishing Detection in IoT: Deep learning classification with LIME-based explainability and BBM92 QKD.
             </p>
           </div>
           <div>
             <div class="flex flex-wrap gap-1.5 mb-6">
-              {#each ['Machine Unlearning', 'CV-QKD', 'SHAP', 'IoT Security'] as tag}
+              {#each ['Machine Unlearning', 'BBM92 QKD', 'LIME', 'IoT Security'] as tag}
                 <span class="text-[10px] font-mono bg-[--color-bg] text-[--color-muted] border border-[--color-border] px-2 py-0.5 rounded">
                   {tag}
                 </span>
