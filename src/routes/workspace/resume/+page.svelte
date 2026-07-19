@@ -40,16 +40,16 @@
       citation: "\"Machine Unlearning-based Privacy-First Medical Imaging Framework for TB Detection.\" In Proceedings of the Scientific Workshop on AI for Medicine (AI2M4RI 2026), 2026. (Accepted)"
     },
     {
-      citation: "\"Q-PhishNet: Quantum-Secured Explainable Machine Unlearning for Phishing Detection in IoT Networks.\" In Proceedings of IEEE Globecom 2025, Taipei, Taiwan, 2025. DOI: 10.1109/GCWkshps68340.2025.11590920. Published on IEEE Xplore."
+      citation: "\"Q-PhishNet: Quantum-Secured Explainable Machine Unlearning for Phishing Detection in IoT Networks.\" In Proceedings of IEEE Globecom 2025, Taipei, Taiwan, 2025. DOI: 10.1109/GCWkshps68340.2025.11590920."
     },
     {
-      citation: "\"Q-ShielD: CV-QKD Framework for Secure Autonomous Vehicle Communications.\" In Proceedings of the IEEE Vehicular Technology Conference (VTC Spring 2025), 2025."
+      citation: "\"Q-ShielD: Quantum-Enhanced Secure Framework for Autonomous Vehicles Communication.\" In Proceedings of the IEEE 101st Vehicular Technology Conference (VTC Spring 2025), Oslo, Norway, 2025. DOI: 10.1109/VTC2025-Spring65109.2025.11174381."
     },
     {
-      citation: "\"Quantum-Based Edge Intelligence Framework for IoT Healthcare Systems.\" In Proceedings of the IEEE HealthCom 2025, 2025."
+      citation: "\"Quantum-based Edge Intelligence Framework for Wearable Health IoT Device Networks.\" In Proceedings of the IEEE International Conference on E-health Networking, Application & Services (HealthCom 2025), Abu Dhabi, United Arab Emirates, 2025. DOI: 10.1109/HealthCom60686.2025.11342726."
     },
     {
-      citation: "\"Deep Learning and Explainable AI Framework for False Data Injection Attack Detection in Autonomous Vehicles.\" Presented at the IEEE International Conference on Semantic Computing (ICSC 2025), Tampa, Florida, USA, 2025."
+      citation: "\"Quantum-Assisted XAI-Driven DL Framework for FDI Detection in Connected Autonomous Electric Vehicles Underlying 6G.\" In Proceedings of the IEEE 5th Intelligent Cybersecurity Conference (ICSC 2025), Tampa, FL, USA, 2025. DOI: 10.1109/ICSC65596.2025.11139950."
     },
     {
       citation: "\"Explainable AI and Quantum Security for Smart Homes Network Attack Classification.\" Springer Journal of Computational Machine Learning (CML 2025), 2025."

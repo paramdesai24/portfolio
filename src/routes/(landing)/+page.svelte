@@ -382,7 +382,7 @@
           <div>
             <div class="flex justify-between items-start mb-3">
               <h4 class="font-serif text-2xl text-[--color-text] line-clamp-1">Machine Unlearning for IoT</h4>
-              <span class="text-xs font-mono text-[--color-status-live-text] uppercase px-2 py-0.5 bg-[--color-status-live-bg] border border-[--color-status-live-border]/20 rounded">Published (IEEE Xplore)</span>
+              <span class="text-xs font-mono text-[--color-status-live-text] uppercase px-2 py-0.5 bg-[--color-status-live-bg] border border-[--color-status-live-border]/20 rounded">Published</span>
             </div>
             <p class="text-sm text-[--color-muted] mb-6 line-clamp-3">
               Quantum-Secured Explainable Machine Unlearning for Phishing Detection in IoT: Selective data unlearning verified via SHAP.

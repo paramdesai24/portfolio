@@ -4,7 +4,7 @@ shortDescription: "Securing IoT data unlearning pipelines using quantum cryptogr
 venue: "IEEE GLOBECOM 2025"
 year: 2025
 researchAreas: ["Machine Unlearning", "Cybersecurity", "XAI"]
-status: "Published (IEEE Xplore)"
+status: "Published"
 pdfUrl: "https://ieeexplore.ieee.org/document/11590920"
 doi: "10.1109/GCWkshps68340.2025.11590920"
 location: "Taipei, Taiwan"
