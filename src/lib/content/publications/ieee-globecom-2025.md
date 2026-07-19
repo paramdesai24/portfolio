@@ -1,7 +1,7 @@
 ---
 title: "Q-PhishNet: Quantum-Secured Explainable Machine Unlearning for Phishing Detection in IoT Networks"
-shortDescription: "Securing IoT data unlearning pipelines using quantum cryptographic hashes and explainability audits."
-venue: "IEEE GLOBECOM 2025"
+shortDescription: "A phishing-detection framework combining deep learning, LIME-based explainability, three machine-unlearning techniques, and BBM92 quantum key distribution for IoT networks."
+venue: "2025 IEEE Globecom Workshops (GC Wkshps)"
 year: 2025
 researchAreas: ["Machine Unlearning", "Cybersecurity", "XAI"]
 status: "Published"
@@ -12,22 +12,27 @@ publisher: "IEEE"
 dateAdded: "July 7, 2026"
 relatedProjects: ["petbot"]
 order: 5
-abstract: "Proposes a quantum-secured machine unlearning framework that enables IoT devices to selectively forget phishing-related training data while maintaining detection accuracy, using explainability techniques to audit the unlearning process."
+abstract: "Q-PhishNet is a phishing-detection framework for IoT networks that combines deep learning, explainable AI, machine unlearning, and quantum cryptography. It uses deep learning for phishing URL classification and LIME for interpreting predictions. To support data revocation and counter poisoned data, it integrates three machine-unlearning techniques: KL Adversarial Unlearning, Fisher Regularization, and Reverse Distillation. The BBM92 quantum key distribution protocol secures data transmission during the unlearning process."
 ---
 
 ## Problem
-In Internet of Things (IoT) ecosystems, data privacy regulations (such as GDPR's \"right to be forgotten\") require that user data be completely removable from trained models upon request. This process, known as *Machine Unlearning*, is highly challenging for resource-constrained IoT devices. Standard unlearning methods are computationally heavy, and verifying that the target data has been successfully \"forgotten\" without destroying model classification accuracy is an unsolved audit challenge. Furthermore, the unlearning protocol itself is vulnerable to adversarial poisoning attacks in transit.
+
+In Internet of Things (IoT) ecosystems, data privacy regulations (such as GDPR's "right to be forgotten") require that user data be completely removable from trained models upon request. This process, known as *Machine Unlearning*, is highly challenging for resource-constrained IoT devices. Standard unlearning methods are computationally intensive, and verifying that target data has been successfully removed without destroying model classification accuracy is non-trivial. Furthermore, the unlearning protocol itself is vulnerable to adversarial data poisoning attacks, and the confidentiality of the unlearning communication must be protected against eavesdropping.
 
 ## Key Contributions
-1. A lightweight, approximate machine unlearning framework suitable for edge-device constraints.
-2. Integration of quantum-secured cryptographic hashing (using CV-QKD primitives) to protect unlearning updates.
-3. An explainability-driven audit protocol utilizing SHAP values to verify the unlearning process.
+
+1. Deep-learning-based phishing URL classification suited to IoT network environments.
+2. LIME (Local Interpretable Model-agnostic Explanations) integration for interpreting individual model predictions.
+3. Three complementary machine-unlearning techniques to enable data influence removal without full model retraining:
+   - **KL Adversarial Unlearning**: disrupts the model's output distribution on revoked samples.
+   - **Fisher Regularization**: identifies and adjusts parameters sensitive to the revoked data.
+   - **Reverse Distillation**: aligns the model's internal representations with those of a teacher trained without the revoked data.
+4. **BBM92 Quantum Key Distribution** to secure data transmission during the unlearning process, providing information-theoretically strong communication security.
 
 ## Methodology
-The proposed framework coordinates a decentralized training schema. When an edge node requests unlearning, the central model computes parameter updates using a localized Fisher Information adjustment, bypassing the need to retrain the network from scratch. To secure this exchange against quantum-level eavesdroppers, updates are encrypted via continuous-variable quantum key distribution (CV-QKD) hashes. Finally, we compare SHAP (SHapley Additive exPlanations) attribution vectors before and after the unlearning operation, verifying that features associated with the unlearned dataset no longer impact classification decisions.
 
-## Results
-Evaluation on standard phishing detection datasets demonstrates that our unlearning protocol can purge target records within 120 milliseconds—representing a 92% reduction in latency compared to full retraining. Post-unlearning classification accuracy remains within 0.8% of the original model, while unlearning verification yields a 99.1% audit confidence score.
+Q-PhishNet addresses phishing URL detection in IoT networks through a multi-stage pipeline. A deep learning model is first trained to classify phishing URLs. LIME is applied to produce local, human-interpretable explanations for individual model predictions, making the system auditable. When a data revocation request is received, the framework applies the three machine-unlearning strategies in combination, targeting the influence of the specified training samples without requiring a full model retraining. The unlearning communication is secured using the BBM92 quantum key distribution protocol, which provides security guarantees grounded in the laws of quantum mechanics rather than computational hardness assumptions.
 
 ## Implications
-By establishing verifiable unlearning protocols, IoT networks can comply with strict privacy laws dynamically. Incorporating quantum-secured signatures guarantees that malicious actors cannot spoof unlearning requests to degrade network models.
+
+By combining explainability with verifiable machine unlearning and quantum-secured communication, Q-PhishNet enables IoT networks to comply with data privacy requirements dynamically. LIME-based interpretation supports auditability of the classification process, while BBM92 QKD ensures that unlearning requests and associated data transmissions cannot be intercepted or spoofed by adversarial actors.
