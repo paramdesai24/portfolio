@@ -1,11 +1,15 @@
 ---
-title: "Quantum-Based Edge Intelligence Framework for IoT Healthcare Systems"
+title: "Quantum-based Edge Intelligence Framework for Wearable Health IoT Device Networks"
 shortDescription: "Securing edge-computed health telemetry streams using quantum keys and anomaly detection."
 venue: "IEEE HealthCom 2025"
 year: 2025
 researchAreas: ["Quantum Security", "Intelligent Systems", "IoT"]
-status: "published"
-pdfUrl: "https://ieeexplore.ieee.org/document/11342726/"
+status: "Published"
+pdfUrl: "https://ieeexplore.ieee.org/document/11342726"
+doi: "10.1109/HealthCom60686.2025.11342726"
+location: "Abu Dhabi, United Arab Emirates"
+publisher: "IEEE"
+dateAdded: "January 21, 2026"
 relatedProjects: ["petbot"]
 order: 4
 abstract: "Presents a quantum-assisted edge computing framework for real-time anomaly detection and secure data processing in IoT-enabled healthcare environments."
