@@ -1,11 +1,15 @@
 ---
-title: "Q-ShielD: CV-QKD Framework for Secure Autonomous Vehicle Communications"
+title: "Q-ShielD: Quantum-Enhanced Secure Framework for Autonomous Vehicles Communication"
 shortDescription: "Securing vehicle-to-everything (V2X) communications against quantum-level adversarial attacks."
 venue: "IEEE VTC Spring 2025"
 year: 2025
 researchAreas: ["Quantum Security", "Cybersecurity"]
-status: "published"
-pdfUrl: "https://ieeexplore.ieee.org/document/11174381/"
+status: "Published"
+pdfUrl: "https://ieeexplore.ieee.org/document/11174381"
+doi: "10.1109/VTC2025-Spring65109.2025.11174381"
+location: "Oslo, Norway"
+publisher: "IEEE"
+dateAdded: "September 30, 2025"
 relatedProjects: ["bhoomi"]
 order: 3
 abstract: "Introduces a continuous-variable quantum key distribution framework for securing V2X communications in autonomous vehicle networks against eavesdropping and quantum-level adversarial attacks."
