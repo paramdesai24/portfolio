@@ -40,7 +40,7 @@
       citation: "\"Machine Unlearning-based Privacy-First Medical Imaging Framework for TB Detection.\" In Proceedings of the Scientific Workshop on AI for Medicine (AI2M4RI 2026), 2026. (Accepted)"
     },
     {
-      citation: "\"Quantum-Secured Explainable Machine Unlearning for Phishing Detection in IoT.\" In Proceedings of the IEEE GLOBECOM 2025, 2025. (Accepted)"
+      citation: "\"Q-PhishNet: Quantum-Secured Explainable Machine Unlearning for Phishing Detection in IoT Networks.\" In Proceedings of IEEE Globecom 2025, Taipei, Taiwan, 2025. DOI: 10.1109/GCWkshps68340.2025.11590920. Published on IEEE Xplore."
     },
     {
       citation: "\"Q-ShielD: CV-QKD Framework for Secure Autonomous Vehicle Communications.\" In Proceedings of the IEEE Vehicular Technology Conference (VTC Spring 2025), 2025."

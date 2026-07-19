@@ -35,6 +35,10 @@ export interface Publication {
   order?: number;
   featured?: boolean;
   abstract: string;
+  doi?: string;
+  location?: string;
+  publisher?: string;
+  dateAdded?: string;
 }
 
 export interface Experience {

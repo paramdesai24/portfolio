@@ -147,6 +147,46 @@
     </div>
   </header>
 
+  <!-- Metadata Details Block -->
+  {#if metadata.doi || metadata.location || metadata.publisher || metadata.dateAdded || metadata.pdfUrl}
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8 p-5 bg-[--color-surface] border border-[--color-border] rounded-xl font-sans text-xs select-none">
+      {#if metadata.publisher}
+        <div class="flex flex-col gap-0.5">
+          <span class="text-[10px] font-mono text-[--color-muted] uppercase tracking-wider">Publisher</span>
+          <span class="font-medium text-[--color-text]">{metadata.publisher}</span>
+        </div>
+      {/if}
+      {#if metadata.location}
+        <div class="flex flex-col gap-0.5">
+          <span class="text-[10px] font-mono text-[--color-muted] uppercase tracking-wider">Location</span>
+          <span class="font-medium text-[--color-text]">{metadata.location}</span>
+        </div>
+      {/if}
+      {#if metadata.doi}
+        <div class="flex flex-col gap-0.5">
+          <span class="text-[10px] font-mono text-[--color-muted] uppercase tracking-wider">DOI</span>
+          <a href="https://doi.org/{metadata.doi}" target="_blank" rel="noopener noreferrer" class="font-medium text-[--color-accent] hover:underline truncate">
+            {metadata.doi}
+          </a>
+        </div>
+      {/if}
+      {#if metadata.pdfUrl}
+        <div class="flex flex-col gap-0.5">
+          <span class="text-[10px] font-mono text-[--color-muted] uppercase tracking-wider">IEEE Xplore</span>
+          <a href={metadata.pdfUrl} target="_blank" rel="noopener noreferrer" class="font-medium text-[--color-accent] hover:underline truncate">
+            View Document
+          </a>
+        </div>
+      {/if}
+      {#if metadata.dateAdded}
+        <div class="flex flex-col gap-0.5 col-span-2 sm:col-span-1">
+          <span class="text-[10px] font-mono text-[--color-muted] uppercase tracking-wider">Date Added</span>
+          <span class="font-medium text-[--color-text]">{metadata.dateAdded}</span>
+        </div>
+      {/if}
+    </div>
+  {/if}
+
   <!-- Abstract Block -->
   {#if metadata.abstract}
     <div class="mb-10 max-w-[680px]">

@@ -188,6 +188,24 @@
                   * {paper.note}
                 </p>
               {/if}
+
+              <!-- Metadata (Location, DOI) -->
+              {#if paper.location || paper.doi}
+                <div class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[10px] sm:text-[11px] font-mono text-[--color-muted] select-text">
+                  {#if paper.location}
+                    <span class="flex items-center gap-1">
+                      <span class="opacity-60 select-none">Location:</span>
+                      <span class="text-[--color-text]">{paper.location}</span>
+                    </span>
+                  {/if}
+                  {#if paper.doi}
+                    <span class="flex items-center gap-1">
+                      <span class="opacity-60 select-none">DOI:</span>
+                      <a href="https://doi.org/{paper.doi}" target="_blank" rel="noopener noreferrer" class="text-[--color-accent] hover:underline">{paper.doi}</a>
+                    </span>
+                  {/if}
+                </div>
+              {/if}
             </div>
 
             <!-- Research Areas pills -->

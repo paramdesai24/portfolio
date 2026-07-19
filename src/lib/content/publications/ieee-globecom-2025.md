@@ -1,10 +1,15 @@
 ---
-title: "Quantum-Secured Explainable Machine Unlearning for Phishing Detection in IoT"
+title: "Q-PhishNet: Quantum-Secured Explainable Machine Unlearning for Phishing Detection in IoT Networks"
 shortDescription: "Securing IoT data unlearning pipelines using quantum cryptographic hashes and explainability audits."
 venue: "IEEE GLOBECOM 2025"
 year: 2025
 researchAreas: ["Machine Unlearning", "Cybersecurity", "XAI"]
-status: "accepted"
+status: "Published (IEEE Xplore)"
+pdfUrl: "https://ieeexplore.ieee.org/document/11590920"
+doi: "10.1109/GCWkshps68340.2025.11590920"
+location: "Taipei, Taiwan"
+publisher: "IEEE"
+dateAdded: "July 7, 2026"
 relatedProjects: ["petbot"]
 order: 5
 abstract: "Proposes a quantum-secured machine unlearning framework that enables IoT devices to selectively forget phishing-related training data while maintaining detection accuracy, using explainability techniques to audit the unlearning process."
