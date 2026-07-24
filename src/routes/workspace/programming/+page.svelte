@@ -479,9 +479,13 @@
     border-radius: 3px;
     cursor: default;
     outline: none;
+    border: 1px solid rgba(0, 0, 0, 0.14); /* Crisp subtle border in Light Mode */
     transition:
       transform 120ms ease,
       outline 100ms ease;
+  }
+  :global(.dark) .cal-cell {
+    border: 1px solid rgba(255, 255, 255, 0.08); /* Crisp subtle border in Dark Mode */
   }
   .cal-cell:not(.empty):focus-visible {
     outline: 2px solid var(--color-accent);
@@ -501,48 +505,48 @@
   /* ── 4 Distinct Platform Color Families (Green, Amber, Crimson, Purple) ──── */
 
   /* 1. GitHub (Emerald Green) */
-  .platform-gh.intensity-1 { background-color: #A7F3D0; border: none; }
-  .platform-gh.intensity-2 { background-color: #34D399; border: none; }
-  .platform-gh.intensity-3 { background-color: #059669; border: none; }
-  .platform-gh.intensity-4 { background-color: #064E3B; border: none; }
+  .platform-gh.intensity-1 { background-color: #A7F3D0; }
+  .platform-gh.intensity-2 { background-color: #34D399; }
+  .platform-gh.intensity-3 { background-color: #059669; }
+  .platform-gh.intensity-4 { background-color: #064E3B; }
 
-  :global(.dark) .platform-gh.intensity-1 { background-color: #064E3B; border: none; }
-  :global(.dark) .platform-gh.intensity-2 { background-color: #059669; border: none; }
-  :global(.dark) .platform-gh.intensity-3 { background-color: #34D399; border: none; }
-  :global(.dark) .platform-gh.intensity-4 { background-color: #A7F3D0; border: none; }
+  :global(.dark) .platform-gh.intensity-1 { background-color: #064E3B; }
+  :global(.dark) .platform-gh.intensity-2 { background-color: #059669; }
+  :global(.dark) .platform-gh.intensity-3 { background-color: #34D399; }
+  :global(.dark) .platform-gh.intensity-4 { background-color: #A7F3D0; }
 
   /* 2. LeetCode (Warm Amber Gold) */
-  .platform-lc.intensity-1 { background-color: #FDE68A; border: none; }
-  .platform-lc.intensity-2 { background-color: #F59E0B; border: none; }
-  .platform-lc.intensity-3 { background-color: #D97706; border: none; }
-  .platform-lc.intensity-4 { background-color: #78350F; border: none; }
+  .platform-lc.intensity-1 { background-color: #FDE68A; }
+  .platform-lc.intensity-2 { background-color: #F59E0B; }
+  .platform-lc.intensity-3 { background-color: #D97706; }
+  .platform-lc.intensity-4 { background-color: #78350F; }
 
-  :global(.dark) .platform-lc.intensity-1 { background-color: #78350F; border: none; }
-  :global(.dark) .platform-lc.intensity-2 { background-color: #D97706; border: none; }
-  :global(.dark) .platform-lc.intensity-3 { background-color: #F59E0B; border: none; }
-  :global(.dark) .platform-lc.intensity-4 { background-color: #FDE68A; border: none; }
+  :global(.dark) .platform-lc.intensity-1 { background-color: #78350F; }
+  :global(.dark) .platform-lc.intensity-2 { background-color: #D97706; }
+  :global(.dark) .platform-lc.intensity-3 { background-color: #F59E0B; }
+  :global(.dark) .platform-lc.intensity-4 { background-color: #FDE68A; }
 
   /* 3. Codeforces (Crimson Red) */
-  .platform-cf.intensity-1 { background-color: #FECACA; border: none; }
-  .platform-cf.intensity-2 { background-color: #F87171; border: none; }
-  .platform-cf.intensity-3 { background-color: #DC2626; border: none; }
-  .platform-cf.intensity-4 { background-color: #7F1D1D; border: none; }
+  .platform-cf.intensity-1 { background-color: #FECACA; }
+  .platform-cf.intensity-2 { background-color: #F87171; }
+  .platform-cf.intensity-3 { background-color: #DC2626; }
+  .platform-cf.intensity-4 { background-color: #7F1D1D; }
 
-  :global(.dark) .platform-cf.intensity-1 { background-color: #7F1D1D; border: none; }
-  :global(.dark) .platform-cf.intensity-2 { background-color: #DC2626; border: none; }
-  :global(.dark) .platform-cf.intensity-3 { background-color: #F87171; border: none; }
-  :global(.dark) .platform-cf.intensity-4 { background-color: #FECACA; border: none; }
+  :global(.dark) .platform-cf.intensity-1 { background-color: #7F1D1D; }
+  :global(.dark) .platform-cf.intensity-2 { background-color: #DC2626; }
+  :global(.dark) .platform-cf.intensity-3 { background-color: #F87171; }
+  :global(.dark) .platform-cf.intensity-4 { background-color: #FECACA; }
 
   /* 4. Overlap (Royal Purple / Violet) */
-  .platform-overlap.intensity-1 { background-color: #DDD6FE; border: none; }
-  .platform-overlap.intensity-2 { background-color: #A78BFA; border: none; }
-  .platform-overlap.intensity-3 { background-color: #7C3AED; border: none; }
-  .platform-overlap.intensity-4 { background-color: #4C1D95; border: none; }
+  .platform-overlap.intensity-1 { background-color: #DDD6FE; }
+  .platform-overlap.intensity-2 { background-color: #A78BFA; }
+  .platform-overlap.intensity-3 { background-color: #7C3AED; }
+  .platform-overlap.intensity-4 { background-color: #4C1D95; }
 
-  :global(.dark) .platform-overlap.intensity-1 { background-color: #4C1D95; border: none; }
-  :global(.dark) .platform-overlap.intensity-2 { background-color: #7C3AED; border: none; }
-  :global(.dark) .platform-overlap.intensity-3 { background-color: #A78BFA; border: none; }
-  :global(.dark) .platform-overlap.intensity-4 { background-color: #DDD6FE; border: none; }
+  :global(.dark) .platform-overlap.intensity-1 { background-color: #4C1D95; }
+  :global(.dark) .platform-overlap.intensity-2 { background-color: #7C3AED; }
+  :global(.dark) .platform-overlap.intensity-3 { background-color: #A78BFA; }
+  :global(.dark) .platform-overlap.intensity-4 { background-color: #DDD6FE; }
 
   /* Legend Swatches (Cumulative Intensity Scale 1 to 4) */
   .legend-swatch.intensity-1 { background-color: #D1D5DB; }
