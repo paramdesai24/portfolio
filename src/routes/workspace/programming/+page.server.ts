@@ -36,12 +36,12 @@ function generateDateRange(start: Date, end: Date): string[] {
   return dates;
 }
 
-async function loadProgrammingData(): Promise<ProgrammingPageData> {
+async function loadProgrammingData(forceRefresh: boolean = false): Promise<ProgrammingPageData> {
   // Fetch all three platforms in parallel — each independently failable
   const [ghResult, lcResult, cfResult] = await Promise.allSettled([
-    getCached('github', fetchGitHubData),
-    getCached('leetcode', fetchLeetCodeData),
-    getCached('codeforces', fetchCodeforcesData)
+    getCached('github', fetchGitHubData, forceRefresh),
+    getCached('leetcode', fetchLeetCodeData, forceRefresh),
+    getCached('codeforces', fetchCodeforcesData, forceRefresh)
   ]);
 
   const gh = ghResult.status === 'fulfilled' ? ghResult.value : { data: null, error: 'GitHub fetch threw an exception' };
@@ -176,8 +176,8 @@ async function loadProgrammingData(): Promise<ProgrammingPageData> {
   };
 }
 
-export const load: PageServerLoad = async () => {
-  // Use cache wrapper — data is refreshed at most every REVALIDATE_SECONDS
-  const data = await getCached('programming-page', loadProgrammingData);
+export const load: PageServerLoad = async ({ url }) => {
+  const forceRefresh = url.searchParams.has('refresh');
+  const data = await getCached('programming-page', () => loadProgrammingData(forceRefresh), forceRefresh);
   return data;
 };

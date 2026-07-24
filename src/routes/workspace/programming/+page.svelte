@@ -273,10 +273,14 @@
         Activity · Jan 2026 → Today · UTC
       </h2>
       {#if lastUpdated}
-        <span class="flex items-center gap-1 font-mono text-[9px] text-[--color-muted] opacity-60">
+        <a
+          href="?refresh=true"
+          class="flex items-center gap-1 font-mono text-[9px] text-[--color-muted] opacity-70 hover:opacity-100 transition-opacity"
+          title="Click to force-refresh live stats from profiles"
+        >
           <RefreshCw size={9} />
           {formatLastUpdated(lastUpdated)}
-        </span>
+        </a>
       {/if}
     </div>
 
@@ -289,22 +293,22 @@
             <div class="cell-grid" style="width: {block.weeks.length * STEP - GAP}px; height: {7 * STEP - GAP}px;">
               {#each block.weeks as week, wi}
                 {#each week as day, di}
-                  {@const intensity = day ? getIntensity(day.total) : 0}
-                  {@const platformCat = getPlatformCategory(day)}
-                  {@const hasData = day && day.date}
-                  <!-- svelte-ignore a11y_interactive_supports_focus -->
-                  <div
-                    class="cal-cell platform-{platformCat} intensity-{intensity}"
-                    class:empty={!hasData}
-                    style="left: {wi * STEP}px; top: {di * STEP}px;"
-                    role={hasData ? 'button' : 'presentation'}
-                    tabindex={hasData ? 0 : -1}
-                    aria-label={cellAriaLabel(day)}
-                    onpointerenter={(e) => handleCellPointerEnter(e, day)}
-                    onpointerleave={handleCellPointerLeave}
-                    onfocus={(e) => handleCellFocus(e, day)}
-                    onblur={handleCellBlur}
-                  ></div>
+                  {#if day && day.date}
+                    {@const intensity = getIntensity(day.total)}
+                    {@const platformCat = getPlatformCategory(day)}
+                    <!-- svelte-ignore a11y_interactive_supports_focus -->
+                    <div
+                      class="cal-cell platform-{platformCat} intensity-{intensity}"
+                      style="left: {wi * STEP}px; top: {di * STEP}px;"
+                      role="button"
+                      tabindex={0}
+                      aria-label={cellAriaLabel(day)}
+                      onpointerenter={(e) => handleCellPointerEnter(e, day)}
+                      onpointerleave={handleCellPointerLeave}
+                      onfocus={(e) => handleCellFocus(e, day)}
+                      onblur={handleCellBlur}
+                    ></div>
+                  {/if}
                 {/each}
               {/each}
             </div>
@@ -316,20 +320,30 @@
 
       <!-- Legend -->
       <div class="calendar-legend" aria-label="Heatmap legend">
-        <span class="platform-dot gh" aria-label="GitHub"></span>
-        <span class="legend-label">GitHub</span>
-        <span class="platform-dot lc" aria-label="LeetCode"></span>
-        <span class="legend-label">LeetCode</span>
-        <span class="platform-dot cf" aria-label="Codeforces"></span>
-        <span class="legend-label">Codeforces</span>
-        <span class="platform-dot overlap" aria-label="Multiple Platforms"></span>
-        <span class="legend-label">Overlap</span>
+        <div class="legend-group">
+          <span class="platform-dot gh" aria-label="GitHub"></span>
+          <span class="legend-label">GitHub</span>
+        </div>
+        <div class="legend-group">
+          <span class="platform-dot lc" aria-label="LeetCode"></span>
+          <span class="legend-label">LeetCode</span>
+        </div>
+        <div class="legend-group">
+          <span class="platform-dot cf" aria-label="Codeforces"></span>
+          <span class="legend-label">Codeforces</span>
+        </div>
+        <div class="legend-group">
+          <span class="platform-dot overlap" aria-label="Multiple Platforms"></span>
+          <span class="legend-label">Overlap</span>
+        </div>
         <span class="legend-sep" aria-hidden="true">·</span>
-        <span class="legend-label">Less</span>
-        {#each [1, 2, 3, 4] as level}
-          <div class="legend-swatch intensity-{level} platform-gh" title="Intensity {level}" aria-hidden="true"></div>
-        {/each}
-        <span class="legend-label">More</span>
+        <div class="legend-group">
+          <span class="legend-label">Less</span>
+          {#each [0, 1, 2, 3, 4] as level}
+            <div class="legend-swatch intensity-{level}" title="Intensity {level}" aria-hidden="true"></div>
+          {/each}
+          <span class="legend-label">More</span>
+        </div>
       </div>
     </div>
   </section>
@@ -481,62 +495,32 @@
   }
 
   /* Empty / Inactive */
-  .intensity-0, .platform-empty { background-color: var(--color-bg); border: 1px solid var(--color-border); }
-  :global(.dark) .intensity-0, :global(.dark) .platform-empty { background-color: #252018; border: 1px solid var(--color-border); }
+  .intensity-0 { background-color: var(--color-bg); border: 1px solid var(--color-border); }
+  :global(.dark) .intensity-0 { background-color: #24201C; border: 1px solid var(--color-border); }
 
-  /* ── Platform colors — muted, desaturated to match cream theme ────────── */
+  /* ── Rich warm brownish palette ─────────────────────────────────────── */
+  .intensity-1 { background-color: #D6C9B3; border: none; }
+  .intensity-2 { background-color: #B28E68; border: none; }
+  .intensity-3 { background-color: #7D4F2E; border: none; }
+  .intensity-4 { background-color: #3B2012; border: none; }
 
-  /* GitHub: muted sage green */
-  .platform-gh.intensity-1 { background-color: #C8D9C9; border: none; }
-  .platform-gh.intensity-2 { background-color: #8DB58F; border: none; }
-  .platform-gh.intensity-3 { background-color: #4E7E51; border: none; }
-  .platform-gh.intensity-4 { background-color: #2A4E2D; border: none; }
-
-  :global(.dark) .platform-gh.intensity-1 { background-color: #1E3320; border: none; }
-  :global(.dark) .platform-gh.intensity-2 { background-color: #2E5C31; border: none; }
-  :global(.dark) .platform-gh.intensity-3 { background-color: #5C9B60; border: none; }
-  :global(.dark) .platform-gh.intensity-4 { background-color: #A8CCA9; border: none; }
-
-  /* LeetCode: muted warm amber / ochre */
-  .platform-lc.intensity-1 { background-color: #E8D9A8; border: none; }
-  .platform-lc.intensity-2 { background-color: #C8A855; border: none; }
-  .platform-lc.intensity-3 { background-color: #9E7820; border: none; }
-  .platform-lc.intensity-4 { background-color: #664E0E; border: none; }
-
-  :global(.dark) .platform-lc.intensity-1 { background-color: #3D2E08; border: none; }
-  :global(.dark) .platform-lc.intensity-2 { background-color: #6B4E10; border: none; }
-  :global(.dark) .platform-lc.intensity-3 { background-color: #B08C3A; border: none; }
-  :global(.dark) .platform-lc.intensity-4 { background-color: #DECA8A; border: none; }
-
-  /* Codeforces: muted brick / terracotta */
-  .platform-cf.intensity-1 { background-color: #E8C4C0; border: none; }
-  .platform-cf.intensity-2 { background-color: #C47E78; border: none; }
-  .platform-cf.intensity-3 { background-color: #985048; border: none; }
-  .platform-cf.intensity-4 { background-color: #622E28; border: none; }
-
-  :global(.dark) .platform-cf.intensity-1 { background-color: #3A1A18; border: none; }
-  :global(.dark) .platform-cf.intensity-2 { background-color: #6B2E28; border: none; }
-  :global(.dark) .platform-cf.intensity-3 { background-color: #A85850; border: none; }
-  :global(.dark) .platform-cf.intensity-4 { background-color: #D9A09A; border: none; }
-
-  /* Overlap: muted dusty mauve / plum */
-  .platform-overlap.intensity-1 { background-color: #DDD0E8; border: none; }
-  .platform-overlap.intensity-2 { background-color: #B898CC; border: none; }
-  .platform-overlap.intensity-3 { background-color: #8A62A8; border: none; }
-  .platform-overlap.intensity-4 { background-color: #523068; border: none; }
-
-  :global(.dark) .platform-overlap.intensity-1 { background-color: #2E1A3A; border: none; }
-  :global(.dark) .platform-overlap.intensity-2 { background-color: #5A3272; border: none; }
-  :global(.dark) .platform-overlap.intensity-3 { background-color: #9568B8; border: none; }
-  :global(.dark) .platform-overlap.intensity-4 { background-color: #D4B8E8; border: none; }
+  :global(.dark) .intensity-1 { background-color: #4D3B2A; border: none; }
+  :global(.dark) .intensity-2 { background-color: #7B5A3C; border: none; }
+  :global(.dark) .intensity-3 { background-color: #B58455; border: none; }
+  :global(.dark) .intensity-4 { background-color: #F0CFAB; border: none; }
 
   /* Legend row */
   .calendar-legend {
     display: flex;
     align-items: center;
-    gap: 6px;
-    margin-top: 16px;
+    gap: 16px; /* Generous spacing */
+    margin-top: 20px;
     flex-wrap: wrap;
+  }
+  .legend-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
   .legend-swatch {
     position: relative;
@@ -557,7 +541,6 @@
     font-size: 10px;
     color: var(--color-muted);
     opacity: 0.4;
-    margin: 0 4px;
   }
   /* Platform dots */
   .platform-dot {
@@ -565,12 +548,15 @@
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    margin-left: 2px;
   }
-  .gh      { background-color: #4E7E51; }
-  .lc      { background-color: #9E7820; }
-  .cf      { background-color: #985048; }
-  .overlap { background-color: #8A62A8; }
+  .gh      { background-color: #3B2012; }
+  .lc      { background-color: #7D4F2E; }
+  .cf      { background-color: #B28E68; }
+  .overlap { background-color: #523068; }
+  :global(.dark) .gh      { background-color: #F0CFAB; }
+  :global(.dark) .lc      { background-color: #B58455; }
+  :global(.dark) .cf      { background-color: #7B5A3C; }
+  :global(.dark) .overlap { background-color: #D4B8E8; }
 
   /* ── Tooltip ─────────────────────────────────────────────────────────── */
   .tooltip-card {

@@ -19,5 +19,5 @@ export const PROGRAMMING_CONFIG = {
   }
 } as const;
 
-/** Cache TTL in seconds (12 hours). Named constant, never hardcoded inline. */
-export const REVALIDATE_SECONDS = 12 * 60 * 60;
+/** Cache TTL in seconds (5 minutes for fresh live stat updates). */
+export const REVALIDATE_SECONDS = 5 * 60;
