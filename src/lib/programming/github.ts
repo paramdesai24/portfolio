@@ -10,7 +10,7 @@
  * raise the rate limit from 60 to 5000 requests/hour.
  */
 
-import { GITHUB_TOKEN } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { PROGRAMMING_CONFIG } from './config';
 import type { FetchResult, GitHubData } from './types';
 
@@ -30,7 +30,8 @@ function toUTCDateString(dateStr: string): string {
 
 export async function fetchGitHubData(): Promise<FetchResult<GitHubData>> {
   try {
-    if (!GITHUB_TOKEN) {
+    const token = env.GITHUB_TOKEN;
+    if (!token) {
       return { data: null, error: 'GITHUB_TOKEN not configured' };
     }
 
@@ -65,7 +66,7 @@ export async function fetchGitHubData(): Promise<FetchResult<GitHubData>> {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Authorization: `Bearer ${token}`,
         'User-Agent': 'portfolio-app'
       },
       body: JSON.stringify({ query, variables: { username, from, to } })
