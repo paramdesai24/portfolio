@@ -495,19 +495,54 @@
   }
 
   /* Empty / Inactive */
-  .intensity-0 { background-color: var(--color-bg); border: 1px solid var(--color-border); }
-  :global(.dark) .intensity-0 { background-color: #24201C; border: 1px solid var(--color-border); }
+  .intensity-0, .platform-empty { background-color: var(--color-bg); border: 1px solid var(--color-border); }
+  :global(.dark) .intensity-0, :global(.dark) .platform-empty { background-color: #24201C; border: 1px solid var(--color-border); }
 
-  /* ── Rich warm brownish palette ─────────────────────────────────────── */
-  .intensity-1 { background-color: #D6C9B3; border: none; }
-  .intensity-2 { background-color: #B28E68; border: none; }
-  .intensity-3 { background-color: #7D4F2E; border: none; }
-  .intensity-4 { background-color: #3B2012; border: none; }
+  /* ── Platform-specific distinct intensity colors ────────────────────── */
 
-  :global(.dark) .intensity-1 { background-color: #4D3B2A; border: none; }
-  :global(.dark) .intensity-2 { background-color: #7B5A3C; border: none; }
-  :global(.dark) .intensity-3 { background-color: #B58455; border: none; }
-  :global(.dark) .intensity-4 { background-color: #F0CFAB; border: none; }
+  /* GitHub (Deep Espresso / Warm Bronze) */
+  .platform-gh.intensity-1 { background-color: #E2D7C5; border: none; }
+  .platform-gh.intensity-2 { background-color: #BC9C7A; border: none; }
+  .platform-gh.intensity-3 { background-color: #865A36; border: none; }
+  .platform-gh.intensity-4 { background-color: #3D2314; border: none; }
+
+  :global(.dark) .platform-gh.intensity-1 { background-color: #3D2314; border: none; }
+  :global(.dark) .platform-gh.intensity-2 { background-color: #865A36; border: none; }
+  :global(.dark) .platform-gh.intensity-3 { background-color: #BC9C7A; border: none; }
+  :global(.dark) .platform-gh.intensity-4 { background-color: #E2D7C5; border: none; }
+
+  /* LeetCode (Warm Amber / Ochre Gold) */
+  .platform-lc.intensity-1 { background-color: #F3E8C4; border: none; }
+  .platform-lc.intensity-2 { background-color: #D9AB44; border: none; }
+  .platform-lc.intensity-3 { background-color: #B47D16; border: none; }
+  .platform-lc.intensity-4 { background-color: #6E4904; border: none; }
+
+  :global(.dark) .platform-lc.intensity-1 { background-color: #4A3203; border: none; }
+  :global(.dark) .platform-lc.intensity-2 { background-color: #8F620D; border: none; }
+  :global(.dark) .platform-lc.intensity-3 { background-color: #D9AB44; border: none; }
+  :global(.dark) .platform-lc.intensity-4 { background-color: #F3E8C4; border: none; }
+
+  /* Codeforces (Crimson / Terracotta Red) */
+  .platform-cf.intensity-1 { background-color: #F4CECA; border: none; }
+  .platform-cf.intensity-2 { background-color: #D47F75; border: none; }
+  .platform-cf.intensity-3 { background-color: #A33E33; border: none; }
+  .platform-cf.intensity-4 { background-color: #5C1B14; border: none; }
+
+  :global(.dark) .platform-cf.intensity-1 { background-color: #3D120D; border: none; }
+  :global(.dark) .platform-cf.intensity-2 { background-color: #7D2D24; border: none; }
+  :global(.dark) .platform-cf.intensity-3 { background-color: #D47F75; border: none; }
+  :global(.dark) .platform-cf.intensity-4 { background-color: #F4CECA; border: none; }
+
+  /* Overlap (2 or 3 active platforms — Vibrant Violet / Royal Purple) */
+  .platform-overlap.intensity-1 { background-color: #E9D5FF; border: none; }
+  .platform-overlap.intensity-2 { background-color: #C084FC; border: none; }
+  .platform-overlap.intensity-3 { background-color: #9333EA; border: none; }
+  .platform-overlap.intensity-4 { background-color: #581C87; border: none; }
+
+  :global(.dark) .platform-overlap.intensity-1 { background-color: #581C87; border: none; }
+  :global(.dark) .platform-overlap.intensity-2 { background-color: #7E22CE; border: none; }
+  :global(.dark) .platform-overlap.intensity-3 { background-color: #A855F7; border: none; }
+  :global(.dark) .platform-overlap.intensity-4 { background-color: #E9D5FF; border: none; }
 
   /* Legend row */
   .calendar-legend {
@@ -549,14 +584,14 @@
     height: 9px;
     border-radius: 50%;
   }
-  .gh      { background-color: #3B2012; }
-  .lc      { background-color: #7D4F2E; }
-  .cf      { background-color: #B28E68; }
-  .overlap { background-color: #523068; }
-  :global(.dark) .gh      { background-color: #F0CFAB; }
-  :global(.dark) .lc      { background-color: #B58455; }
-  :global(.dark) .cf      { background-color: #7B5A3C; }
-  :global(.dark) .overlap { background-color: #D4B8E8; }
+  .gh      { background-color: #3D2314; }
+  .lc      { background-color: #B47D16; }
+  .cf      { background-color: #A33E33; }
+  .overlap { background-color: #9333EA; }
+  :global(.dark) .gh      { background-color: #E2D7C5; }
+  :global(.dark) .lc      { background-color: #D9AB44; }
+  :global(.dark) .cf      { background-color: #D47F75; }
+  :global(.dark) .overlap { background-color: #A855F7; }
 
   /* ── Tooltip ─────────────────────────────────────────────────────────── */
   .tooltip-card {

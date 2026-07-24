@@ -2,7 +2,7 @@
   import { onMount, tick } from 'svelte';
   import { browser } from '$app/environment';
   import { currentPageTitle } from '$lib/stores/workspace';
-  import { FileText, Share2, Star } from '@lucide/svelte';
+  import { FileText, Share2, Star, Mic } from '@lucide/svelte';
   import { theme } from '$lib/stores/theme';
 
   // Svelte 5 props
@@ -117,9 +117,9 @@
 
     <!-- Special Note -->
     {#if metadata.note}
-      <div class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-sans border border-[--color-achievement-border] bg-[--color-achievement-bg] text-[--color-achievement-text] font-semibold mb-4">
-        <Star size={10} class="fill-[--color-achievement-text] stroke-none" />
-        {metadata.note}
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-sans font-medium bg-[--color-accent-dim] text-[--color-accent] border border-[--color-accent]/20 shadow-2xs mb-4">
+        <Mic size={12} class="shrink-0 text-[--color-accent]" />
+        <span>{metadata.note}</span>
       </div>
     {/if}
 

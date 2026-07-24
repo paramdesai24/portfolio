@@ -3,7 +3,7 @@
   import { fade } from 'svelte/transition';
   import { currentPageTitle } from '$lib/stores/workspace';
   import type { Publication } from '$lib/types';
-  import { FileText, Star, Search } from '@lucide/svelte';
+  import { FileText, Star, Search, Mic } from '@lucide/svelte';
 
   onMount(() => {
     currentPageTitle.set('Publications');
@@ -184,11 +184,14 @@
                 </div>
               {/if}
 
-              <!-- Italic Note -->
+              <!-- Highlighted Presentation Note Badge -->
               {#if paper.note}
-                <p class="font-sans italic text-[11px] text-[--color-accent] mt-2.5">
-                  * {paper.note}
-                </p>
+                <div class="mt-3 flex items-center gap-2 select-none">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-sans font-medium bg-[--color-accent-dim] text-[--color-accent] border border-[--color-accent]/20 shadow-2xs">
+                    <Mic size={12} class="shrink-0 text-[--color-accent]" />
+                    <span>{paper.note}</span>
+                  </span>
+                </div>
               {/if}
 
               <!-- Metadata (Location, DOI) -->
