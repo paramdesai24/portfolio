@@ -36,7 +36,6 @@ export interface GitHubData {
   repoCount: number;
 }
 
-/** LeetCode-specific stats */
 export interface LeetCodeData {
   /** Per-day accepted submission counts */
   calendar: Record<string, number>;
@@ -48,6 +47,10 @@ export interface LeetCodeData {
   maxStreak: number;
   /** Current contest rating */
   contestRating: number;
+  /** Contest percentile rank (e.g. 15.4 for Top 15.4%) */
+  contestTopPercentage?: number;
+  /** Contest global ranking number */
+  contestGlobalRanking?: number;
 }
 
 /** Codeforces-specific stats */

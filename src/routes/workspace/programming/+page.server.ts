@@ -111,17 +111,30 @@ async function loadProgrammingData(): Promise<ProgrammingPageData> {
     };
   })();
 
-  // 4. LeetCode Global Rank
+  // 4. LeetCode Contest Global Rank (Percentile)
   const card4: StatCard = (() => {
     if (!lc.data) {
-      return { id: 'leetcode-rank', label: 'LeetCode Global Rank', value: '—', subLabel: 'Current ranking', error: lc.error };
+      return { id: 'leetcode-rank', label: 'LeetCode Contest Rank', value: '—', subLabel: 'Contest percentile rank', error: lc.error };
     }
-    const rank = lc.data.globalRank;
+    const topPct = lc.data.contestTopPercentage;
+    const contestRank = lc.data.contestGlobalRanking;
+
+    let valueStr = '—';
+    if (topPct && topPct > 0) {
+      valueStr = `Top ${topPct % 1 === 0 ? topPct : topPct.toFixed(1)}%`;
+    } else if (lc.data.globalRank > 0) {
+      valueStr = `#${lc.data.globalRank.toLocaleString()}`;
+    }
+
+    const subLabelStr = contestRank && contestRank > 0
+      ? `#${contestRank.toLocaleString()} in global contests`
+      : 'Contest percentile rank';
+
     return {
       id: 'leetcode-rank',
-      label: 'LeetCode Global Rank',
-      value: rank > 0 ? `#${rank.toLocaleString()}` : '—',
-      subLabel: 'Current global ranking',
+      label: 'LeetCode Contest Rank',
+      value: valueStr,
+      subLabel: subLabelStr,
       error: null
     };
   })();
@@ -129,13 +142,13 @@ async function loadProgrammingData(): Promise<ProgrammingPageData> {
   // 5. LeetCode Maximum Streak
   const card5: StatCard = (() => {
     if (!lc.data) {
-      return { id: 'leetcode-streak', label: 'Max Solving Streak', value: '—', subLabel: 'Consecutive days', error: lc.error };
+      return { id: 'leetcode-streak', label: 'Max Solving Streak', value: '—', subLabel: 'Consecutive problem solving days', error: lc.error };
     }
     return {
       id: 'leetcode-streak',
       label: 'Max Solving Streak',
       value: `${lc.data.maxStreak}d`,
-      subLabel: 'Consecutive days with ≥1 accepted',
+      subLabel: 'Consecutive problem solving days',
       error: null
     };
   })();

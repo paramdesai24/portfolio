@@ -58,6 +58,9 @@ export async function fetchLeetCodeData(): Promise<FetchResult<LeetCodeData>> {
         }
         userContestRanking(username: $username) {
           rating
+          globalRanking
+          totalParticipants
+          topPercentage
         }
       }
     `;
@@ -95,8 +98,6 @@ export async function fetchLeetCodeData(): Promise<FetchResult<LeetCodeData>> {
     const globalRank: number = matchedUser.profile?.ranking ?? 0;
 
     // submissionCalendar is a JSON string: { "<unix_ts>": <submission_count> }
-    // This is total daily submissions; we use it as a proxy for activity
-    // (accepted-only calendar is not separately exposed in public API)
     const calendarRaw: string = matchedUser.userCalendar?.submissionCalendar ?? '{}';
     let calendarParsed: Record<string, number> = {};
     try {
@@ -119,13 +120,22 @@ export async function fetchLeetCodeData(): Promise<FetchResult<LeetCodeData>> {
     // maxStreak from userCalendar (LeetCode computes this)
     const maxStreak: number = matchedUser.userCalendar?.streak ?? 0;
 
-    // Contest rating from separate field
-    const contestRating: number = Math.round(
-      json?.data?.userContestRanking?.rating ?? 0
-    );
+    // Contest info
+    const contestRankingData = json?.data?.userContestRanking;
+    const contestRating: number = Math.round(contestRankingData?.rating ?? 0);
+    const contestGlobalRanking: number = contestRankingData?.globalRanking ?? 0;
+    const contestTopPercentage: number = contestRankingData?.topPercentage ?? 0;
 
     return {
-      data: { calendar, totalSolved, globalRank, maxStreak, contestRating },
+      data: {
+        calendar,
+        totalSolved,
+        globalRank,
+        maxStreak,
+        contestRating,
+        contestTopPercentage: contestTopPercentage > 0 ? contestTopPercentage : undefined,
+        contestGlobalRanking: contestGlobalRanking > 0 ? contestGlobalRanking : undefined
+      },
       error: null
     };
   } catch (err) {
