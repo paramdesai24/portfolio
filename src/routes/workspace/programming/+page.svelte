@@ -270,7 +270,7 @@
   <section class="anim-item delay-200 mb-10" aria-label="Activity heatmap">
     <div class="flex items-center justify-between mb-4">
       <h2 class="font-mono text-[10px] uppercase tracking-widest text-[--color-muted] font-bold">
-        Activity · Jan 2026 → Today · UTC
+        Activity · Jan 2026 → Today
       </h2>
       {#if lastUpdated}
         <a
@@ -279,7 +279,7 @@
           title="Click to force-refresh live stats from profiles"
         >
           <RefreshCw size={9} />
-          {formatLastUpdated(lastUpdated)}
+          Last Updated: {formatLastUpdated(lastUpdated)}
         </a>
       {/if}
     </div>
