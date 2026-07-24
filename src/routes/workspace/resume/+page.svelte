@@ -57,6 +57,11 @@
   ];
 </script>
 
+<svelte:head>
+  <title>Resume | Param Desai</title>
+  <meta name="description" content="Param Desai's official resume, technical skills, publications, and professional experience." />
+</svelte:head>
+
 <div class="resume-page flex flex-col items-center w-full min-h-screen py-4 select-text">
   <div class="w-full max-w-[760px] bg-[--color-surface] border border-[--color-border] rounded-xl shadow-card p-8 md:p-12 print-container">
     

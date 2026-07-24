@@ -166,6 +166,10 @@
   }
 </script>
 
+<svelte:head>
+  <title>{metadata?.title ? `${metadata.title} | Param Desai` : 'Project | Param Desai'}</title>
+</svelte:head>
+
 <div class="flex flex-col w-full min-h-screen">
   <!-- Back Link -->
   <a 

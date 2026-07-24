@@ -68,17 +68,21 @@
     };
   });
 
-  // Share link helper
-  function handleShare() {
+  // Copy link to clipboard
+  function sharePage() {
     if (browser) {
       navigator.clipboard.writeText(window.location.href);
-      shareMessage = 'Citation link copied!';
+      shareMessage = 'Link copied to clipboard!';
       setTimeout(() => {
         shareMessage = '';
-      }, 2000);
+      }, 2500);
     }
   }
 </script>
+
+<svelte:head>
+  <title>{metadata?.title ? `${metadata.title} | Param Desai` : 'Publication | Param Desai'}</title>
+</svelte:head>
 
 <div class="flex flex-col w-full min-h-screen">
   <!-- Back Link -->

@@ -27,6 +27,12 @@
     }, 200);
     return () => clearTimeout(timer);
   });
+</script>
+
+<svelte:head>
+  <title>Publications | Param Desai</title>
+  <meta name="description" content="Academic publications, research papers, and conference proceedings by Param Desai." />
+</svelte:head>
 
 
 

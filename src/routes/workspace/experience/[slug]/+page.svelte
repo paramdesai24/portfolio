@@ -17,6 +17,10 @@
   });
 </script>
 
+<svelte:head>
+  <title>{metadata?.role ? `${metadata.role} | Param Desai` : 'Experience | Param Desai'}</title>
+</svelte:head>
+
 <div class="flex flex-col w-full min-h-screen">
   <!-- Back Link -->
   <a 

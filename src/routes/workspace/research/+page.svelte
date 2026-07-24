@@ -61,7 +61,7 @@
 </script>
 
 <svelte:head>
-  <title>Research | Param Desai</title>
+  <title>Research Overview | Param Desai</title>
   <meta name="description" content="Explore Param Desai's active research fields, papers, and current research focus." />
 </svelte:head>
 

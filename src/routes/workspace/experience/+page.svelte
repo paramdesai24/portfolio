@@ -15,6 +15,11 @@
   const experiences = $derived(data.experiences || []);
 </script>
 
+<svelte:head>
+  <title>Experience | Param Desai</title>
+  <meta name="description" content="Param Desai's work experience, academic leadership, and AI research roles." />
+</svelte:head>
+
 <div class="flex flex-col w-full min-h-screen">
   <!-- Page Header -->
   <div class="mb-8">

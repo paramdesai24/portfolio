@@ -45,6 +45,11 @@
   );
 </script>
 
+<svelte:head>
+  <title>Projects | Param Desai</title>
+  <meta name="description" content="AI systems, probabilistic modeling, and climate AI projects built by Param Desai." />
+</svelte:head>
+
 <div class="flex flex-col w-full min-h-screen">
   <!-- Page Header -->
   <div class="mb-8">

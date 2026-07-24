@@ -21,6 +21,12 @@
     currentPageTitle.set('Blog');
   });
 
+  function formatDate(dateStr: string | undefined): string {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
   // Extract h2 headings on content render for scroll spy
   $effect(() => {
     if (contentContainer && data.content !== undefined) {
@@ -38,25 +44,37 @@
     }
   });
 
-  // Track active section on scroll
+  // Track active section highlight on scroll
   $effect(() => {
-    if (sections.length === 0 || !contentContainer || !browser) return;
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) activeSectionId = entry.target.id;
-      });
-    }, { root: null, rootMargin: '-15% 0px -55% 0px', threshold: 0 });
+    if (!browser || sections.length === 0) return;
 
-    const headings = contentContainer.querySelectorAll('h2');
-    headings.forEach((h) => observer.observe(h));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            activeSectionId = entry.target.id;
+          }
+        });
+      },
+      { rootMargin: '-80px 0px -60% 0px', threshold: 0.1 }
+    );
+
+    sections.forEach((sec) => {
+      const el = document.getElementById(sec.id);
+      if (el) observer.observe(el);
+    });
+
     return () => observer.disconnect();
   });
 
+  // Share link helper
   function handleShare() {
     if (browser) {
       navigator.clipboard.writeText(window.location.href);
-      shareMessage = 'Link copied!';
-      setTimeout(() => { shareMessage = ''; }, 2000);
+      shareMessage = 'Citation link copied!';
+      setTimeout(() => {
+        shareMessage = '';
+      }, 2000);
     }
   }
 
@@ -65,13 +83,11 @@
     'Explainer': 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
     'Narrative': 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
   };
-
-  function formatDate(dateStr: string | undefined): string {
-    if (!dateStr) return '';
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-  }
 </script>
+
+<svelte:head>
+  <title>{metadata?.title ? `${metadata.title} | Param Desai` : 'Blog | Param Desai'}</title>
+</svelte:head>
 
 <div class="flex flex-col w-full min-h-screen">
   <!-- Back Link -->
