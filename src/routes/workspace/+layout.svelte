@@ -18,7 +18,8 @@
     ClipboardList,
     Sun,
     Moon,
-    Pen
+    Pen,
+    Code2
   } from '@lucide/svelte';
 
   // Svelte 5 snippet props
@@ -64,7 +65,8 @@
       title: 'About Me',
       items: [
         { name: 'Blog', href: '/workspace/blog', icon: Pen },
-        { name: 'Resume', href: '/workspace/resume', icon: FileText }
+        { name: 'Resume', href: '/workspace/resume', icon: FileText },
+        { name: 'Programming', href: '/workspace/programming', icon: Code2 }
       ]
     }
   ];

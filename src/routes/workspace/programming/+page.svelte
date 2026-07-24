@@ -3,7 +3,7 @@
   import { currentPageTitle } from '$lib/stores/workspace';
   import { PROGRAMMING_CONFIG } from '$lib/programming/config';
   import type { CalendarDay, StatCard } from '$lib/programming/types';
-  import { Github, ExternalLink, AlertCircle, RefreshCw } from '@lucide/svelte';
+  import { ExternalLink, AlertCircle, RefreshCw } from '@lucide/svelte';
 
   let { data } = $props();
 
