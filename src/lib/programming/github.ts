@@ -1,13 +1,10 @@
 /**
  * GitHub data adapter — server-side only.
  *
- * Uses the GitHub GraphQL API v4 with GITHUB_TOKEN (stored in .env, never
- * shipped to client). Fetches:
- *   - Contribution calendar (Jan 1 2026 → today UTC)
- *   - Public repository count
+ * Uses GitHub GraphQL API v4 with GITHUB_TOKEN if available, and seamlessly
+ * falls back to fetching live HTML directly from github.com/users/<username>/contributions.
  *
- * GITHUB_TOKEN requires no scopes for public data — it is used only to
- * raise the rate limit from 60 to 5000 requests/hour.
+ * This ensures GitHub contribution activity updates LIVE in real-time on every load.
  */
 
 import { env } from '$env/dynamic/private';
@@ -28,16 +25,26 @@ function toUTCDateString(dateStr: string): string {
   return `${y}-${m}-${day}`;
 }
 
-/** Fallback fetch using public REST APIs when GITHUB_TOKEN is not available or rate limited */
-async function fetchGitHubDataPublic(username: string): Promise<FetchResult<GitHubData>> {
+/**
+ * Direct fetch from official github.com/users/<username>/contributions HTML page.
+ * Bypasses 3rd party APIs and reflects live commits instantly without token requirement.
+ */
+async function fetchGitHubDataDirect(username: string): Promise<FetchResult<GitHubData>> {
   try {
     const [userRes, contribRes] = await Promise.all([
       fetch(`https://api.github.com/users/${username}`, {
-        headers: { 'User-Agent': 'portfolio-app', 'Cache-Control': 'no-cache, no-store' },
+        headers: {
+          'User-Agent': 'portfolio-app',
+          'Cache-Control': 'no-cache, no-store, max-age=0'
+        },
         cache: 'no-store'
       }),
-      fetch(`https://github-contributions-api.jogruber.de/v4/${username}?y=2026`, {
-        headers: { 'User-Agent': 'portfolio-app', 'Cache-Control': 'no-cache, no-store' },
+      fetch(`https://github.com/users/${username}/contributions`, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml',
+          'Cache-Control': 'no-cache, no-store, max-age=0'
+        },
         cache: 'no-store'
       })
     ]);
@@ -52,15 +59,40 @@ async function fetchGitHubDataPublic(username: string): Promise<FetchResult<GitH
     let contributions2026 = 0;
 
     if (contribRes.ok) {
-      const contribData = await contribRes.json();
-      const contributionsList: Array<{ date: string; count: number }> = contribData.contributions ?? [];
-      contributions2026 = contribData.total?.['2026'] ?? 0;
+      const html = await contribRes.text();
 
-      for (const item of contributionsList) {
-        const dateStr = item.date;
-        const dayDate = new Date(dateStr + 'T00:00:00Z');
-        if (dayDate >= START_DATE && item.count > 0) {
-          calendar[dateStr] = item.count;
+      // GitHub HTML contribution cells pattern:
+      // Pattern A: <tool-tip ...>N contribution(s) on Month DD, YYYY</tool-tip>
+      // Pattern B: <td ... data-date="YYYY-MM-DD" ...> ... N contribution(s) ...
+      const toolTipRegex = /(\d+)\s+contribution[s]?\s+on\s+([A-Za-z]+\s+\d+,\s+\d{4})/gi;
+      let tipMatch: RegExpExecArray | null;
+
+      while ((tipMatch = toolTipRegex.exec(html)) !== null) {
+        const count = parseInt(tipMatch[1], 10);
+        const dateParsed = new Date(tipMatch[2] + ' UTC');
+
+        if (!isNaN(dateParsed.getTime()) && dateParsed >= START_DATE && count > 0) {
+          const dateStr = toUTCDateString(dateParsed.toISOString());
+          calendar[dateStr] = (calendar[dateStr] ?? 0) + count;
+          contributions2026 += count;
+        }
+      }
+
+      // Fallback regex matching td data-date & data-level / tooltips if toolTipRegex yielded no results
+      if (Object.keys(calendar).length === 0) {
+        const cellRegex = /data-date="(\d{4}-\d{2}-\d{2})"[^>]*>([\s\S]*?)<\/td>/gi;
+        let cellMatch: RegExpExecArray | null;
+        while ((cellMatch = cellRegex.exec(html)) !== null) {
+          const dateStr = cellMatch[1];
+          const inner = cellMatch[2];
+          const cntMatch = inner.match(/(\d+)\s+contribution/i);
+          const count = cntMatch ? parseInt(cntMatch[1], 10) : 0;
+
+          const dayDate = new Date(dateStr + 'T00:00:00Z');
+          if (dayDate >= START_DATE && count > 0) {
+            calendar[dateStr] = count;
+            contributions2026 += count;
+          }
         }
       }
     }
@@ -71,7 +103,7 @@ async function fetchGitHubDataPublic(username: string): Promise<FetchResult<GitH
     };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    return { data: null, error: `Public GitHub fetch failed: ${msg}` };
+    return { data: null, error: `Direct GitHub fetch failed: ${msg}` };
   }
 }
 
@@ -80,8 +112,7 @@ export async function fetchGitHubData(): Promise<FetchResult<GitHubData>> {
   const token = env.GITHUB_TOKEN || (typeof process !== 'undefined' ? process.env.GITHUB_TOKEN : undefined);
 
   if (!token) {
-    // Seamless fallback to public endpoints so stats update live without token dependency
-    return fetchGitHubDataPublic(username);
+    return fetchGitHubDataDirect(username);
   }
 
   try {
@@ -116,19 +147,19 @@ export async function fetchGitHubData(): Promise<FetchResult<GitHubData>> {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
         'User-Agent': 'portfolio-app',
-        'Cache-Control': 'no-cache, no-store'
+        'Cache-Control': 'no-cache, no-store, max-age=0'
       },
       cache: 'no-store',
       body: JSON.stringify({ query, variables: { username, from, to } })
     });
 
     if (!res.ok) {
-      return fetchGitHubDataPublic(username);
+      return fetchGitHubDataDirect(username);
     }
 
     const json = await res.json();
     if (json.errors || !json?.data?.user) {
-      return fetchGitHubDataPublic(username);
+      return fetchGitHubDataDirect(username);
     }
 
     const user = json.data.user;
@@ -153,6 +184,6 @@ export async function fetchGitHubData(): Promise<FetchResult<GitHubData>> {
       error: null
     };
   } catch {
-    return fetchGitHubDataPublic(username);
+    return fetchGitHubDataDirect(username);
   }
 }
