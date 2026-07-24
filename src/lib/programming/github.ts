@@ -30,7 +30,7 @@ function toUTCDateString(dateStr: string): string {
 
 export async function fetchGitHubData(): Promise<FetchResult<GitHubData>> {
   try {
-    const token = env.GITHUB_TOKEN;
+    const token = env.GITHUB_TOKEN || (typeof process !== 'undefined' ? process.env.GITHUB_TOKEN : undefined);
     if (!token) {
       return { data: null, error: 'GITHUB_TOKEN not configured' };
     }

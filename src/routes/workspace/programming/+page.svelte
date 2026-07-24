@@ -324,9 +324,9 @@
       <div class="calendar-legend" aria-label="Heatmap legend">
         <span class="legend-label">Less</span>
         {#each [0, 1, 2, 3, 4] as level}
-          <div class="cal-cell intensity-{level}" title="Intensity {level}" aria-hidden="true"></div>
+          <div class="legend-swatch intensity-{level}" title="Intensity {level}" aria-hidden="true"></div>
         {/each}
-        <span class="legend-label">More</span>
+        <span class="legend-label mr-2">More</span>
         <span class="legend-sep" aria-hidden="true">·</span>
         <!-- Platform dots -->
         <span class="platform-dot gh" aria-label="GitHub"></span>
@@ -512,20 +512,33 @@
     z-index: 2;
   }
 
-  /* Intensity levels — light mode (beige palette) */
+  /* Intensity levels — Rich warm brownish palette */
   .intensity-0 { background-color: var(--color-bg); border: 1px solid var(--color-border); }
-  .intensity-1 { background-color: color-mix(in srgb, var(--color-accent) 18%, var(--color-bg)); border: none; }
-  .intensity-2 { background-color: color-mix(in srgb, var(--color-accent) 38%, var(--color-bg)); border: none; }
-  .intensity-3 { background-color: color-mix(in srgb, var(--color-accent) 62%, var(--color-bg)); border: none; }
-  .intensity-4 { background-color: color-mix(in srgb, var(--color-accent) 88%, var(--color-bg)); border: none; }
+  .intensity-1 { background-color: #D6C9B3; border: none; }
+  .intensity-2 { background-color: #B28E68; border: none; }
+  .intensity-3 { background-color: #7D4F2E; border: none; }
+  .intensity-4 { background-color: #3B2012; border: none; }
+
+  :global(.dark) .intensity-0 { background-color: #24201C; border: 1px solid var(--color-border); }
+  :global(.dark) .intensity-1 { background-color: #4D3B2A; border: none; }
+  :global(.dark) .intensity-2 { background-color: #7B5A3C; border: none; }
+  :global(.dark) .intensity-3 { background-color: #B58455; border: none; }
+  :global(.dark) .intensity-4 { background-color: #F0CFAB; border: none; }
 
   /* Legend row */
   .calendar-legend {
     display: flex;
     align-items: center;
-    gap: 3px;
-    margin-top: 12px;
+    gap: 4px;
+    margin-top: 14px;
     flex-wrap: wrap;
+  }
+  .legend-swatch {
+    position: relative;
+    width: 11px;
+    height: 11px;
+    border-radius: 2px;
+    flex-shrink: 0;
   }
   .legend-label {
     font-family: var(--font-mono);
@@ -550,9 +563,12 @@
     border: 1px solid var(--color-border);
     margin-left: 4px;
   }
-  .gh  { background-color: color-mix(in srgb, var(--color-accent) 60%, var(--color-bg)); }
-  .lc  { background-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-bg)); }
-  .cf  { background-color: color-mix(in srgb, var(--color-accent) 25%, var(--color-bg)); }
+  .gh  { background-color: #3B2012; }
+  .lc  { background-color: #7D4F2E; }
+  .cf  { background-color: #B28E68; }
+  :global(.dark) .gh { background-color: #F0CFAB; }
+  :global(.dark) .lc { background-color: #B58455; }
+  :global(.dark) .cf { background-color: #7B5A3C; }
 
   /* ── Tooltip ─────────────────────────────────────────────────────────── */
   .tooltip-card {
