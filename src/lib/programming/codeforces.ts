@@ -43,7 +43,11 @@ export async function fetchCodeforcesData(): Promise<FetchResult<CodeforcesData>
 
     // Fetch all submissions for the user (public endpoint, no auth)
     const res = await fetch(`${CF_BASE}/user.status?handle=${handle}&from=1&count=10000`, {
-      headers: { 'User-Agent': 'portfolio-app' }
+      headers: {
+        'User-Agent': 'portfolio-app',
+        'Cache-Control': 'no-cache, no-store'
+      },
+      cache: 'no-store'
     });
 
     if (!res.ok) {

@@ -70,8 +70,10 @@ export async function fetchLeetCodeData(): Promise<FetchResult<LeetCodeData>> {
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'portfolio-app',
+        'Cache-Control': 'no-cache, no-store',
         Referer: 'https://leetcode.com'
       },
+      cache: 'no-store',
       body: JSON.stringify({ query, variables: { username } })
     });
 

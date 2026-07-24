@@ -28,19 +28,67 @@ function toUTCDateString(dateStr: string): string {
   return `${y}-${m}-${day}`;
 }
 
-export async function fetchGitHubData(): Promise<FetchResult<GitHubData>> {
+/** Fallback fetch using public REST APIs when GITHUB_TOKEN is not available or rate limited */
+async function fetchGitHubDataPublic(username: string): Promise<FetchResult<GitHubData>> {
   try {
-    const token = env.GITHUB_TOKEN || (typeof process !== 'undefined' ? process.env.GITHUB_TOKEN : undefined);
-    if (!token) {
-      return { data: null, error: 'GITHUB_TOKEN not configured' };
+    const [userRes, contribRes] = await Promise.all([
+      fetch(`https://api.github.com/users/${username}`, {
+        headers: { 'User-Agent': 'portfolio-app', 'Cache-Control': 'no-cache, no-store' },
+        cache: 'no-store'
+      }),
+      fetch(`https://github-contributions-api.jogruber.de/v4/${username}?y=2026`, {
+        headers: { 'User-Agent': 'portfolio-app', 'Cache-Control': 'no-cache, no-store' },
+        cache: 'no-store'
+      })
+    ]);
+
+    let repoCount = 0;
+    if (userRes.ok) {
+      const userData = await userRes.json();
+      repoCount = userData.public_repos ?? 0;
     }
 
+    const calendar: Record<string, number> = {};
+    let contributions2026 = 0;
+
+    if (contribRes.ok) {
+      const contribData = await contribRes.json();
+      const contributionsList: Array<{ date: string; count: number }> = contribData.contributions ?? [];
+      contributions2026 = contribData.total?.['2026'] ?? 0;
+
+      for (const item of contributionsList) {
+        const dateStr = item.date;
+        const dayDate = new Date(dateStr + 'T00:00:00Z');
+        if (dayDate >= START_DATE && item.count > 0) {
+          calendar[dateStr] = item.count;
+        }
+      }
+    }
+
+    return {
+      data: { calendar, contributions2026, repoCount },
+      error: null
+    };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { data: null, error: `Public GitHub fetch failed: ${msg}` };
+  }
+}
+
+export async function fetchGitHubData(): Promise<FetchResult<GitHubData>> {
+  const username = PROGRAMMING_CONFIG.github;
+  const token = env.GITHUB_TOKEN || (typeof process !== 'undefined' ? process.env.GITHUB_TOKEN : undefined);
+
+  if (!token) {
+    // Seamless fallback to public endpoints so stats update live without token dependency
+    return fetchGitHubDataPublic(username);
+  }
+
+  try {
     const today = new Date();
     const from = START_DATE.toISOString();
     const to = today.toISOString();
-    const username = PROGRAMMING_CONFIG.github;
 
-    // GitHub GraphQL: contributionsCollection gives daily counts + repo count
     const query = `
       query($username: String!, $from: DateTime!, $to: DateTime!) {
         user(login: $username) {
@@ -67,31 +115,27 @@ export async function fetchGitHubData(): Promise<FetchResult<GitHubData>> {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
-        'User-Agent': 'portfolio-app'
+        'User-Agent': 'portfolio-app',
+        'Cache-Control': 'no-cache, no-store'
       },
+      cache: 'no-store',
       body: JSON.stringify({ query, variables: { username, from, to } })
     });
 
     if (!res.ok) {
-      return { data: null, error: `GitHub API error: ${res.status} ${res.statusText}` };
+      return fetchGitHubDataPublic(username);
     }
 
     const json = await res.json();
-
-    if (json.errors) {
-      return { data: null, error: `GitHub GraphQL error: ${json.errors[0]?.message ?? 'unknown'}` };
+    if (json.errors || !json?.data?.user) {
+      return fetchGitHubDataPublic(username);
     }
 
-    const user = json?.data?.user;
-    if (!user) {
-      return { data: null, error: 'GitHub user not found' };
-    }
-
+    const user = json.data.user;
     const repoCount: number = user.repositories?.totalCount ?? 0;
     const calendarData = user.contributionsCollection?.contributionCalendar;
     const contributions2026: number = calendarData?.totalContributions ?? 0;
 
-    // Build per-day map: YYYY-MM-DD → count (UTC dates, only >= START_DATE)
     const calendar: Record<string, number> = {};
     const weeks = calendarData?.weeks ?? [];
     for (const week of weeks) {
@@ -108,8 +152,7 @@ export async function fetchGitHubData(): Promise<FetchResult<GitHubData>> {
       data: { calendar, contributions2026, repoCount },
       error: null
     };
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    return { data: null, error: `GitHub fetch failed: ${msg}` };
+  } catch {
+    return fetchGitHubDataPublic(username);
   }
 }
