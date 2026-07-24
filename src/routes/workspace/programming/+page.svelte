@@ -34,51 +34,49 @@
     return 4;
   }
 
-  /** Groups calendar days into weeks (columns of 7) for SVG grid */
-  function groupByWeeks(days: CalendarDay[]): CalendarDay[][] {
-    if (days.length === 0) return [];
-    // Find day-of-week for the first day (0=Sun … 6=Sat)
-    const firstDate = new Date(days[0].date + 'T00:00:00Z');
-    const firstDow = firstDate.getUTCDay(); // 0=Sun
-    // Pad with nulls so grid starts on Sunday column
-    const padded: (CalendarDay | null)[] = [
-      ...Array(firstDow).fill(null),
-      ...days
-    ];
-    const weeks: CalendarDay[][] = [];
-    for (let i = 0; i < padded.length; i += 7) {
-      const week = padded.slice(i, i + 7);
-      // Fill trailing days
-      while (week.length < 7) week.push(null as unknown as CalendarDay);
-      weeks.push(week as CalendarDay[]);
-    }
-    return weeks;
+  interface MonthBlock {
+    label: string;
+    weeks: (CalendarDay | null)[][];
   }
 
-  const weeks = $derived(groupByWeeks(calendar));
+  /** Groups calendar days by month into separate visual month blocks (like LeetCode) */
+  function groupByMonths(days: CalendarDay[]): MonthBlock[] {
+    if (!days || days.length === 0) return [];
 
-  /** Month labels: first week-index where that month first appears */
-  const monthLabels = $derived(
-    (() => {
-      const labels: { label: string; weekIndex: number }[] = [];
-      let lastMonth = -1;
-      weeks.forEach((week, wi) => {
-        const firstReal = week.find((d) => d?.date);
-        if (firstReal) {
-          const m = new Date(firstReal.date + 'T00:00:00Z').getUTCMonth();
-          if (m !== lastMonth) {
-            lastMonth = m;
-            const d = new Date(firstReal.date + 'T00:00:00Z');
-            labels.push({
-              label: d.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' }),
-              weekIndex: wi
-            });
-          }
-        }
-      });
-      return labels;
-    })()
-  );
+    const byMonth: Record<string, CalendarDay[]> = {};
+    for (const day of days) {
+      if (!day || !day.date) continue;
+      const monthKey = day.date.slice(0, 7); // e.g. "2026-01"
+      if (!byMonth[monthKey]) byMonth[monthKey] = [];
+      byMonth[monthKey].push(day);
+    }
+
+    const blocks: MonthBlock[] = [];
+    for (const monthDays of Object.values(byMonth)) {
+      if (monthDays.length === 0) continue;
+      const firstDate = new Date(monthDays[0].date + 'T00:00:00Z');
+      const label = firstDate.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' });
+      const firstDow = firstDate.getUTCDay();
+
+      const padded: (CalendarDay | null)[] = [
+        ...Array(firstDow).fill(null),
+        ...monthDays
+      ];
+
+      const weeks: (CalendarDay | null)[][] = [];
+      for (let i = 0; i < padded.length; i += 7) {
+        const week = padded.slice(i, i + 7);
+        while (week.length < 7) week.push(null);
+        weeks.push(week);
+      }
+
+      blocks.push({ label, weeks });
+    }
+
+    return blocks;
+  }
+
+  const monthBlocks = $derived(groupByMonths(calendar));
 
   /** Returns platform category for styling: 'empty' | 'gh' | 'lc' | 'cf' | 'overlap' */
   function getPlatformCategory(day: CalendarDay | null): 'empty' | 'gh' | 'lc' | 'cf' | 'overlap' {
@@ -91,13 +89,9 @@
     return 'empty';
   }
 
-  const CELL = 16;   // cell size px (increased from 13)
-  const GAP = 4;     // gap px (increased from 3)
+  const CELL = 16;   // cell size px
+  const GAP = 4;     // gap px
   const STEP = CELL + GAP;
-  const DOW_LABELS = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
-
-  const svgWidth = $derived(weeks.length * STEP);
-  const svgHeight = 7 * STEP;
 
   /** Format date for display */
   function formatDate(dateStr: string): string {
@@ -289,47 +283,35 @@
     <!-- Scroll wrapper for mobile -->
     <div class="calendar-scroll-wrapper" role="region" aria-label="Contribution calendar" tabindex="-1">
       <div class="calendar-inner">
-
-        <!-- Day-of-week labels (left column) -->
-        <div class="dow-labels" aria-hidden="true">
-          {#each DOW_LABELS as label}
-            <span>{label}</span>
-          {/each}
-        </div>
-
-        <!-- Weeks + month labels -->
-        <div class="weeks-col">
-          <!-- Month labels row -->
-          <div class="month-labels-row" aria-hidden="true" style="width: {svgWidth}px;">
-            {#each monthLabels as { label, weekIndex }}
-              <span style="left: {weekIndex * STEP}px;">{label}</span>
-            {/each}
-          </div>
-
-          <!-- Cell grid -->
-          <div class="cell-grid" style="width: {svgWidth}px; height: {svgHeight}px;">
-            {#each weeks as week, wi}
-              {#each week as day, di}
-                {@const intensity = day ? getIntensity(day.total) : 0}
-                {@const platformCat = getPlatformCategory(day)}
-                {@const hasData = day && day.date}
-                <!-- svelte-ignore a11y_interactive_supports_focus -->
-                <div
-                  class="cal-cell platform-{platformCat} intensity-{intensity}"
-                  class:empty={!hasData}
-                  style="left: {wi * STEP}px; top: {di * STEP}px;"
-                  role={hasData ? 'button' : 'presentation'}
-                  tabindex={hasData ? 0 : -1}
-                  aria-label={cellAriaLabel(day)}
-                  onpointerenter={(e) => handleCellPointerEnter(e, day)}
-                  onpointerleave={handleCellPointerLeave}
-                  onfocus={(e) => handleCellFocus(e, day)}
-                  onblur={handleCellBlur}
-                ></div>
+        {#each monthBlocks as block}
+          <div class="month-block">
+            <!-- Cell grid for this month -->
+            <div class="cell-grid" style="width: {block.weeks.length * STEP - GAP}px; height: {7 * STEP - GAP}px;">
+              {#each block.weeks as week, wi}
+                {#each week as day, di}
+                  {@const intensity = day ? getIntensity(day.total) : 0}
+                  {@const platformCat = getPlatformCategory(day)}
+                  {@const hasData = day && day.date}
+                  <!-- svelte-ignore a11y_interactive_supports_focus -->
+                  <div
+                    class="cal-cell platform-{platformCat} intensity-{intensity}"
+                    class:empty={!hasData}
+                    style="left: {wi * STEP}px; top: {di * STEP}px;"
+                    role={hasData ? 'button' : 'presentation'}
+                    tabindex={hasData ? 0 : -1}
+                    aria-label={cellAriaLabel(day)}
+                    onpointerenter={(e) => handleCellPointerEnter(e, day)}
+                    onpointerleave={handleCellPointerLeave}
+                    onfocus={(e) => handleCellFocus(e, day)}
+                    onblur={handleCellBlur}
+                  ></div>
+                {/each}
               {/each}
-            {/each}
+            </div>
+            <!-- Month label centered below this month block (LeetCode style) -->
+            <div class="month-label">{block.label}</div>
           </div>
-        </div>
+        {/each}
       </div>
 
       <!-- Legend -->
@@ -342,7 +324,7 @@
         <span class="legend-label">Codeforces</span>
         <span class="platform-dot overlap" aria-label="Multiple Platforms"></span>
         <span class="legend-label">Overlap</span>
-        <span class="legend-sep mr-2" aria-hidden="true">·</span>
+        <span class="legend-sep" aria-hidden="true">·</span>
         <span class="legend-label">Less</span>
         {#each [1, 2, 3, 4] as level}
           <div class="legend-swatch intensity-{level} platform-gh" title="Intensity {level}" aria-hidden="true"></div>
@@ -451,50 +433,23 @@
   .calendar-inner {
     display: flex;
     align-items: flex-start;
-    gap: 6px;
+    gap: 14px; /* Distinct visual gap between months (LeetCode style) */
     min-width: max-content;
-    padding-top: 20px; /* room for month labels */
   }
 
-  /* Day-of-week labels */
-  .dow-labels {
+  .month-block {
     display: flex;
     flex-direction: column;
-    gap: 0px;
-    padding-top: 0px;
-    min-width: 28px;
-  }
-  .dow-labels span {
-    font-family: var(--font-mono);
-    font-size: 9px;
-    color: var(--color-muted);
-    height: 20px;
-    display: flex;
     align-items: center;
-    opacity: 0.7;
-    user-select: none;
   }
 
-  /* Weeks column */
-  .weeks-col {
-    position: relative;
-  }
-
-  /* Month labels */
-  .month-labels-row {
-    position: relative;
-    height: 18px;
-    margin-bottom: 4px;
-  }
-  .month-labels-row span {
-    position: absolute;
-    top: 0;
+  .month-label {
+    margin-top: 8px;
     font-family: var(--font-mono);
     font-size: 10px;
     color: var(--color-muted);
     opacity: 0.75;
     user-select: none;
-    white-space: nowrap;
   }
 
   /* Cell grid */
@@ -502,7 +457,7 @@
     position: relative;
   }
 
-  /* Individual calendar cell (Increased size: 16px) */
+  /* Individual calendar cell */
   .cal-cell {
     position: absolute;
     width: 16px;
@@ -527,53 +482,53 @@
 
   /* Empty / Inactive */
   .intensity-0, .platform-empty { background-color: var(--color-bg); border: 1px solid var(--color-border); }
-  :global(.dark) .intensity-0, :global(.dark) .platform-empty { background-color: #24201C; border: 1px solid var(--color-border); }
+  :global(.dark) .intensity-0, :global(.dark) .platform-empty { background-color: #252018; border: 1px solid var(--color-border); }
 
-  /* ── Platform-specific distinct colors ───────────────────────────────── */
+  /* ── Platform colors — muted, desaturated to match cream theme ────────── */
 
-  /* GitHub (Forest Emerald Green) */
-  .platform-gh.intensity-1 { background-color: #A7F3D0; border: none; }
-  .platform-gh.intensity-2 { background-color: #34D399; border: none; }
-  .platform-gh.intensity-3 { background-color: #059669; border: none; }
-  .platform-gh.intensity-4 { background-color: #064E3B; border: none; }
+  /* GitHub: muted sage green */
+  .platform-gh.intensity-1 { background-color: #C8D9C9; border: none; }
+  .platform-gh.intensity-2 { background-color: #8DB58F; border: none; }
+  .platform-gh.intensity-3 { background-color: #4E7E51; border: none; }
+  .platform-gh.intensity-4 { background-color: #2A4E2D; border: none; }
 
-  :global(.dark) .platform-gh.intensity-1 { background-color: #064E3B; border: none; }
-  :global(.dark) .platform-gh.intensity-2 { background-color: #059669; border: none; }
-  :global(.dark) .platform-gh.intensity-3 { background-color: #34D399; border: none; }
-  :global(.dark) .platform-gh.intensity-4 { background-color: #A7F3D0; border: none; }
+  :global(.dark) .platform-gh.intensity-1 { background-color: #1E3320; border: none; }
+  :global(.dark) .platform-gh.intensity-2 { background-color: #2E5C31; border: none; }
+  :global(.dark) .platform-gh.intensity-3 { background-color: #5C9B60; border: none; }
+  :global(.dark) .platform-gh.intensity-4 { background-color: #A8CCA9; border: none; }
 
-  /* LeetCode (Warm Amber / Orange) */
-  .platform-lc.intensity-1 { background-color: #FDE68A; border: none; }
-  .platform-lc.intensity-2 { background-color: #F59E0B; border: none; }
-  .platform-lc.intensity-3 { background-color: #D97706; border: none; }
-  .platform-lc.intensity-4 { background-color: #78350F; border: none; }
+  /* LeetCode: muted warm amber / ochre */
+  .platform-lc.intensity-1 { background-color: #E8D9A8; border: none; }
+  .platform-lc.intensity-2 { background-color: #C8A855; border: none; }
+  .platform-lc.intensity-3 { background-color: #9E7820; border: none; }
+  .platform-lc.intensity-4 { background-color: #664E0E; border: none; }
 
-  :global(.dark) .platform-lc.intensity-1 { background-color: #78350F; border: none; }
-  :global(.dark) .platform-lc.intensity-2 { background-color: #D97706; border: none; }
-  :global(.dark) .platform-lc.intensity-3 { background-color: #F59E0B; border: none; }
-  :global(.dark) .platform-lc.intensity-4 { background-color: #FDE68A; border: none; }
+  :global(.dark) .platform-lc.intensity-1 { background-color: #3D2E08; border: none; }
+  :global(.dark) .platform-lc.intensity-2 { background-color: #6B4E10; border: none; }
+  :global(.dark) .platform-lc.intensity-3 { background-color: #B08C3A; border: none; }
+  :global(.dark) .platform-lc.intensity-4 { background-color: #DECA8A; border: none; }
 
-  /* Codeforces (Crimson / Terracotta Red) */
-  .platform-cf.intensity-1 { background-color: #FECACA; border: none; }
-  .platform-cf.intensity-2 { background-color: #F87171; border: none; }
-  .platform-cf.intensity-3 { background-color: #DC2626; border: none; }
-  .platform-cf.intensity-4 { background-color: #7F1D1D; border: none; }
+  /* Codeforces: muted brick / terracotta */
+  .platform-cf.intensity-1 { background-color: #E8C4C0; border: none; }
+  .platform-cf.intensity-2 { background-color: #C47E78; border: none; }
+  .platform-cf.intensity-3 { background-color: #985048; border: none; }
+  .platform-cf.intensity-4 { background-color: #622E28; border: none; }
 
-  :global(.dark) .platform-cf.intensity-1 { background-color: #7F1D1D; border: none; }
-  :global(.dark) .platform-cf.intensity-2 { background-color: #DC2626; border: none; }
-  :global(.dark) .platform-cf.intensity-3 { background-color: #F87171; border: none; }
-  :global(.dark) .platform-cf.intensity-4 { background-color: #FECACA; border: none; }
+  :global(.dark) .platform-cf.intensity-1 { background-color: #3A1A18; border: none; }
+  :global(.dark) .platform-cf.intensity-2 { background-color: #6B2E28; border: none; }
+  :global(.dark) .platform-cf.intensity-3 { background-color: #A85850; border: none; }
+  :global(.dark) .platform-cf.intensity-4 { background-color: #D9A09A; border: none; }
 
-  /* Overlap (Deep Dark Violet / Espresso) */
-  .platform-overlap.intensity-1 { background-color: #E9D5FF; border: none; }
-  .platform-overlap.intensity-2 { background-color: #C084FC; border: none; }
-  .platform-overlap.intensity-3 { background-color: #9333EA; border: none; }
-  .platform-overlap.intensity-4 { background-color: #3B0764; border: none; }
+  /* Overlap: muted dusty mauve / plum */
+  .platform-overlap.intensity-1 { background-color: #DDD0E8; border: none; }
+  .platform-overlap.intensity-2 { background-color: #B898CC; border: none; }
+  .platform-overlap.intensity-3 { background-color: #8A62A8; border: none; }
+  .platform-overlap.intensity-4 { background-color: #523068; border: none; }
 
-  :global(.dark) .platform-overlap.intensity-1 { background-color: #3B0764; border: none; }
-  :global(.dark) .platform-overlap.intensity-2 { background-color: #9333EA; border: none; }
-  :global(.dark) .platform-overlap.intensity-3 { background-color: #C084FC; border: none; }
-  :global(.dark) .platform-overlap.intensity-4 { background-color: #E9D5FF; border: none; }
+  :global(.dark) .platform-overlap.intensity-1 { background-color: #2E1A3A; border: none; }
+  :global(.dark) .platform-overlap.intensity-2 { background-color: #5A3272; border: none; }
+  :global(.dark) .platform-overlap.intensity-3 { background-color: #9568B8; border: none; }
+  :global(.dark) .platform-overlap.intensity-4 { background-color: #D4B8E8; border: none; }
 
   /* Legend row */
   .calendar-legend {
@@ -612,10 +567,10 @@
     border-radius: 50%;
     margin-left: 2px;
   }
-  .gh      { background-color: #059669; }
-  .lc      { background-color: #D97706; }
-  .cf      { background-color: #DC2626; }
-  .overlap { background-color: #9333EA; }
+  .gh      { background-color: #4E7E51; }
+  .lc      { background-color: #9E7820; }
+  .cf      { background-color: #985048; }
+  .overlap { background-color: #8A62A8; }
 
   /* ── Tooltip ─────────────────────────────────────────────────────────── */
   .tooltip-card {
