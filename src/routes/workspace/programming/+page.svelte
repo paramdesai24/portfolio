@@ -498,62 +498,62 @@
   .intensity-0, .platform-empty { background-color: var(--color-bg); border: 1px solid var(--color-border); }
   :global(.dark) .intensity-0, :global(.dark) .platform-empty { background-color: #221E1A; border: 1px solid #332D27; }
 
-  /* ── Unified Warm Earth & Gold Theme Palette ────────────────────────── */
+  /* ── 4 Distinct Platform Color Families (Green, Amber, Crimson, Purple) ──── */
 
-  /* GitHub (Warm Sand / Muted Taupe) */
-  .platform-gh.intensity-1 { background-color: #E6DCCE; border: none; }
-  .platform-gh.intensity-2 { background-color: #C4B29E; border: none; }
-  .platform-gh.intensity-3 { background-color: #947D68; border: none; }
-  .platform-gh.intensity-4 { background-color: #564332; border: none; }
+  /* 1. GitHub (Emerald Green) */
+  .platform-gh.intensity-1 { background-color: #A7F3D0; border: none; }
+  .platform-gh.intensity-2 { background-color: #34D399; border: none; }
+  .platform-gh.intensity-3 { background-color: #059669; border: none; }
+  .platform-gh.intensity-4 { background-color: #064E3B; border: none; }
 
-  :global(.dark) .platform-gh.intensity-1 { background-color: #3D3328; border: none; }
-  :global(.dark) .platform-gh.intensity-2 { background-color: #6E5D4B; border: none; }
-  :global(.dark) .platform-gh.intensity-3 { background-color: #A8937D; border: none; }
-  :global(.dark) .platform-gh.intensity-4 { background-color: #E3D5C5; border: none; }
+  :global(.dark) .platform-gh.intensity-1 { background-color: #064E3B; border: none; }
+  :global(.dark) .platform-gh.intensity-2 { background-color: #059669; border: none; }
+  :global(.dark) .platform-gh.intensity-3 { background-color: #34D399; border: none; }
+  :global(.dark) .platform-gh.intensity-4 { background-color: #A7F3D0; border: none; }
 
-  /* LeetCode (Warm Golden Amber) */
-  .platform-lc.intensity-1 { background-color: #F5E8C8; border: none; }
-  .platform-lc.intensity-2 { background-color: #DEC07A; border: none; }
-  .platform-lc.intensity-3 { background-color: #B8933D; border: none; }
-  .platform-lc.intensity-4 { background-color: #735616; border: none; }
+  /* 2. LeetCode (Warm Amber Gold) */
+  .platform-lc.intensity-1 { background-color: #FDE68A; border: none; }
+  .platform-lc.intensity-2 { background-color: #F59E0B; border: none; }
+  .platform-lc.intensity-3 { background-color: #D97706; border: none; }
+  .platform-lc.intensity-4 { background-color: #78350F; border: none; }
 
-  :global(.dark) .platform-lc.intensity-1 { background-color: #42351A; border: none; }
-  :global(.dark) .platform-lc.intensity-2 { background-color: #7D632B; border: none; }
-  :global(.dark) .platform-lc.intensity-3 { background-color: #BF9A47; border: none; }
-  :global(.dark) .platform-lc.intensity-4 { background-color: #F7E1AD; border: none; }
+  :global(.dark) .platform-lc.intensity-1 { background-color: #78350F; border: none; }
+  :global(.dark) .platform-lc.intensity-2 { background-color: #D97706; border: none; }
+  :global(.dark) .platform-lc.intensity-3 { background-color: #F59E0B; border: none; }
+  :global(.dark) .platform-lc.intensity-4 { background-color: #FDE68A; border: none; }
 
-  /* Codeforces (Warm Terracotta / Cinnamon Copper) */
-  .platform-cf.intensity-1 { background-color: #F5DFD6; border: none; }
-  .platform-cf.intensity-2 { background-color: #DAAB9B; border: none; }
-  .platform-cf.intensity-3 { background-color: #B26E5B; border: none; }
-  .platform-cf.intensity-4 { background-color: #6D3828; border: none; }
+  /* 3. Codeforces (Crimson Red) */
+  .platform-cf.intensity-1 { background-color: #FECACA; border: none; }
+  .platform-cf.intensity-2 { background-color: #F87171; border: none; }
+  .platform-cf.intensity-3 { background-color: #DC2626; border: none; }
+  .platform-cf.intensity-4 { background-color: #7F1D1D; border: none; }
 
-  :global(.dark) .platform-cf.intensity-1 { background-color: #452A22; border: none; }
-  :global(.dark) .platform-cf.intensity-2 { background-color: #855243; border: none; }
-  :global(.dark) .platform-cf.intensity-3 { background-color: #C78473; border: none; }
-  :global(.dark) .platform-cf.intensity-4 { background-color: #F8D0C5; border: none; }
+  :global(.dark) .platform-cf.intensity-1 { background-color: #7F1D1D; border: none; }
+  :global(.dark) .platform-cf.intensity-2 { background-color: #DC2626; border: none; }
+  :global(.dark) .platform-cf.intensity-3 { background-color: #F87171; border: none; }
+  :global(.dark) .platform-cf.intensity-4 { background-color: #FECACA; border: none; }
 
-  /* Overlap (Multiple Platforms — Glowing Champagne Gold Highlight) */
-  .platform-overlap.intensity-1 { background-color: #EAE0D5; border: none; }
-  .platform-overlap.intensity-2 { background-color: #C4AD97; border: none; }
-  .platform-overlap.intensity-3 { background-color: #7F6047; border: none; }
-  .platform-overlap.intensity-4 { background-color: #382313; border: none; }
+  /* 4. Overlap (Royal Purple / Violet) */
+  .platform-overlap.intensity-1 { background-color: #DDD6FE; border: none; }
+  .platform-overlap.intensity-2 { background-color: #A78BFA; border: none; }
+  .platform-overlap.intensity-3 { background-color: #7C3AED; border: none; }
+  .platform-overlap.intensity-4 { background-color: #4C1D95; border: none; }
 
-  :global(.dark) .platform-overlap.intensity-1 { background-color: #59482D; border: none; }
-  :global(.dark) .platform-overlap.intensity-2 { background-color: #9E804D; border: none; }
-  :global(.dark) .platform-overlap.intensity-3 { background-color: #E3BA6F; border: none; }
-  :global(.dark) .platform-overlap.intensity-4 { background-color: #FFF5DE; border: none; }
+  :global(.dark) .platform-overlap.intensity-1 { background-color: #4C1D95; border: none; }
+  :global(.dark) .platform-overlap.intensity-2 { background-color: #7C3AED; border: none; }
+  :global(.dark) .platform-overlap.intensity-3 { background-color: #A78BFA; border: none; }
+  :global(.dark) .platform-overlap.intensity-4 { background-color: #DDD6FE; border: none; }
 
-  /* Legend swatches (Intensity gradient) */
-  .legend-swatch.intensity-1 { background-color: #E6DCCE; }
-  .legend-swatch.intensity-2 { background-color: #C4B29E; }
-  .legend-swatch.intensity-3 { background-color: #947D68; }
-  .legend-swatch.intensity-4 { background-color: #564332; }
+  /* Legend Swatches (Cumulative Intensity Scale 1 to 4) */
+  .legend-swatch.intensity-1 { background-color: #D1D5DB; }
+  .legend-swatch.intensity-2 { background-color: #9CA3AF; }
+  .legend-swatch.intensity-3 { background-color: #4B5563; }
+  .legend-swatch.intensity-4 { background-color: #111827; }
 
-  :global(.dark) .legend-swatch.intensity-1 { background-color: #3D3328; }
-  :global(.dark) .legend-swatch.intensity-2 { background-color: #6E5D4B; }
-  :global(.dark) .legend-swatch.intensity-3 { background-color: #A8937D; }
-  :global(.dark) .legend-swatch.intensity-4 { background-color: #E3D5C5; }
+  :global(.dark) .legend-swatch.intensity-1 { background-color: #374151; }
+  :global(.dark) .legend-swatch.intensity-2 { background-color: #6B7280; }
+  :global(.dark) .legend-swatch.intensity-3 { background-color: #9CA3AF; }
+  :global(.dark) .legend-swatch.intensity-4 { background-color: #F9FAFB; }
 
   /* Legend row */
   .calendar-legend {
@@ -595,15 +595,15 @@
     height: 9px;
     border-radius: 50%;
   }
-  .gh      { background-color: #947D68; }
-  .lc      { background-color: #B8933D; }
-  .cf      { background-color: #B26E5B; }
-  .overlap { background-color: #382313; }
+  .gh      { background-color: #10B981; }
+  .lc      { background-color: #F59E0B; }
+  .cf      { background-color: #EF4444; }
+  .overlap { background-color: #8B5CF6; }
 
-  :global(.dark) .gh      { background-color: #A8937D; }
-  :global(.dark) .lc      { background-color: #BF9A47; }
-  :global(.dark) .cf      { background-color: #C78473; }
-  :global(.dark) .overlap { background-color: #FFF5DE; }
+  :global(.dark) .gh      { background-color: #34D399; }
+  :global(.dark) .lc      { background-color: #FBBF24; }
+  :global(.dark) .cf      { background-color: #F87171; }
+  :global(.dark) .overlap { background-color: #A78BFA; }
 
   /* ── Tooltip ─────────────────────────────────────────────────────────── */
   .tooltip-card {
