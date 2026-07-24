@@ -80,8 +80,19 @@
     })()
   );
 
-  const CELL = 13;   // cell size px
-  const GAP = 3;     // gap px
+  /** Returns platform category for styling: 'empty' | 'gh' | 'lc' | 'cf' | 'overlap' */
+  function getPlatformCategory(day: CalendarDay | null): 'empty' | 'gh' | 'lc' | 'cf' | 'overlap' {
+    if (!day || day.total === 0) return 'empty';
+    const activeCount = (day.github > 0 ? 1 : 0) + (day.leetcode > 0 ? 1 : 0) + (day.codeforces > 0 ? 1 : 0);
+    if (activeCount > 1) return 'overlap';
+    if (day.github > 0) return 'gh';
+    if (day.leetcode > 0) return 'lc';
+    if (day.codeforces > 0) return 'cf';
+    return 'empty';
+  }
+
+  const CELL = 16;   // cell size px (increased from 13)
+  const GAP = 4;     // gap px (increased from 3)
   const STEP = CELL + GAP;
   const DOW_LABELS = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
 
@@ -300,10 +311,11 @@
             {#each weeks as week, wi}
               {#each week as day, di}
                 {@const intensity = day ? getIntensity(day.total) : 0}
+                {@const platformCat = getPlatformCategory(day)}
                 {@const hasData = day && day.date}
                 <!-- svelte-ignore a11y_interactive_supports_focus -->
                 <div
-                  class="cal-cell intensity-{intensity}"
+                  class="cal-cell platform-{platformCat} intensity-{intensity}"
                   class:empty={!hasData}
                   style="left: {wi * STEP}px; top: {di * STEP}px;"
                   role={hasData ? 'button' : 'presentation'}
@@ -322,19 +334,20 @@
 
       <!-- Legend -->
       <div class="calendar-legend" aria-label="Heatmap legend">
-        <span class="legend-label">Less</span>
-        {#each [0, 1, 2, 3, 4] as level}
-          <div class="legend-swatch intensity-{level}" title="Intensity {level}" aria-hidden="true"></div>
-        {/each}
-        <span class="legend-label mr-2">More</span>
-        <span class="legend-sep" aria-hidden="true">·</span>
-        <!-- Platform dots -->
         <span class="platform-dot gh" aria-label="GitHub"></span>
-        <span class="legend-label">GH</span>
+        <span class="legend-label">GitHub</span>
         <span class="platform-dot lc" aria-label="LeetCode"></span>
-        <span class="legend-label">LC</span>
+        <span class="legend-label">LeetCode</span>
         <span class="platform-dot cf" aria-label="Codeforces"></span>
-        <span class="legend-label">CF</span>
+        <span class="legend-label">Codeforces</span>
+        <span class="platform-dot overlap" aria-label="Multiple Platforms"></span>
+        <span class="legend-label">Overlap</span>
+        <span class="legend-sep mr-2" aria-hidden="true">·</span>
+        <span class="legend-label">Less</span>
+        {#each [1, 2, 3, 4] as level}
+          <div class="legend-swatch intensity-{level} platform-gh" title="Intensity {level}" aria-hidden="true"></div>
+        {/each}
+        <span class="legend-label">More</span>
       </div>
     </div>
   </section>
@@ -447,15 +460,15 @@
   .dow-labels {
     display: flex;
     flex-direction: column;
-    gap: 3px;
-    padding-top: 2px;
+    gap: 0px;
+    padding-top: 0px;
     min-width: 28px;
   }
   .dow-labels span {
     font-family: var(--font-mono);
-    font-size: 8px;
+    font-size: 9px;
     color: var(--color-muted);
-    height: 13px;
+    height: 20px;
     display: flex;
     align-items: center;
     opacity: 0.7;
@@ -470,14 +483,14 @@
   /* Month labels */
   .month-labels-row {
     position: relative;
-    height: 16px;
+    height: 18px;
     margin-bottom: 4px;
   }
   .month-labels-row span {
     position: absolute;
     top: 0;
     font-family: var(--font-mono);
-    font-size: 9px;
+    font-size: 10px;
     color: var(--color-muted);
     opacity: 0.75;
     user-select: none;
@@ -489,12 +502,12 @@
     position: relative;
   }
 
-  /* Individual calendar cell */
+  /* Individual calendar cell (Increased size: 16px) */
   .cal-cell {
     position: absolute;
-    width: 13px;
-    height: 13px;
-    border-radius: 2.5px;
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
     cursor: default;
     outline: none;
     transition:
@@ -512,44 +525,81 @@
     z-index: 2;
   }
 
-  /* Intensity levels — Rich warm brownish palette */
-  .intensity-0 { background-color: var(--color-bg); border: 1px solid var(--color-border); }
-  .intensity-1 { background-color: #D6C9B3; border: none; }
-  .intensity-2 { background-color: #B28E68; border: none; }
-  .intensity-3 { background-color: #7D4F2E; border: none; }
-  .intensity-4 { background-color: #3B2012; border: none; }
+  /* Empty / Inactive */
+  .intensity-0, .platform-empty { background-color: var(--color-bg); border: 1px solid var(--color-border); }
+  :global(.dark) .intensity-0, :global(.dark) .platform-empty { background-color: #24201C; border: 1px solid var(--color-border); }
 
-  :global(.dark) .intensity-0 { background-color: #24201C; border: 1px solid var(--color-border); }
-  :global(.dark) .intensity-1 { background-color: #4D3B2A; border: none; }
-  :global(.dark) .intensity-2 { background-color: #7B5A3C; border: none; }
-  :global(.dark) .intensity-3 { background-color: #B58455; border: none; }
-  :global(.dark) .intensity-4 { background-color: #F0CFAB; border: none; }
+  /* ── Platform-specific distinct colors ───────────────────────────────── */
+
+  /* GitHub (Forest Emerald Green) */
+  .platform-gh.intensity-1 { background-color: #A7F3D0; border: none; }
+  .platform-gh.intensity-2 { background-color: #34D399; border: none; }
+  .platform-gh.intensity-3 { background-color: #059669; border: none; }
+  .platform-gh.intensity-4 { background-color: #064E3B; border: none; }
+
+  :global(.dark) .platform-gh.intensity-1 { background-color: #064E3B; border: none; }
+  :global(.dark) .platform-gh.intensity-2 { background-color: #059669; border: none; }
+  :global(.dark) .platform-gh.intensity-3 { background-color: #34D399; border: none; }
+  :global(.dark) .platform-gh.intensity-4 { background-color: #A7F3D0; border: none; }
+
+  /* LeetCode (Warm Amber / Orange) */
+  .platform-lc.intensity-1 { background-color: #FDE68A; border: none; }
+  .platform-lc.intensity-2 { background-color: #F59E0B; border: none; }
+  .platform-lc.intensity-3 { background-color: #D97706; border: none; }
+  .platform-lc.intensity-4 { background-color: #78350F; border: none; }
+
+  :global(.dark) .platform-lc.intensity-1 { background-color: #78350F; border: none; }
+  :global(.dark) .platform-lc.intensity-2 { background-color: #D97706; border: none; }
+  :global(.dark) .platform-lc.intensity-3 { background-color: #F59E0B; border: none; }
+  :global(.dark) .platform-lc.intensity-4 { background-color: #FDE68A; border: none; }
+
+  /* Codeforces (Crimson / Terracotta Red) */
+  .platform-cf.intensity-1 { background-color: #FECACA; border: none; }
+  .platform-cf.intensity-2 { background-color: #F87171; border: none; }
+  .platform-cf.intensity-3 { background-color: #DC2626; border: none; }
+  .platform-cf.intensity-4 { background-color: #7F1D1D; border: none; }
+
+  :global(.dark) .platform-cf.intensity-1 { background-color: #7F1D1D; border: none; }
+  :global(.dark) .platform-cf.intensity-2 { background-color: #DC2626; border: none; }
+  :global(.dark) .platform-cf.intensity-3 { background-color: #F87171; border: none; }
+  :global(.dark) .platform-cf.intensity-4 { background-color: #FECACA; border: none; }
+
+  /* Overlap (Deep Dark Violet / Espresso) */
+  .platform-overlap.intensity-1 { background-color: #E9D5FF; border: none; }
+  .platform-overlap.intensity-2 { background-color: #C084FC; border: none; }
+  .platform-overlap.intensity-3 { background-color: #9333EA; border: none; }
+  .platform-overlap.intensity-4 { background-color: #3B0764; border: none; }
+
+  :global(.dark) .platform-overlap.intensity-1 { background-color: #3B0764; border: none; }
+  :global(.dark) .platform-overlap.intensity-2 { background-color: #9333EA; border: none; }
+  :global(.dark) .platform-overlap.intensity-3 { background-color: #C084FC; border: none; }
+  :global(.dark) .platform-overlap.intensity-4 { background-color: #E9D5FF; border: none; }
 
   /* Legend row */
   .calendar-legend {
     display: flex;
     align-items: center;
-    gap: 4px;
-    margin-top: 14px;
+    gap: 6px;
+    margin-top: 16px;
     flex-wrap: wrap;
   }
   .legend-swatch {
     position: relative;
-    width: 11px;
-    height: 11px;
-    border-radius: 2px;
+    width: 13px;
+    height: 13px;
+    border-radius: 2.5px;
     flex-shrink: 0;
   }
   .legend-label {
     font-family: var(--font-mono);
-    font-size: 9px;
+    font-size: 10px;
     color: var(--color-muted);
-    opacity: 0.7;
+    opacity: 0.85;
     user-select: none;
   }
   .legend-sep {
     font-family: var(--font-mono);
-    font-size: 9px;
+    font-size: 10px;
     color: var(--color-muted);
     opacity: 0.4;
     margin: 0 4px;
@@ -557,18 +607,15 @@
   /* Platform dots */
   .platform-dot {
     display: inline-block;
-    width: 7px;
-    height: 7px;
+    width: 9px;
+    height: 9px;
     border-radius: 50%;
-    border: 1px solid var(--color-border);
-    margin-left: 4px;
+    margin-left: 2px;
   }
-  .gh  { background-color: #3B2012; }
-  .lc  { background-color: #7D4F2E; }
-  .cf  { background-color: #B28E68; }
-  :global(.dark) .gh { background-color: #F0CFAB; }
-  :global(.dark) .lc { background-color: #B58455; }
-  :global(.dark) .cf { background-color: #7B5A3C; }
+  .gh      { background-color: #059669; }
+  .lc      { background-color: #D97706; }
+  .cf      { background-color: #DC2626; }
+  .overlap { background-color: #9333EA; }
 
   /* ── Tooltip ─────────────────────────────────────────────────────────── */
   .tooltip-card {
