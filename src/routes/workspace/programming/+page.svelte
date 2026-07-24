@@ -496,59 +496,70 @@
 
   /* Empty / Inactive */
   .intensity-0, .platform-empty { background-color: var(--color-bg); border: 1px solid var(--color-border); }
-  :global(.dark) .intensity-0, :global(.dark) .platform-empty { background-color: #24201C; border: 1px solid var(--color-border); }
+  :global(.dark) .intensity-0, :global(.dark) .platform-empty { background-color: #221E1A; border: 1px solid #332D27; }
 
-  /* ── Platform-specific distinct intensity colors ────────────────────── */
+  /* ── Unified Warm Earth & Gold Theme Palette ────────────────────────── */
 
-  /* GitHub (Deep Espresso / Warm Bronze) */
-  .platform-gh.intensity-1 { background-color: #E2D7C5; border: none; }
-  .platform-gh.intensity-2 { background-color: #BC9C7A; border: none; }
-  .platform-gh.intensity-3 { background-color: #865A36; border: none; }
-  .platform-gh.intensity-4 { background-color: #3D2314; border: none; }
+  /* GitHub (Warm Sand / Muted Taupe) */
+  .platform-gh.intensity-1 { background-color: #E6DCCE; border: none; }
+  .platform-gh.intensity-2 { background-color: #C4B29E; border: none; }
+  .platform-gh.intensity-3 { background-color: #947D68; border: none; }
+  .platform-gh.intensity-4 { background-color: #564332; border: none; }
 
-  :global(.dark) .platform-gh.intensity-1 { background-color: #3D2314; border: none; }
-  :global(.dark) .platform-gh.intensity-2 { background-color: #865A36; border: none; }
-  :global(.dark) .platform-gh.intensity-3 { background-color: #BC9C7A; border: none; }
-  :global(.dark) .platform-gh.intensity-4 { background-color: #E2D7C5; border: none; }
+  :global(.dark) .platform-gh.intensity-1 { background-color: #3D3328; border: none; }
+  :global(.dark) .platform-gh.intensity-2 { background-color: #6E5D4B; border: none; }
+  :global(.dark) .platform-gh.intensity-3 { background-color: #A8937D; border: none; }
+  :global(.dark) .platform-gh.intensity-4 { background-color: #E3D5C5; border: none; }
 
-  /* LeetCode (Warm Amber / Ochre Gold) */
-  .platform-lc.intensity-1 { background-color: #F3E8C4; border: none; }
-  .platform-lc.intensity-2 { background-color: #D9AB44; border: none; }
-  .platform-lc.intensity-3 { background-color: #B47D16; border: none; }
-  .platform-lc.intensity-4 { background-color: #6E4904; border: none; }
+  /* LeetCode (Warm Golden Amber) */
+  .platform-lc.intensity-1 { background-color: #F5E8C8; border: none; }
+  .platform-lc.intensity-2 { background-color: #DEC07A; border: none; }
+  .platform-lc.intensity-3 { background-color: #B8933D; border: none; }
+  .platform-lc.intensity-4 { background-color: #735616; border: none; }
 
-  :global(.dark) .platform-lc.intensity-1 { background-color: #4A3203; border: none; }
-  :global(.dark) .platform-lc.intensity-2 { background-color: #8F620D; border: none; }
-  :global(.dark) .platform-lc.intensity-3 { background-color: #D9AB44; border: none; }
-  :global(.dark) .platform-lc.intensity-4 { background-color: #F3E8C4; border: none; }
+  :global(.dark) .platform-lc.intensity-1 { background-color: #42351A; border: none; }
+  :global(.dark) .platform-lc.intensity-2 { background-color: #7D632B; border: none; }
+  :global(.dark) .platform-lc.intensity-3 { background-color: #BF9A47; border: none; }
+  :global(.dark) .platform-lc.intensity-4 { background-color: #F7E1AD; border: none; }
 
-  /* Codeforces (Crimson / Terracotta Red) */
-  .platform-cf.intensity-1 { background-color: #F4CECA; border: none; }
-  .platform-cf.intensity-2 { background-color: #D47F75; border: none; }
-  .platform-cf.intensity-3 { background-color: #A33E33; border: none; }
-  .platform-cf.intensity-4 { background-color: #5C1B14; border: none; }
+  /* Codeforces (Warm Terracotta / Cinnamon Copper) */
+  .platform-cf.intensity-1 { background-color: #F5DFD6; border: none; }
+  .platform-cf.intensity-2 { background-color: #DAAB9B; border: none; }
+  .platform-cf.intensity-3 { background-color: #B26E5B; border: none; }
+  .platform-cf.intensity-4 { background-color: #6D3828; border: none; }
 
-  :global(.dark) .platform-cf.intensity-1 { background-color: #3D120D; border: none; }
-  :global(.dark) .platform-cf.intensity-2 { background-color: #7D2D24; border: none; }
-  :global(.dark) .platform-cf.intensity-3 { background-color: #D47F75; border: none; }
-  :global(.dark) .platform-cf.intensity-4 { background-color: #F4CECA; border: none; }
+  :global(.dark) .platform-cf.intensity-1 { background-color: #452A22; border: none; }
+  :global(.dark) .platform-cf.intensity-2 { background-color: #855243; border: none; }
+  :global(.dark) .platform-cf.intensity-3 { background-color: #C78473; border: none; }
+  :global(.dark) .platform-cf.intensity-4 { background-color: #F8D0C5; border: none; }
 
-  /* Overlap (2 or 3 active platforms — Vibrant Violet / Royal Purple) */
-  .platform-overlap.intensity-1 { background-color: #E9D5FF; border: none; }
-  .platform-overlap.intensity-2 { background-color: #C084FC; border: none; }
-  .platform-overlap.intensity-3 { background-color: #9333EA; border: none; }
-  .platform-overlap.intensity-4 { background-color: #581C87; border: none; }
+  /* Overlap (Multiple Platforms — Glowing Champagne Gold Highlight) */
+  .platform-overlap.intensity-1 { background-color: #EAE0D5; border: none; }
+  .platform-overlap.intensity-2 { background-color: #C4AD97; border: none; }
+  .platform-overlap.intensity-3 { background-color: #7F6047; border: none; }
+  .platform-overlap.intensity-4 { background-color: #382313; border: none; }
 
-  :global(.dark) .platform-overlap.intensity-1 { background-color: #581C87; border: none; }
-  :global(.dark) .platform-overlap.intensity-2 { background-color: #7E22CE; border: none; }
-  :global(.dark) .platform-overlap.intensity-3 { background-color: #A855F7; border: none; }
-  :global(.dark) .platform-overlap.intensity-4 { background-color: #E9D5FF; border: none; }
+  :global(.dark) .platform-overlap.intensity-1 { background-color: #59482D; border: none; }
+  :global(.dark) .platform-overlap.intensity-2 { background-color: #9E804D; border: none; }
+  :global(.dark) .platform-overlap.intensity-3 { background-color: #E3BA6F; border: none; }
+  :global(.dark) .platform-overlap.intensity-4 { background-color: #FFF5DE; border: none; }
+
+  /* Legend swatches (Intensity gradient) */
+  .legend-swatch.intensity-1 { background-color: #E6DCCE; }
+  .legend-swatch.intensity-2 { background-color: #C4B29E; }
+  .legend-swatch.intensity-3 { background-color: #947D68; }
+  .legend-swatch.intensity-4 { background-color: #564332; }
+
+  :global(.dark) .legend-swatch.intensity-1 { background-color: #3D3328; }
+  :global(.dark) .legend-swatch.intensity-2 { background-color: #6E5D4B; }
+  :global(.dark) .legend-swatch.intensity-3 { background-color: #A8937D; }
+  :global(.dark) .legend-swatch.intensity-4 { background-color: #E3D5C5; }
 
   /* Legend row */
   .calendar-legend {
     display: flex;
     align-items: center;
-    gap: 16px; /* Generous spacing */
+    gap: 16px;
     margin-top: 20px;
     flex-wrap: wrap;
   }
@@ -584,14 +595,15 @@
     height: 9px;
     border-radius: 50%;
   }
-  .gh      { background-color: #3D2314; }
-  .lc      { background-color: #B47D16; }
-  .cf      { background-color: #A33E33; }
-  .overlap { background-color: #9333EA; }
-  :global(.dark) .gh      { background-color: #E2D7C5; }
-  :global(.dark) .lc      { background-color: #D9AB44; }
-  :global(.dark) .cf      { background-color: #D47F75; }
-  :global(.dark) .overlap { background-color: #A855F7; }
+  .gh      { background-color: #947D68; }
+  .lc      { background-color: #B8933D; }
+  .cf      { background-color: #B26E5B; }
+  .overlap { background-color: #382313; }
+
+  :global(.dark) .gh      { background-color: #A8937D; }
+  :global(.dark) .lc      { background-color: #BF9A47; }
+  :global(.dark) .cf      { background-color: #C78473; }
+  :global(.dark) .overlap { background-color: #FFF5DE; }
 
   /* ── Tooltip ─────────────────────────────────────────────────────────── */
   .tooltip-card {
