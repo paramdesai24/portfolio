@@ -1,5 +1,6 @@
 <script lang="ts">
   import { ArrowRight, Download } from '@lucide/svelte';
+  import { goto } from '$app/navigation';
 
   interface Props {
     visitorCount?: number | null;
@@ -10,12 +11,17 @@
   let ctaIsTransitioning = $state(false);
 
   function handleExploreClick(e: MouseEvent) {
+    // Allow normal click behaviors (e.g., cmd/ctrl + click to open in new tab)
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    
     e.preventDefault();
     if (ctaIsTransitioning) return;
     ctaIsTransitioning = true;
+    
+    // Quick 100ms delay for visual press effect before instant client-side routing
     setTimeout(() => {
-      window.location.href = 'https://www.paramdesai24.me/workspace/resume';
-    }, 600);
+      goto('/workspace/resume');
+    }, 100);
   }
 </script>
 
@@ -24,9 +30,6 @@
   aria-labelledby="cta-heading"
   aria-roledescription="call to action section"
 >
-  <!-- Preload the destination page -->
-  <link rel="prefetch" href="https://www.paramdesai24.me/workspace/resume" />
-
   <div
     class="cta-card w-full max-w-2xl"
     class:cta-transitioning={ctaIsTransitioning}
@@ -63,7 +66,8 @@
         <!-- Primary CTA -->
         <a
           id="cta-explore-profile"
-          href="https://www.paramdesai24.me/workspace/resume"
+          href="/workspace/resume"
+          data-sveltekit-preload-data="hover"
           onclick={handleExploreClick}
           class="cta-primary focus-ring"
           class:cta-primary-fading={ctaIsTransitioning}
@@ -108,8 +112,8 @@
       0 8px 48px -8px color-mix(in srgb, var(--color-accent) 12%, transparent);
     overflow: hidden;
     transition:
-      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-      opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
       box-shadow 0.3s ease;
     -webkit-tap-highlight-color: transparent;
   }
@@ -121,8 +125,8 @@
   }
 
   .cta-card.cta-transitioning {
-    transform: scale(1.015);
-    opacity: 0.6;
+    transform: scale(1.008);
+    opacity: 0.8;
   }
 
   .cta-accent-bar {
@@ -237,7 +241,7 @@
     border: 1px solid var(--color-accent);
     text-decoration: none;
     transition:
-      opacity 0.5s ease,
+      opacity 0.2s ease,
       transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
       box-shadow 0.25s ease;
     box-shadow: 0 2px 16px -4px color-mix(in srgb, var(--color-accent) 50%, transparent);
@@ -263,8 +267,7 @@
   }
 
   .cta-primary.cta-primary-fading {
-    opacity: 0.4;
-    pointer-events: none;
+    opacity: 0.7;
   }
 
   .cta-secondary {
