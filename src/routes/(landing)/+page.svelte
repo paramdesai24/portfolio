@@ -5,6 +5,8 @@
   import { supabase } from '$lib/supabase';
   import { theme } from '$lib/stores/theme';
 
+  let ctaIsTransitioning = $state(false);
+
   let mounted = $state(false);
 
   function toggleTheme() {
@@ -22,104 +24,21 @@
   let phraseIdx = $state(0);
   let isDeleting = $state(false);
 
-  // Visitor Count & Reviews States
+
+  // Visitor Count
   let visitorCount = $state<number | null>(null);
 
-  interface Review {
-    id: string;
-    name: string | null;
-    message: string;
-    rating: number;
-    created_at: string;
-  }
-  let reviews = $state<Review[]>([]);
-  let newName = $state('');
-  let newMessage = $state('');
-  let newRating = $state(5);
-  let isSubmitting = $state(false);
-  let submitSuccess = $state(false);
-
-  function getRelativeTime(dateString: string): string {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMins / 60);
-    const diffDays = Math.floor(diffHours / 24);
-
-    if (diffMins < 1) return 'just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-  }
-
-
-
-  async function fetchReviews() {
-    try {
-      const { data, error } = await supabase
-        .from('reviews')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (!error && data) {
-        reviews = data;
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  async function handleSubmit(e: SubmitEvent) {
+  function handleExploreClick(e: MouseEvent) {
     e.preventDefault();
-    if (!newMessage.trim() || isSubmitting) return;
-    isSubmitting = true;
-
-    const newReview = {
-      name: newName.trim() || null,
-      message: newMessage.trim(),
-      rating: newRating,
-      created_at: new Date().toISOString()
-    };
-
-    const optimisticId = Math.random().toString(36).substring(2);
-    reviews = [{ id: optimisticId, ...newReview }, ...reviews];
-
-    try {
-      const { data, error } = await supabase
-        .from('reviews')
-        .insert([newReview])
-        .select();
-
-      isSubmitting = false;
-
-      if (!error) {
-        submitSuccess = true;
-        newName = '';
-        newMessage = '';
-        newRating = 5;
-        
-        if (data && data[0]) {
-          reviews = reviews.map(r => r.id === optimisticId ? data[0] : r);
-        }
-        
-        setTimeout(() => {
-          submitSuccess = false;
-        }, 3000);
-      } else {
-        reviews = reviews.filter(r => r.id !== optimisticId);
-        console.error('Failed to submit review:', error);
-      }
-    } catch (err) {
-      isSubmitting = false;
-      reviews = reviews.filter(r => r.id !== optimisticId);
-      console.error(err);
-    }
+    ctaIsTransitioning = true;
+    setTimeout(() => {
+      window.location.href = 'https://www.paramdesai24.me/workspace/resume';
+    }, 600);
   }
+
+
 
   onMount(() => {
-    // Fetch initial reviews
-    fetchReviews();
-
     async function registerAndFetchViews() {
       try {
         await supabase.from('page_views').insert([{}]);
@@ -428,135 +347,65 @@
         </div>
       </div>
     </section>
-    <!-- Feature 2: Anonymous Reviews Panel -->
-    <section class="flex flex-col gap-8 anim-item delay-1700 mt-16 border-t border-[--color-border] pt-16">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-[--color-border]">
-        <div class="flex flex-col gap-0.5">
-          <h3 class="font-serif text-2xl text-[--color-text] m-0 leading-tight">Guestbook & Reviews</h3>
-          <p class="text-xs text-[--color-muted] font-sans m-0 leading-normal">Leave an anonymous review or comment about my projects and research.</p>
-        </div>
-        
-        <!-- Feature 1: Total Visitor Count Pill -->
-        {#if visitorCount !== null}
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[--color-accent-dim] border border-[--color-border] text-[10px] font-mono text-[--color-accent] select-none shadow-2xs sm:self-center self-start">
-            <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>you are visitor #{visitorCount}</span>
-          </div>
-        {/if}
-      </div>
+    <!-- Final CTA Section: Ready to Explore More? -->
+    <section class="flex flex-col items-center anim-item delay-1700 mt-16">
+      <!-- Preload the destination page -->
+      <link rel="prefetch" href="https://www.paramdesai24.me/workspace/resume" />
 
-      <!-- Reviews list -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {#if reviews.length > 0}
-          {#each reviews as review (review.id)}
-            <div class="card flex flex-col justify-between hover:translate-y-[-1px] transition-transform duration-300">
-              <div>
-                <!-- Rating Stars -->
-                <div class="flex items-center gap-0.5 text-amber-500 mb-2">
-                  {#each Array.from({ length: review.rating }) as _}
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                    </svg>
-                  {/each}
-                  {#each Array.from({ length: 5 - review.rating }) as _}
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-3.5 h-3.5">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                    </svg>
-                  {/each}
-                </div>
-                <!-- Review Message -->
-                <p class="text-xs text-[--color-text] font-sans leading-relaxed text-justify mb-4">
-                  {review.message}
-                </p>
-              </div>
+      <div class="cta-card w-full max-w-2xl" class:cta-transitioning={ctaIsTransitioning}>
+        <!-- Decorative top accent line -->
+        <div class="cta-accent-bar"></div>
 
-              <!-- Author name & time metadata -->
-              <div class="flex justify-between items-center text-[10px] text-[--color-muted] font-mono border-t border-[--color-border]/30 pt-3">
-                <span class="font-bold text-[--color-accent]">{review.name || 'Anonymous'}</span>
-                <span>{getRelativeTime(review.created_at)}</span>
-              </div>
+        <div class="cta-inner">
+          <!-- Eyebrow label -->
+          <span class="cta-eyebrow">Continue the Journey</span>
+
+          <!-- Heading -->
+          <h3 class="cta-heading font-serif">Ready to Explore More?</h3>
+
+          <!-- Description -->
+          <p class="cta-description">
+            You've only seen a glimpse of my work.<br />
+            Explore my complete interactive resume to learn more about my research journey,
+            publications, projects, technical skills, leadership, achievements, coursework,
+            and professional experience.
+          </p>
+
+          <!-- Visitor pill -->
+          {#if visitorCount !== null}
+            <div class="cta-visitor-pill">
+              <span class="cta-visitor-dot"></span>
+              <span>you are visitor #{visitorCount}</span>
             </div>
-          {/each}
-        {:else}
-          <div class="md:col-span-2 text-center py-12 text-xs text-[--color-muted] font-sans border border-dashed border-[--color-border] rounded-xl bg-[--color-surface]/50">
-            No reviews yet. Be the first to share your thoughts!
-          </div>
-        {/if}
-      </div>
+          {/if}
 
-      <!-- Submission Form -->
-      <div class="w-full max-w-xl mx-auto mt-6 bg-[--color-surface] border border-[--color-border] rounded-xl p-6 shadow-2xs">
-        <h4 class="font-serif text-lg text-[--color-text] mb-1 select-none">Write a Review</h4>
-        <p class="text-[10px] text-[--color-muted] font-sans mb-4 select-none">Your email is not collected. Reviews are public.</p>
-        
-        <form onsubmit={handleSubmit} class="flex flex-col gap-4">
-          <!-- Name field -->
-          <div class="flex flex-col gap-1.5">
-            <label for="review-name" class="text-[10px] font-mono uppercase tracking-wider text-[--color-muted] select-none">Name (Optional)</label>
-            <input
-              type="text"
-              id="review-name"
-              bind:value={newName}
-              placeholder="Your name (optional)"
-              class="w-full px-3 py-2 rounded-lg bg-[--color-bg] border border-[--color-border] text-xs font-sans text-[--color-text] focus:outline-hidden"
-              maxlength="50"
-            />
-          </div>
-
-          <!-- Message textarea -->
-          <div class="flex flex-col gap-1.5">
-            <label for="review-message" class="text-[10px] font-mono uppercase tracking-wider text-[--color-muted] select-none">Comment / Feedback</label>
-            <textarea
-              id="review-message"
-              bind:value={newMessage}
-              placeholder="Type your message here..."
-              required
-              rows="4"
-              class="w-full px-3 py-2 rounded-lg bg-[--color-bg] border border-[--color-border] text-xs font-sans text-[--color-text] focus:outline-hidden resize-y"
-              maxlength="1000"
-            ></textarea>
-          </div>
-
-          <!-- Star Picker & Submit -->
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
-            <div class="flex items-center gap-3">
-              <span class="text-[10px] font-mono uppercase tracking-wider text-[--color-muted] select-none">Rating:</span>
-              <div class="flex items-center gap-1 select-none">
-                {#each [1, 2, 3, 4, 5] as star}
-                  <button
-                    type="button"
-                    onclick={() => newRating = star}
-                    class="text-amber-500 hover:scale-110 transition-transform cursor-pointer bg-transparent border-none p-0 focus:outline-hidden"
-                    aria-label="Rate {star} stars"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill={star <= newRating ? "currentColor" : "none"}
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      class="w-5 h-5"
-                    >
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                    </svg>
-                  </button>
-                {/each}
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              class="px-5 py-2 bg-[--color-accent] text-[--color-surface] rounded-lg font-medium text-xs border border-[--color-accent] hover:bg-opacity-90 transition-all cursor-pointer shadow-xs disabled:opacity-50 select-none"
+          <!-- CTA Buttons -->
+          <div class="cta-buttons">
+            <!-- Primary CTA -->
+            <a
+              id="cta-explore-profile"
+              href="https://www.paramdesai24.me/workspace/resume"
+              onclick={handleExploreClick}
+              class="cta-primary"
+              class:cta-primary-fading={ctaIsTransitioning}
             >
-              {#if isSubmitting}
-                Sending...
-              {:else}
-                {submitSuccess ? 'Sent ✓' : 'Submit Review'}
-              {/if}
-            </button>
+              <span>Explore My Complete Profile</span>
+              <span class="cta-arrow"><ArrowRight size={16} /></span>
+            </a>
+
+            <!-- Secondary CTA -->
+            <a
+              id="cta-download-resume"
+              href="/PARAM_DESAI_Resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="cta-secondary"
+            >
+              <Download size={14} />
+              <span>Download Resume</span>
+            </a>
           </div>
-        </form>
+        </div>
       </div>
     </section>
   </main>
@@ -673,5 +522,217 @@
   @keyframes blink {
     from, to { background-color: transparent }
     50% { background-color: currentColor }
+  }
+
+  /* ─── Final CTA Section ─── */
+
+  .cta-card {
+    position: relative;
+    border-radius: 1.25rem;
+    border: 1px solid var(--color-border);
+    background:
+      radial-gradient(
+        ellipse 80% 60% at 50% 0%,
+        var(--color-accent-dim) 0%,
+        transparent 70%
+      ),
+      var(--color-surface);
+    box-shadow:
+      0 0 0 1px var(--color-border),
+      0 8px 48px -8px color-mix(in srgb, var(--color-accent) 12%, transparent);
+    overflow: hidden;
+    transition:
+      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.3s ease;
+  }
+
+  .cta-card:hover {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-accent) 40%, var(--color-border)),
+      0 16px 64px -8px color-mix(in srgb, var(--color-accent) 20%, transparent);
+  }
+
+  /* Scale + fade card on transition */
+  .cta-card.cta-transitioning {
+    transform: scale(1.015);
+    opacity: 0.6;
+  }
+
+  /* Gradient accent bar across the top */
+  .cta-accent-bar {
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--color-accent) 40%,
+      color-mix(in srgb, var(--color-accent) 60%, transparent) 100%
+    );
+    opacity: 0.7;
+  }
+
+  .cta-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 3.5rem 2.5rem 3rem;
+    gap: 1rem;
+  }
+
+  /* Eyebrow chip */
+  .cta-eyebrow {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-accent);
+    background: var(--color-accent-dim);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+    padding: 0.25rem 0.85rem;
+    border-radius: 9999px;
+  }
+
+  /* Heading */
+  .cta-heading {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--color-text);
+    margin: 0.25rem 0 0;
+    letter-spacing: -0.02em;
+  }
+
+  /* Description */
+  .cta-description {
+    font-size: 0.9rem;
+    line-height: 1.75;
+    color: var(--color-muted);
+    max-width: 48ch;
+    margin: 0.25rem 0 0;
+  }
+
+  /* Visitor pill */
+  .cta-visitor-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.2rem 0.75rem;
+    border-radius: 9999px;
+    background: var(--color-accent-dim);
+    border: 1px solid var(--color-border);
+    font-family: var(--font-mono, monospace);
+    font-size: 0.6rem;
+    color: var(--color-accent);
+    margin-top: 0.25rem;
+  }
+
+  .cta-visitor-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.85); }
+  }
+
+  /* Button row */
+  .cta-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.85rem;
+    margin-top: 1.25rem;
+  }
+
+  /* Primary button */
+  .cta-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    border-radius: 0.6rem;
+    background: var(--color-accent);
+    color: var(--color-surface);
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: inherit;
+    border: 1px solid var(--color-accent);
+    text-decoration: none;
+    transition:
+      opacity 0.5s ease,
+      transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.25s ease;
+    box-shadow: 0 2px 16px -4px color-mix(in srgb, var(--color-accent) 50%, transparent);
+    cursor: pointer;
+  }
+
+  .cta-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px -4px color-mix(in srgb, var(--color-accent) 55%, transparent);
+  }
+
+  .cta-primary:active {
+    transform: translateY(0);
+  }
+
+  /* Arrow slides right on hover */
+  .cta-primary .cta-arrow {
+    display: inline-flex;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .cta-primary:hover .cta-arrow {
+    transform: translateX(4px);
+  }
+
+  /* Fading state during page transition */
+  .cta-primary.cta-primary-fading {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  /* Secondary button */
+  .cta-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.7rem 1.25rem;
+    border-radius: 0.6rem;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: inherit;
+    border: 1px solid var(--color-border);
+    text-decoration: none;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .cta-secondary:hover {
+    background: var(--color-accent-dim);
+    border-color: color-mix(in srgb, var(--color-accent) 35%, var(--color-border));
+    transform: translateY(-1px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta-card,
+    .cta-primary,
+    .cta-primary .cta-arrow,
+    .cta-secondary {
+      transition: none !important;
+    }
+    .cta-visitor-dot {
+      animation: none !important;
+    }
   }
 </style>
