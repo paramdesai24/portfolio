@@ -11,6 +11,7 @@
 
   function handleExploreClick(e: MouseEvent) {
     e.preventDefault();
+    if (ctaIsTransitioning) return;
     ctaIsTransitioning = true;
     setTimeout(() => {
       window.location.href = 'https://www.paramdesai24.me/workspace/resume';
@@ -18,20 +19,28 @@
   }
 </script>
 
-<section class="flex flex-col items-center anim-item delay-1700 mt-16" aria-label="Explore profile section">
+<section
+  class="flex flex-col items-center anim-item delay-1700 mt-16"
+  aria-labelledby="cta-heading"
+  aria-roledescription="call to action section"
+>
   <!-- Preload the destination page -->
   <link rel="prefetch" href="https://www.paramdesai24.me/workspace/resume" />
 
-  <div class="cta-card w-full max-w-2xl" class:cta-transitioning={ctaIsTransitioning}>
+  <div
+    class="cta-card w-full max-w-2xl"
+    class:cta-transitioning={ctaIsTransitioning}
+    aria-busy={ctaIsTransitioning}
+  >
     <!-- Decorative top accent line -->
-    <div class="cta-accent-bar"></div>
+    <div class="cta-accent-bar" aria-hidden="true"></div>
 
     <div class="cta-inner">
       <!-- Eyebrow label -->
       <span class="cta-eyebrow">Continue the Journey</span>
 
       <!-- Heading -->
-      <h3 class="cta-heading font-serif">Ready to Explore More?</h3>
+      <h3 id="cta-heading" class="cta-heading font-serif">Ready to Explore More?</h3>
 
       <!-- Description -->
       <p class="cta-description">
@@ -43,24 +52,26 @@
 
       <!-- Visitor pill -->
       {#if visitorCount !== null}
-        <div class="cta-visitor-pill">
-          <span class="cta-visitor-dot"></span>
+        <div class="cta-visitor-pill" aria-label="Visitor count: #{visitorCount}">
+          <span class="cta-visitor-dot" aria-hidden="true"></span>
           <span>you are visitor #{visitorCount}</span>
         </div>
       {/if}
 
       <!-- CTA Buttons -->
-      <div class="cta-buttons">
+      <div class="cta-buttons" role="group" aria-label="Profile action buttons">
         <!-- Primary CTA -->
         <a
           id="cta-explore-profile"
           href="https://www.paramdesai24.me/workspace/resume"
           onclick={handleExploreClick}
-          class="cta-primary"
+          class="cta-primary focus-ring"
           class:cta-primary-fading={ctaIsTransitioning}
+          aria-disabled={ctaIsTransitioning}
+          aria-label="Explore My Complete Profile (interactive resume)"
         >
           <span>Explore My Complete Profile</span>
-          <span class="cta-arrow"><ArrowRight size={16} /></span>
+          <span class="cta-arrow" aria-hidden="true"><ArrowRight size={16} /></span>
         </a>
 
         <!-- Secondary CTA -->
@@ -69,9 +80,10 @@
           href="/PARAM_DESAI_Resume.pdf"
           target="_blank"
           rel="noopener noreferrer"
-          class="cta-secondary"
+          class="cta-secondary focus-ring"
+          aria-label="Download Resume PDF document"
         >
-          <Download size={14} />
+          <Download size={14} aria-hidden="true" />
           <span>Download Resume</span>
         </a>
       </div>
@@ -196,6 +208,12 @@
     align-items: center;
     gap: 0.85rem;
     margin-top: 1.25rem;
+  }
+
+  /* High contrast focus ring for keyboard navigation */
+  .focus-ring:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
   }
 
   .cta-primary {
