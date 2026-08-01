@@ -18,7 +18,7 @@ const cache = new Map<string, CacheEntry<unknown>>();
  * Returns cached data if still valid, otherwise calls `fetcher`, caches
  * the result (if successful), and returns it. Each cache key is independently cached.
  */
-export async function getCached<T extends { error?: string | null }>(
+export async function getCached<T>(
   key: string,
   fetcher: () => Promise<T>,
   forceRefresh: boolean = false
@@ -31,8 +31,9 @@ export async function getCached<T extends { error?: string | null }>(
   }
 
   const data = await fetcher();
-  // Only cache if the request succeeded without error
-  if (!data.error) {
+  // Only cache if the request succeeded without a top-level error field
+  const hasError = data !== null && typeof data === 'object' && 'error' in (data as object) && (data as Record<string, unknown>).error;
+  if (!hasError) {
     cache.set(key, {
       data,
       expiresAt: now + REVALIDATE_SECONDS * 1000
