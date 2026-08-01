@@ -216,6 +216,6 @@ async function loadProgrammingData(forceRefresh: boolean = false): Promise<Progr
 
 export const load: PageServerLoad = async ({ url }) => {
   const forceRefresh = url.searchParams.has('refresh');
-  const data = await getCached('programming-page', () => loadProgrammingData(forceRefresh), forceRefresh);
+  const data = await loadProgrammingData(forceRefresh);
   return data;
 };

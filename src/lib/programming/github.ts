@@ -123,7 +123,6 @@ async function fetchViaContributionsAPI(username: string): Promise<FetchResult<G
 
       const dayDate = parseUTCDate(entry.date);
       if (dayDate < START_DATE) continue; // only 2026+
-      if (dayDate > new Date()) continue;  // skip future dates the API pre-fills
 
       // Date is already YYYY-MM-DD from the API — no conversion needed
       calendar[entry.date] = entry.count;
