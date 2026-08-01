@@ -9,6 +9,7 @@
  */
 
 import type { PageServerLoad } from './$types';
+import { dev } from '$app/environment';
 import { getCached } from '$lib/programming/cache';
 import { fetchGitHubData } from '$lib/programming/github';
 import { fetchLeetCodeData } from '$lib/programming/leetcode';
@@ -65,6 +66,41 @@ async function loadProgrammingData(forceRefresh: boolean = false): Promise<Progr
     return { date, github, leetcode, codeforces, total: github + leetcode + codeforces };
   });
 
+  // CANONICAL GitHub total: sum the github column of the heatmap.
+  // This is the single source of truth used by BOTH the stat card and the heatmap,
+  // so they are guaranteed to match.
+  const githubHeatmapTotal = calendar.reduce((s, d) => s + d.github, 0);
+
+  // Dev-mode validation: warn if the value from the GitHub fetcher differs from
+  // the heatmap sum. These should always be equal after the github.ts fix.
+  if (dev && gh.data) {
+    if (githubHeatmapTotal !== gh.data.contributions2026) {
+      console.warn(
+        `[GitHub validation FAILED] ` +
+        `stat card total (${gh.data.contributions2026}) !== ` +
+        `heatmap sum (${githubHeatmapTotal}). ` +
+        `Using heatmap sum as the displayed value.`
+      );
+    } else {
+      console.log(
+        `[GitHub validation OK] total=${githubHeatmapTotal} matches heatmap sum.`
+      );
+    }
+    // Server-side range/day debug log
+    const activeDays = calendar.filter((d) => d.github > 0);
+    const rangeStart = allDates[0] ?? 'none';
+    const rangeEnd = allDates[allDates.length - 1] ?? 'none';
+    const firstActive = activeDays[0]?.date ?? 'none';
+    const lastActive = activeDays[activeDays.length - 1]?.date ?? 'none';
+    console.log(
+      `[GitHub/page] range=${rangeStart}→${rangeEnd}` +
+      ` | total_days=${allDates.length}` +
+      ` | github_total=${githubHeatmapTotal}` +
+      ` | first_active=${firstActive}` +
+      ` | last_active=${lastActive}`
+    );
+  }
+
   // ── Stat cards — exactly 6 ──────────────────────────────────────────────
 
   // 1. Competitive Programming Problems Solved (LeetCode + Codeforces combined)
@@ -83,7 +119,9 @@ async function loadProgrammingData(forceRefresh: boolean = false): Promise<Progr
     };
   })();
 
-  // 2. GitHub Contributions (2026 only)
+  // 2. GitHub Contributions (Jan 2026 → today)
+  // Value is derived from githubHeatmapTotal, which is the sum of the github
+  // column in the rendered calendar — identical to what the heatmap shows.
   const card2: StatCard = (() => {
     if (!gh.data) {
       return { id: 'github-contributions', label: 'GitHub Contributions', value: '—', subLabel: '2026 · Jan → today', error: gh.error };
@@ -91,7 +129,7 @@ async function loadProgrammingData(forceRefresh: boolean = false): Promise<Progr
     return {
       id: 'github-contributions',
       label: 'GitHub Contributions',
-      value: String(gh.data.contributions2026),
+      value: String(githubHeatmapTotal),
       subLabel: '2026 · Jan → today',
       error: null
     };
