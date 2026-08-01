@@ -111,6 +111,7 @@
       transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
       opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
       box-shadow 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .cta-card:hover {
@@ -140,8 +141,14 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 3.5rem 2.5rem 3rem;
+    padding: 2.5rem 1.5rem 2rem;
     gap: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .cta-inner {
+      padding: 3.5rem 2.5rem 3rem;
+    }
   }
 
   .cta-eyebrow {
@@ -283,6 +290,10 @@
     background: var(--color-accent-dim);
     border-color: color-mix(in srgb, var(--color-accent) 35%, var(--color-border));
     transform: translateY(-1px);
+  }
+
+  .cta-secondary:active {
+    transform: translateY(0);
   }
 
   @media (prefers-reduced-motion: reduce) {
