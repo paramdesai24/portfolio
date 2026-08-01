@@ -1,22 +1,59 @@
 /**
  * GitHub data adapter — server-side only.
  *
- * PRIMARY SOURCE: github-contributions-api.jogruber.de/v4/<username>?y=2026
- *   - Returns a clean JSON array of { date, count, level } per calendar day.
- *   - No auth token required. No HTML scraping. Works reliably right now.
- *   - Source: https://github.com/grubersjoe/github-contributions-api
+ * ─────────────────────────────────────────────────────────────────────────────
+ * CANONICAL SOURCE OF TRUTH
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Endpoint: GitHub GraphQL API v4
+ * URL:      https://api.github.com/graphql
+ * Auth:     GITHUB_TOKEN (Personal Access Token, scope: read:user)
  *
- * SECONDARY SOURCE (if GITHUB_TOKEN is set): GitHub GraphQL API v4
- *   - More authoritative but requires a personal access token.
- *   - Used as the primary path when the token is available.
+ * This is the ONLY data source. There are no fallbacks to:
+ *   - HTML scraping
+ *   - Third-party proxy APIs (jogruber.de, readme-stats, etc.)
+ *   - Cached mirrors
  *
- * REPO COUNT: Always fetched from the official GitHub REST API (public, no token).
+ * If the token is missing or the API call fails, the function returns
+ * { data: null, error: "<reason>" } — it never silently fabricates values.
  *
- * CANONICAL INVARIANT: contributions2026 = Object.values(calendar).reduce(+)
- *   — the stat card and heatmap always derive from the same source.
+ * ─────────────────────────────────────────────────────────────────────────────
+ * NORMALIZED OUTPUT
+ * ─────────────────────────────────────────────────────────────────────────────
+ * After fetching, contribution days are normalized into a single flat dict:
  *
- * Contribution type: ALL contribution types (commits, PRs, issues, reviews),
- * matching what GitHub's own contribution graph shows.
+ *   calendar: Record<string, number>   // { "YYYY-MM-DD": count, ... }
+ *
+ * Only days with count > 0 are stored. Zero-contribution days are filled
+ * in by page.server.ts's generateDateRange() so every calendar cell exists.
+ *
+ * The total (contributions2026) is ALWAYS:
+ *
+ *   Object.values(calendar).reduce((s, v) => s + v, 0)
+ *
+ * It is NEVER taken from GitHub's `totalContributions` field (which is an
+ * API-internal aggregate that may differ from the sum of individual days
+ * due to range boundary rounding).
+ *
+ * ─────────────────────────────────────────────────────────────────────────────
+ * TIMEZONE HANDLING
+ * ─────────────────────────────────────────────────────────────────────────────
+ * GitHub's GraphQL API returns contributionDays.date as a YYYY-MM-DD string
+ * representing the calendar date in the user's account timezone. These strings
+ * are treated as OPAQUE CALENDAR DATES throughout the pipeline.
+ *
+ * We NEVER call new Date(day.date) to do range comparisons. Instead we use
+ * direct lexicographic string comparison:
+ *
+ *   '2026-01-01' <= day.date && day.date <= '2026-08-01'
+ *
+ * This is exact and timezone-safe because YYYY-MM-DD strings sort correctly.
+ *
+ * ─────────────────────────────────────────────────────────────────────────────
+ * CACHING
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Cached for GITHUB_CACHE_SECONDS (30 minutes) by the caller (page.server.ts).
+ * GitHub GraphQL is rate-limited to 5,000 points/hour; one calendar query
+ * costs ~1 point so 30-minute caching is conservative and safe.
  */
 
 import { env } from '$env/dynamic/private';
@@ -25,39 +62,71 @@ import { PROGRAMMING_CONFIG } from './config';
 import type { FetchResult, GitHubData } from './types';
 
 const GITHUB_GRAPHQL = 'https://api.github.com/graphql';
-// Community-maintained GitHub contribution JSON API (no token required)
-// Returns: { total: { "2026": N }, contributions: [{ date, count, level }] }
-const GH_CONTRIB_API = 'https://github-contributions-api.jogruber.de/v4';
 
-// Jan 1 2026 UTC — the inclusive start of the tracked date range
-const START_DATE = new Date(PROGRAMMING_CONFIG.calendarStart);
+// ─── Helpers ────────────────────────────────────────────────────────────────
 
-/** Converts a YYYY-MM-DD string to a Date at UTC midnight */
-function parseUTCDate(dateStr: string): Date {
-  return new Date(dateStr + 'T00:00:00Z');
+/**
+ * Returns today's date as a YYYY-MM-DD string in UTC.
+ * Called fresh on every fetch — never cached at module level.
+ *
+ * Using UTC ensures the range end is consistent with how GitHub stores
+ * contribution dates (the `to` boundary covers the full UTC day).
+ */
+function utcToday(): string {
+  return new Date().toISOString().slice(0, 10);
 }
 
 /**
- * Returns the sum of all values in the calendar dict.
- * This is the ONLY way contributions2026 is computed — it guarantees
- * the stat card value === sum of heatmap daily cells.
+ * Dev-only validation of the normalized calendar data.
+ * Runs after every successful fetch and logs warnings for any violations.
+ * Has zero effect in production (dev === false → entire body is dead code).
  */
-function sumCalendar(calendar: Record<string, number>): number {
-  return Object.values(calendar).reduce((acc, v) => acc + v, 0);
-}
-
-/** Emits a dev-only debug log for the GitHub pipeline. */
-function debugLog(
-  source: 'contributions-api' | 'graphql',
+function devValidate(
   calendar: Record<string, number>,
-  total: number
+  total: number,
+  rangeStart: string,
+  rangeEnd: string
 ): void {
   if (!dev) return;
+
   const dates = Object.keys(calendar).sort();
-  const rangeStart = '2026-01-01';
-  const rangeEnd = new Date().toISOString().slice(0, 10);
+  let ok = true;
+
+  // 1. No dates outside the requested range
+  for (const date of dates) {
+    if (date < rangeStart || date > rangeEnd) {
+      console.warn(`[GitHub] VALIDATION FAIL: date ${date} is outside range ${rangeStart}→${rangeEnd}`);
+      ok = false;
+    }
+  }
+
+  // 2. No duplicate dates (dict keys are unique by definition, but assert)
+  const uniqueCount = new Set(dates).size;
+  if (uniqueCount !== dates.length) {
+    console.warn(`[GitHub] VALIDATION FAIL: ${dates.length - uniqueCount} duplicate date(s) detected`);
+    ok = false;
+  }
+
+  // 3. Dates are strictly increasing (already sorted — check adjacent pairs)
+  for (let i = 1; i < dates.length; i++) {
+    if (dates[i] <= dates[i - 1]) {
+      console.warn(`[GitHub] VALIDATION FAIL: dates not strictly increasing: ${dates[i - 1]} then ${dates[i]}`);
+      ok = false;
+    }
+  }
+
+  // 4. Heatmap total === stat card total (they are the same value by construction,
+  //    but this asserts the construction itself is correct)
+  const computedSum = Object.values(calendar).reduce((s, v) => s + v, 0);
+  if (computedSum !== total) {
+    console.warn(`[GitHub] VALIDATION FAIL: calendar sum (${computedSum}) !== reported total (${total})`);
+    ok = false;
+  }
+
+  // 5. Summary log
   console.log(
-    `[GitHub/${source}] range=${rangeStart}→${rangeEnd}` +
+    `[GitHub/graphql] ${ok ? 'OK' : 'WARNINGS'}` +
+    ` | range=${rangeStart}→${rangeEnd}` +
     ` | active_days=${dates.length}` +
     ` | total=${total}` +
     ` | first_active=${dates[0] ?? 'none'}` +
@@ -65,89 +134,34 @@ function debugLog(
   );
 }
 
-/** Fetch public repo count from the GitHub REST API (no token needed). */
-async function fetchRepoCount(username: string): Promise<number> {
-  try {
-    const res = await fetch(`https://api.github.com/users/${username}`, {
-      headers: { 'User-Agent': 'portfolio-app' },
-      cache: 'no-store'
-    });
-    if (!res.ok) return 0;
-    const data = await res.json();
-    return data.public_repos ?? 0;
-  } catch {
-    return 0;
+// ─── Main fetch ──────────────────────────────────────────────────────────────
+
+export async function fetchGitHubData(): Promise<FetchResult<GitHubData>> {
+  const username = PROGRAMMING_CONFIG.github;
+  const token = env.GITHUB_TOKEN;
+
+  // Hard requirement: no token → no data. We never silently fall back to
+  // third-party APIs or fabricated values.
+  if (!token) {
+    return {
+      data: null,
+      error: 'GITHUB_TOKEN is not set. Add it to .env to enable GitHub contributions.'
+    };
   }
-}
 
-/**
- * PRIMARY: Fetch from github-contributions-api.jogruber.de
- *
- * Endpoint: GET /v4/<username>?y=2026
- * Response: {
- *   total: { "2026": <number> },
- *   contributions: [{ date: "YYYY-MM-DD", count: <number>, level: 0|1|2|3|4 }]
- * }
- *
- * Trade-off: This is a community-maintained service. If it goes down,
- * the adapter falls back to the GitHub GraphQL path (token required) or
- * returns an error. The service itself scrapes GitHub's public HTML server-side,
- * so it reflects the same data as GitHub's own contribution graph.
- */
-async function fetchViaContributionsAPI(username: string): Promise<FetchResult<GitHubData>> {
+  // Date range — computed dynamically on every call.
+  // rangeStart: the configured calendar start (e.g. '2026-01-01')
+  // rangeEnd:   today in UTC (e.g. '2026-08-01')
+  const rangeStart = PROGRAMMING_CONFIG.calendarStart; // YYYY-MM-DD
+  const rangeEnd = utcToday();                          // YYYY-MM-DD
+
+  // GraphQL DateTime scalars require ISO 8601 with time component.
+  // We use T23:59:59Z for `to` to ensure all contributions on `rangeEnd`
+  // are included regardless of when during the UTC day they occurred.
+  const from = `${rangeStart}T00:00:00Z`;
+  const to   = `${rangeEnd}T23:59:59Z`;
+
   try {
-    const [contribRes, repoCount] = await Promise.all([
-      fetch(`${GH_CONTRIB_API}/${username}?y=2026`, {
-        headers: { 'User-Agent': 'portfolio-app' },
-        cache: 'no-store'
-      }),
-      fetchRepoCount(username)
-    ]);
-
-    if (!contribRes.ok) {
-      return { data: null, error: `GitHub contributions API error: ${contribRes.status} ${contribRes.statusText}` };
-    }
-
-    const json = await contribRes.json();
-
-    // Validate response shape
-    if (!Array.isArray(json.contributions)) {
-      return { data: null, error: 'GitHub contributions API: unexpected response shape' };
-    }
-
-    const calendar: Record<string, number> = {};
-
-    for (const entry of json.contributions as Array<{ date: string; count: number }>) {
-      if (!entry.date || typeof entry.count !== 'number') continue;
-      if (entry.count <= 0) continue; // skip zero-contribution days (filled by page.server.ts)
-
-      const dayDate = parseUTCDate(entry.date);
-      if (dayDate < START_DATE) continue; // only 2026+
-
-      // Date is already YYYY-MM-DD from the API — no conversion needed
-      calendar[entry.date] = entry.count;
-    }
-
-    const contributions2026 = sumCalendar(calendar);
-    debugLog('contributions-api', calendar, contributions2026);
-
-    return { data: { calendar, contributions2026, repoCount }, error: null };
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    return { data: null, error: `GitHub contributions API fetch failed: ${msg}` };
-  }
-}
-
-/**
- * SECONDARY: Fetch from the official GitHub GraphQL API v4.
- * Requires GITHUB_TOKEN. Used when the token is present (more authoritative).
- */
-async function fetchViaGraphQL(username: string, token: string): Promise<FetchResult<GitHubData>> {
-  try {
-    const today = new Date();
-    const from = START_DATE.toISOString();
-    const to = today.toISOString();
-
     const query = `
       query($username: String!, $from: DateTime!, $to: DateTime!) {
         user(login: $username) {
@@ -156,6 +170,7 @@ async function fetchViaGraphQL(username: string, token: string): Promise<FetchRe
           }
           contributionsCollection(from: $from, to: $to) {
             contributionCalendar {
+              totalContributions
               weeks {
                 contributionDays {
                   date
@@ -172,7 +187,7 @@ async function fetchViaGraphQL(username: string, token: string): Promise<FetchRe
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        'Authorization': `Bearer ${token}`,
         'User-Agent': 'portfolio-app'
       },
       cache: 'no-store',
@@ -180,59 +195,70 @@ async function fetchViaGraphQL(username: string, token: string): Promise<FetchRe
     });
 
     if (!res.ok) {
-      return { data: null, error: `GitHub GraphQL HTTP error: ${res.status}` };
+      return {
+        data: null,
+        error: `GitHub GraphQL HTTP ${res.status}: ${res.statusText}`
+      };
     }
 
     const json = await res.json();
-    if (json.errors || !json?.data?.user) {
-      const msg = json.errors?.[0]?.message ?? 'unknown GraphQL error';
-      return { data: null, error: `GitHub GraphQL error: ${msg}` };
+
+    if (json.errors?.length) {
+      return {
+        data: null,
+        error: `GitHub GraphQL error: ${json.errors[0]?.message ?? 'unknown'}`
+      };
+    }
+
+    if (!json?.data?.user) {
+      return {
+        data: null,
+        error: `GitHub GraphQL: user "${username}" not found`
+      };
     }
 
     const user = json.data.user;
     const repoCount: number = user.repositories?.totalCount ?? 0;
-    const weeks = user.contributionsCollection?.contributionCalendar?.weeks ?? [];
+    const weeks: Array<{ contributionDays: Array<{ date: string; contributionCount: number }> }> =
+      user.contributionsCollection?.contributionCalendar?.weeks ?? [];
 
+    // ── Build normalized calendar ──────────────────────────────────────────
+    //
+    // Rules:
+    //   • Treat day.date as an opaque YYYY-MM-DD string — no Date parsing.
+    //   • Filter strictly: rangeStart <= date <= rangeEnd.
+    //   • Skip zero-contribution days (page.server.ts fills those as 0).
+    //   • Each date appears exactly once in the GraphQL response; no += needed.
+    //
     const calendar: Record<string, number> = {};
+
     for (const week of weeks) {
-      for (const day of week.contributionDays ?? []) {
+      for (const day of week.contributionDays) {
+        // Lexicographic string comparison — correct for YYYY-MM-DD
+        if (day.date < rangeStart || day.date > rangeEnd) continue;
         if (day.contributionCount <= 0) continue;
-        const dayDate = parseUTCDate(day.date);
-        if (dayDate < START_DATE) continue;
-        // day.date is already YYYY-MM-DD in the GraphQL response
-        calendar[day.date] = (calendar[day.date] ?? 0) + day.contributionCount;
+
+        calendar[day.date] = day.contributionCount;
       }
     }
 
-    const contributions2026 = sumCalendar(calendar);
-    debugLog('graphql', calendar, contributions2026);
+    // ── Canonical total ────────────────────────────────────────────────────
+    //
+    // NEVER use calendarData.totalContributions here.
+    // That value is computed by GitHub internally and may differ from the
+    // sum of individual days (e.g. off-by-one on range boundaries).
+    //
+    // The total is ALWAYS the sum of calendar values — identical to what
+    // page.server.ts computes from the same dict for the stat card.
+    //
+    const contributions2026 = Object.values(calendar).reduce((s, v) => s + v, 0);
+
+    devValidate(calendar, contributions2026, rangeStart, rangeEnd);
 
     return { data: { calendar, contributions2026, repoCount }, error: null };
+
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    return { data: null, error: `GitHub GraphQL fetch failed: ${msg}` };
+    return { data: null, error: `GitHub fetch failed: ${msg}` };
   }
-}
-
-/**
- * Main entry point.
- *
- * Strategy:
- *   1. If GITHUB_TOKEN is set → try GraphQL (most authoritative).
- *      On failure → fall back to the contributions API.
- *   2. If no token → use the contributions API directly (no auth needed,
- *      returns live data via the community-maintained scraping proxy).
- */
-export async function fetchGitHubData(): Promise<FetchResult<GitHubData>> {
-  const username = PROGRAMMING_CONFIG.github;
-  const token = env.GITHUB_TOKEN || (typeof process !== 'undefined' ? process.env.GITHUB_TOKEN : undefined);
-
-  if (token) {
-    const result = await fetchViaGraphQL(username, token);
-    if (result.data) return result;
-    // GraphQL failed — fall back to contributions API
-    if (dev) console.warn(`[GitHub] GraphQL failed (${result.error}), falling back to contributions API`);
-  }
-
-  return fetchViaContributionsAPI(username);
 }

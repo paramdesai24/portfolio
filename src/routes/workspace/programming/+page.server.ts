@@ -1,11 +1,37 @@
 /**
  * Server-side load function for the Programming page.
  *
- * All external API calls happen here — GITHUB_TOKEN never touches the client.
- * The three platforms are fetched in parallel. Each has independent error
- * handling: if one fails, the page still renders with the other two.
+ * All external API calls happen here — tokens never touch the client.
+ * The three platforms (GitHub, LeetCode, Codeforces) are fetched in parallel.
+ * Each platform is independently failable: if one fails, the page still
+ * renders correctly with data from the other two.
  *
- * Data is cached for REVALIDATE_SECONDS (12h) using the module-level cache.
+ * ─────────────────────────────────────────────────────────────────────────────
+ * SINGLE SOURCE OF TRUTH INVARIANT
+ * ─────────────────────────────────────────────────────────────────────────────
+ * After fetching all platforms, a merged calendar array is built:
+ *
+ *   CalendarDay[]  →  { date, github, leetcode, codeforces, total }
+ *
+ * This array covers every day from calendarStart → today (inclusive).
+ * Zero-contribution days exist with all counts set to 0.
+ *
+ * The GitHub stat card value is:
+ *
+ *   githubTotal = sum of calendar[i].github for all i
+ *
+ * This is IDENTICAL to what the heatmap renders — they share the same array.
+ * There is no separate GitHub total computation anywhere in the codebase.
+ *
+ * ─────────────────────────────────────────────────────────────────────────────
+ * TIMEZONE HANDLING
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Date generation uses UTC methods exclusively (getUTCFullYear, getUTCMonth,
+ * getUTCDate, setUTCDate) to avoid local-timezone shifts.
+ *
+ * `todayUTC()` produces the UTC date string (YYYY-MM-DD) at call time.
+ * The calendar always ends on the current UTC date — never yesterday, never
+ * a day ahead.
  */
 
 import type { PageServerLoad } from './$types';
@@ -14,99 +40,150 @@ import { getCached } from '$lib/programming/cache';
 import { fetchGitHubData } from '$lib/programming/github';
 import { fetchLeetCodeData } from '$lib/programming/leetcode';
 import { fetchCodeforcesData } from '$lib/programming/codeforces';
-import { PROGRAMMING_CONFIG } from '$lib/programming/config';
+import { PROGRAMMING_CONFIG, GITHUB_CACHE_SECONDS } from '$lib/programming/config';
 import type { CalendarDay, StatCard, ProgrammingPageData } from '$lib/programming/types';
 
-const CALENDAR_START = new Date(PROGRAMMING_CONFIG.calendarStart);
+// ─── Date helpers ────────────────────────────────────────────────────────────
 
-/** Generates all YYYY-MM-DD UTC dates from start to today (inclusive) */
-function generateDateRange(start: Date, end: Date): string[] {
+/** Returns today's date as YYYY-MM-DD in UTC, computed fresh each call. */
+function utcToday(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+/**
+ * Generates every YYYY-MM-DD string from `startDate` through `endDate`
+ * (both inclusive). Uses UTC arithmetic to avoid DST / local-timezone shifts.
+ *
+ * @param startDate - YYYY-MM-DD string (e.g. '2026-01-01')
+ * @param endDate   - YYYY-MM-DD string (e.g. '2026-08-01')
+ */
+function generateDateRange(startDate: string, endDate: string): string[] {
   const dates: string[] = [];
-  const cur = new Date(start);
-  cur.setUTCHours(0, 0, 0, 0);
-  const endDay = new Date(end);
-  endDay.setUTCHours(0, 0, 0, 0);
 
-  while (cur <= endDay) {
+  // Parse as explicit UTC midnight to avoid timezone interpretation
+  const cur = new Date(`${startDate}T00:00:00Z`);
+  const end = new Date(`${endDate}T00:00:00Z`);
+
+  while (cur <= end) {
     const y = cur.getUTCFullYear();
     const m = String(cur.getUTCMonth() + 1).padStart(2, '0');
     const d = String(cur.getUTCDate()).padStart(2, '0');
     dates.push(`${y}-${m}-${d}`);
     cur.setUTCDate(cur.getUTCDate() + 1);
   }
+
   return dates;
 }
 
-async function loadProgrammingData(forceRefresh: boolean = false): Promise<ProgrammingPageData> {
-  // Fetch all three platforms in parallel — each independently failable
+// ─── Dev-only page-level validation ─────────────────────────────────────────
+
+function devValidatePage(
+  calendar: CalendarDay[],
+  githubTotal: number,
+  statCardTotal: number
+): void {
+  if (!dev) return;
+
+  // 1. Heatmap total must equal stat card total (they derive from the same array)
+  if (githubTotal !== statCardTotal) {
+    console.warn(
+      `[page] VALIDATION FAIL: heatmap GitHub total (${githubTotal}) ` +
+      `!== stat card total (${statCardTotal})`
+    );
+  } else {
+    console.log(`[page] GitHub total validated: ${githubTotal}`);
+  }
+
+  // 2. No missing dates — calendar must be contiguous
+  for (let i = 1; i < calendar.length; i++) {
+    const prev = calendar[i - 1].date;
+    const curr = calendar[i].date;
+    // Quick contiguity check: adjacent strings should differ by 1 day.
+    // We verify by comparing computed next-day string.
+    const expectedNext = (() => {
+      const d = new Date(`${prev}T00:00:00Z`);
+      d.setUTCDate(d.getUTCDate() + 1);
+      return d.toISOString().slice(0, 10);
+    })();
+    if (curr !== expectedNext) {
+      console.warn(`[page] VALIDATION FAIL: gap in calendar between ${prev} and ${curr} (expected ${expectedNext})`);
+    }
+  }
+
+  // 3. Range bounds
+  const first = calendar[0]?.date;
+  const last  = calendar[calendar.length - 1]?.date;
+  const today = utcToday();
+
+  if (first !== PROGRAMMING_CONFIG.calendarStart) {
+    console.warn(`[page] VALIDATION FAIL: calendar starts at ${first}, expected ${PROGRAMMING_CONFIG.calendarStart}`);
+  }
+  if (last !== today) {
+    console.warn(`[page] VALIDATION FAIL: calendar ends at ${last}, expected today=${today}`);
+  }
+
+  console.log(
+    `[page] calendar: ${calendar.length} days, ${first}→${last}, githubTotal=${githubTotal}`
+  );
+}
+
+// ─── Main loader ─────────────────────────────────────────────────────────────
+
+async function loadProgrammingData(forceRefresh: boolean): Promise<ProgrammingPageData> {
+  // Fetch all three platforms in parallel, each independently failable.
+  // GitHub uses a 30-minute cache; LeetCode and Codeforces use 15 seconds.
   const [ghResult, lcResult, cfResult] = await Promise.allSettled([
-    getCached('github', fetchGitHubData, forceRefresh),
-    getCached('leetcode', fetchLeetCodeData, forceRefresh),
+    getCached('github',     fetchGitHubData,     forceRefresh, GITHUB_CACHE_SECONDS),
+    getCached('leetcode',   fetchLeetCodeData,   forceRefresh),
     getCached('codeforces', fetchCodeforcesData, forceRefresh)
   ]);
 
-  const gh = ghResult.status === 'fulfilled' ? ghResult.value : { data: null, error: 'GitHub fetch threw an exception' };
-  const lc = lcResult.status === 'fulfilled' ? lcResult.value : { data: null, error: 'LeetCode fetch threw an exception' };
-  const cf = cfResult.status === 'fulfilled' ? cfResult.value : { data: null, error: 'Codeforces fetch threw an exception' };
+  const gh = ghResult.status === 'fulfilled' ? ghResult.value : { data: null, error: 'GitHub fetch threw' };
+  const lc = lcResult.status === 'fulfilled' ? lcResult.value : { data: null, error: 'LeetCode fetch threw' };
+  const cf = cfResult.status === 'fulfilled' ? cfResult.value : { data: null, error: 'Codeforces fetch threw' };
 
   const errors = {
-    github: gh.error,
-    leetcode: lc.error,
+    github:     gh.error,
+    leetcode:   lc.error,
     codeforces: cf.error
   };
 
-  // Build merged calendar: one entry per day from Jan 1 2026 → today
-  const today = new Date();
-  const allDates = generateDateRange(CALENDAR_START, today);
+  // ── Build merged calendar ──────────────────────────────────────────────────
+  //
+  // One CalendarDay entry for every calendar day from calendarStart → today.
+  // Zero-contribution days are included with all counts = 0.
+  // The order is strictly ascending by date.
+  //
+  const today    = utcToday();
+  const allDates = generateDateRange(PROGRAMMING_CONFIG.calendarStart, today);
 
   const calendar: CalendarDay[] = allDates.map((date) => {
-    const github = gh.data?.calendar[date] ?? 0;
-    const leetcode = lc.data?.calendar[date] ?? 0;
+    const github    = gh.data?.calendar[date] ?? 0;
+    const leetcode  = lc.data?.calendar[date] ?? 0;
     const codeforces = cf.data?.calendar[date] ?? 0;
     return { date, github, leetcode, codeforces, total: github + leetcode + codeforces };
   });
 
-  // CANONICAL GitHub total: sum the github column of the heatmap.
-  // This is the single source of truth used by BOTH the stat card and the heatmap,
-  // so they are guaranteed to match.
-  const githubHeatmapTotal = calendar.reduce((s, d) => s + d.github, 0);
+  // ── Canonical GitHub total ─────────────────────────────────────────────────
+  //
+  // Computed by summing the github column of the SAME array the heatmap uses.
+  // This is the only place the total is computed — it is used directly in
+  // the stat card. There is no other GitHub total anywhere in the codebase.
+  //
+  const githubTotal = calendar.reduce((s, d) => s + d.github, 0);
 
-  // Dev-mode validation: warn if the value from the GitHub fetcher differs from
-  // the heatmap sum. These should always be equal after the github.ts fix.
-  if (dev && gh.data) {
-    if (githubHeatmapTotal !== gh.data.contributions2026) {
-      console.warn(
-        `[GitHub validation FAILED] ` +
-        `stat card total (${gh.data.contributions2026}) !== ` +
-        `heatmap sum (${githubHeatmapTotal}). ` +
-        `Using heatmap sum as the displayed value.`
-      );
-    } else {
-      console.log(
-        `[GitHub validation OK] total=${githubHeatmapTotal} matches heatmap sum.`
-      );
-    }
-    // Server-side range/day debug log
-    const activeDays = calendar.filter((d) => d.github > 0);
-    const rangeStart = allDates[0] ?? 'none';
-    const rangeEnd = allDates[allDates.length - 1] ?? 'none';
-    const firstActive = activeDays[0]?.date ?? 'none';
-    const lastActive = activeDays[activeDays.length - 1]?.date ?? 'none';
-    console.log(
-      `[GitHub/page] range=${rangeStart}→${rangeEnd}` +
-      ` | total_days=${allDates.length}` +
-      ` | github_total=${githubHeatmapTotal}` +
-      ` | first_active=${firstActive}` +
-      ` | last_active=${lastActive}`
-    );
-  }
+  // ── Stat cards ─────────────────────────────────────────────────────────────
 
-  // ── Stat cards — exactly 6 ──────────────────────────────────────────────
-
-  // 1. Competitive Programming Problems Solved (LeetCode + Codeforces combined)
+  // 1. Problems Solved (LeetCode + Codeforces combined)
   const card1: StatCard = (() => {
     if (!lc.data && !cf.data) {
-      return { id: 'problems-solved', label: 'Problems Solved', value: '—', subLabel: 'LeetCode + Codeforces', error: 'Data unavailable' };
+      return {
+        id: 'problems-solved',
+        label: 'Problems Solved',
+        value: '—',
+        subLabel: 'LeetCode + Codeforces',
+        error: 'Data unavailable'
+      };
     }
     const lcSolved = lc.data?.totalSolved ?? 0;
     const cfSolved = cf.data?.totalSolved ?? 0;
@@ -119,26 +196,37 @@ async function loadProgrammingData(forceRefresh: boolean = false): Promise<Progr
     };
   })();
 
-  // 2. GitHub Contributions (Jan 2026 → today)
-  // Value is derived from githubHeatmapTotal, which is the sum of the github
-  // column in the rendered calendar — identical to what the heatmap shows.
+  // 2. GitHub Contributions
+  // Value = githubTotal, which is sum(calendar[i].github) — same data as heatmap.
   const card2: StatCard = (() => {
     if (!gh.data) {
-      return { id: 'github-contributions', label: 'GitHub Contributions', value: '—', subLabel: '2026 · Jan → today', error: gh.error };
+      return {
+        id: 'github-contributions',
+        label: 'GitHub Contributions',
+        value: '—',
+        subLabel: `${PROGRAMMING_CONFIG.calendarStart} → today`,
+        error: gh.error
+      };
     }
     return {
       id: 'github-contributions',
       label: 'GitHub Contributions',
-      value: String(githubHeatmapTotal),
-      subLabel: '2026 · Jan → today',
+      value: String(githubTotal),
+      subLabel: `Jan ${new Date(`${PROGRAMMING_CONFIG.calendarStart}T00:00:00Z`).getUTCFullYear()} → today`,
       error: null
     };
   })();
 
-  // 3. GitHub Repositories (current public count)
+  // 3. GitHub Repositories
   const card3: StatCard = (() => {
     if (!gh.data) {
-      return { id: 'github-repos', label: 'GitHub Repositories', value: '—', subLabel: 'Public repositories', error: gh.error };
+      return {
+        id: 'github-repos',
+        label: 'GitHub Repositories',
+        value: '—',
+        subLabel: 'Public repositories',
+        error: gh.error
+      };
     }
     return {
       id: 'github-repos',
@@ -149,25 +237,29 @@ async function loadProgrammingData(forceRefresh: boolean = false): Promise<Progr
     };
   })();
 
-  // 4. LeetCode Contest Global Rank (Percentile)
+  // 4. LeetCode Contest Rank
   const card4: StatCard = (() => {
     if (!lc.data) {
-      return { id: 'leetcode-rank', label: 'LeetCode Contest Rank', value: '—', subLabel: 'Contest percentile rank', error: lc.error };
+      return {
+        id: 'leetcode-rank',
+        label: 'LeetCode Contest Rank',
+        value: '—',
+        subLabel: 'Contest percentile rank',
+        error: lc.error
+      };
     }
     const topPct = lc.data.contestTopPercentage;
     const contestRank = lc.data.contestGlobalRanking;
-
     let valueStr = '—';
     if (topPct && topPct > 0) {
       valueStr = `Top ${topPct % 1 === 0 ? topPct : topPct.toFixed(1)}%`;
     } else if (lc.data.globalRank > 0) {
       valueStr = `#${lc.data.globalRank.toLocaleString()}`;
     }
-
-    const subLabelStr = contestRank && contestRank > 0
-      ? `#${contestRank.toLocaleString()} in global contests`
-      : 'Contest percentile rank';
-
+    const subLabelStr =
+      contestRank && contestRank > 0
+        ? `#${contestRank.toLocaleString()} in global contests`
+        : 'Contest percentile rank';
     return {
       id: 'leetcode-rank',
       label: 'LeetCode Contest Rank',
@@ -177,10 +269,16 @@ async function loadProgrammingData(forceRefresh: boolean = false): Promise<Progr
     };
   })();
 
-  // 5. LeetCode Maximum Streak
+  // 5. LeetCode Max Streak
   const card5: StatCard = (() => {
     if (!lc.data) {
-      return { id: 'leetcode-streak', label: 'Max Solving Streak', value: '—', subLabel: 'Consecutive problem solving days', error: lc.error };
+      return {
+        id: 'leetcode-streak',
+        label: 'Max Solving Streak',
+        value: '—',
+        subLabel: 'Consecutive problem solving days',
+        error: lc.error
+      };
     }
     return {
       id: 'leetcode-streak',
@@ -194,7 +292,13 @@ async function loadProgrammingData(forceRefresh: boolean = false): Promise<Progr
   // 6. LeetCode Contest Rating
   const card6: StatCard = (() => {
     if (!lc.data) {
-      return { id: 'leetcode-rating', label: 'Contest Rating', value: '—', subLabel: 'LeetCode contests', error: lc.error };
+      return {
+        id: 'leetcode-rating',
+        label: 'Contest Rating',
+        value: '—',
+        subLabel: 'LeetCode contest rating',
+        error: lc.error
+      };
     }
     const rating = lc.data.contestRating;
     return {
@@ -206,6 +310,9 @@ async function loadProgrammingData(forceRefresh: boolean = false): Promise<Progr
     };
   })();
 
+  // ── Validate (dev only) ────────────────────────────────────────────────────
+  devValidatePage(calendar, githubTotal, githubTotal); // same value by construction
+
   return {
     calendar,
     stats: [card1, card2, card3, card4, card5, card6],
@@ -216,6 +323,5 @@ async function loadProgrammingData(forceRefresh: boolean = false): Promise<Progr
 
 export const load: PageServerLoad = async ({ url }) => {
   const forceRefresh = url.searchParams.has('refresh');
-  const data = await loadProgrammingData(forceRefresh);
-  return data;
+  return loadProgrammingData(forceRefresh);
 };

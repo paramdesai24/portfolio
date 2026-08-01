@@ -8,8 +8,13 @@ export const PROGRAMMING_CONFIG = {
   leetcode: 'paramdesai7',
   codeforces: 'Perom_7',
 
-  /** Calendar date range start — Jan 1 2026, UTC midnight */
-  calendarStart: '2026-01-01T00:00:00Z',
+  /**
+   * Calendar start date — inclusive lower bound of the tracked date range.
+   * Format: YYYY-MM-DD (plain calendar date, no timezone suffix).
+   * Used as a string for direct lexicographic date comparison — never parsed
+   * through new Date() inside the data pipeline.
+   */
+  calendarStart: '2026-01-01',
 
   /** External profile links */
   links: {
@@ -19,5 +24,15 @@ export const PROGRAMMING_CONFIG = {
   }
 } as const;
 
-/** Cache TTL in seconds (15 seconds for instant live stat updates). */
+/**
+ * Cache TTL for LeetCode and Codeforces adapters.
+ * These use public endpoints without strict rate limits.
+ */
 export const REVALIDATE_SECONDS = 15;
+
+/**
+ * Cache TTL for the GitHub GraphQL adapter.
+ * GitHub GraphQL is rate-limited to 5,000 points/hour per token.
+ * 30 minutes is a safe default that keeps data reasonably fresh.
+ */
+export const GITHUB_CACHE_SECONDS = 1800;
