@@ -34,7 +34,7 @@
 
   const publications = [
     {
-      citation: "\"FIDES: Federated Intelligence and Detection with Quantum Security for Financial Institutions.\" In Proceedings of the International Conference on Computer, Information and Telecommunication Systems (CITS 2026), 2026. (Accepted)"
+      citation: "\"FIDES: A Federated Intelligence and Detection with Quantum Security for Financial Institutions.\" In Proceedings of the International Conference on Computer, Information and Telecommunication Systems (CITS 2026), Piraeus-Athens, Greece, 2026. DOI: 10.1109/CITS70307.2026.11637348."
     },
     {
       citation: "\"Machine Unlearning-based Privacy-First Medical Imaging Framework for TB Detection.\" In Proceedings of the Scientific Workshop on AI for Medicine (AI2M4RI 2026), 2026. (Accepted)"

@@ -1,33 +1,46 @@
 ---
-title: "FIDES: Federated Intelligence and Detection with Quantum Security for Financial Institutions"
+title: "FIDES: A Federated Intelligence and Detection with Quantum Security for Financial Institutions"
 shortDescription: "Quantum-secured federated deep learning framework for multi-institution financial fraud detection with CV-QKD gradient encryption and FedDyn aggregation"
-venue: "CITS 2026"
+venue: "IEEE CITS 2026"
 year: 2026
-status: "accepted"
+status: "Published"
+pdfUrl: "https://ieeexplore.ieee.org/document/11637348"
+doi: "10.1109/CITS70307.2026.11637348"
+location: "Piraeus-Athens, Greece"
+publisher: "IEEE"
+dateAdded: "August 13, 2026"
 researchAreas: ["Federated Learning", "Quantum Security", "Financial AI"]
 order: 7
-abstract: "FIDES addresses increasingly sophisticated financial fraud using Federated Deep Learning with CV-QKD-secured gradient transmission across non-IID client data. FedDyn aggregation achieves 97.74% accuracy with >250,000 bits/sec key rate and >98% secure key ratio, providing information-theoretically strong privacy guarantees for inter-institution model training."
+abstract: "With the increasing sophistication of financial frauds, there is now a need for more advanced, secure, and scalable detection mechanisms. A fraud detection framework has been proposed that uses Federated Deep Learning (FDL) and Quantum Key Distribution (QKD) for non-IID financial data while carrying out secure communication. Using FL algorithms-FedAvg, FedAdagrad, FedAMP, and FedDyn-on partitioned client data, we demonstrate that FedDyn outperforms the other algorithms with an accuracy of 97.74%. Furthermore, we use Continuous-Variable QKD to encrypt the model updates to secure client-server communication, achieving a secure key ratio of above 98% and key rates of more than 250,000 bits/sec. Lastly, we implemented an elaborate suite of evaluations consisting of client-wise metrics, ROC curves, and t-SNE plots to validate the efficacy of our model implementation in terms of both performance and privacy preservation. Through our results, we address the brought-up importance of distributed intelligence powered by quantum encryption against advanced financial frauds."
 ---
 
 ## Problem
 
-Federated learning is widely marketed as privacy-preserving because raw transaction data never leaves client institutions. However, this framing contains a critical blind spot: gradient inversion attacks can reconstruct private training inputs with high fidelity from intercepted gradient updates, without ever accessing raw data. For financial institutions sharing fraud detection models, intercepted gradients can expose proprietary fraud patterns, transaction typologies, and customer data — intelligence with direct competitive and operational value. Standard federated architectures transmit gradients in plaintext or with TLS, which provides confidentiality against passive eavesdropping but not against a motivated adversary who has compromised the communication infrastructure.
+Frauds in industrial financial systems are no longer confined to simple forged checks, accounting errors, and malicious transactions — they are a booming and vicious threat, resulting in over $16.6 billion in losses in 2024 alone (a 33% increase year-over-year). While Machine Learning (ML) and Deep Learning (DL) have emerged as powerful detection tools, conventional centralized models require aggregating sensitive client transaction histories onto a central server, exposing proprietary financial data to massive breach risks. Conversely, while Federated Learning (FL) keeps raw data localized across financial institutions, transmitting model gradients and weight updates over classical channels leaves the communication link vulnerable to interception, manipulation, and gradient inversion attacks by motivated adversaries.
 
 ## Key Contributions
 
-1. A federated fraud detection framework (FIDES) securing gradient transmission with CV-QKD, replacing computational security assumptions with physical-law guarantees.
-2. Systematic comparison of FL aggregation algorithms (FedAvg, FedAdagrad, FedAMP, FedDyn) under realistic non-IID financial data distributions.
-3. A consent-driven machine unlearning module (KL-Adversarial, Fisher Regularization, Reverse Distillation) allowing institutions to remove revoked data without full retraining.
-4. Evaluation against gradient inversion attacks, confirming that QKD-encrypted updates cannot be reconstructed even under unlimited computational adversaries.
+1. **FIDES Framework**: A novel three-layer architecture ($\psi_1, \psi_2, \psi_3$) integrating Federated Deep Learning (FDL) with Quantum Key Distribution (QKD) to enable secure, scalable, and privacy-preserving fraud detection across non-IID financial data.
+2. **Algorithm Comparison on Non-IID Data**: Comprehensive evaluation of four federated learning algorithms (**FedAvg, FedAdagrad, FedAMP, and FedDyn**) under realistic temporal partitioning across heterogeneous clients, proving FedDyn's superior performance (97.74% accuracy).
+3. **Continuous-Variable QKD (CV-QKD) Security**: Implementation and evaluation of a CV-QKD encryption protocol for model weight updates and gradient exchange, achieving >98% secure key extraction efficiency and throughput above 250,000 bits/sec.
+4. **Comprehensive Multi-Metric Evaluation**: Validation using client-wise metrics, ROC curves (AUC 99.86%), confusion matrices, and t-SNE class cluster visualizations to verify both fraud classification accuracy and strict privacy preservation.
 
 ## Methodology
 
-FIDES is a three-layer federated architecture. At the client layer, each financial institution trains on its local transaction dataset and computes gradient updates. Before transmission, gradient batches are encrypted using CV-QKD key material — keys whose secrecy is guaranteed by quantum mechanics rather than computational hardness. At the aggregation layer, FedDyn (Federated Dynamic Regularization) addresses the non-IID challenge inherent in real federated deployments: different institutions have different fraud rates, customer demographics, and transaction typologies. FedDyn adds a client-specific regularization term that prevents local models from drifting too far from the global model during local training — a problem FedAvg handles poorly under non-IID distributions. The unlearning module uses the three-strategy framework from Q-PhishNet: KL-Adversarial disrupts the output distribution on revoked samples, Fisher Regularization targets parameters with high sensitivity to those samples, and Reverse Distillation aligns the model's internal representations with a teacher trained without the revoked data.
+FIDES structures fraud detection across three interconnected functional layers:
+- **Data Acquisition & Preprocessing ($\psi_1$)**: Processes 50,000 transaction samples across 21 feature dimensions. Features undergo z-score standardization, IQR-based outlier capping, dimensionality reduction with Principal Component Analysis (PCA), and feature selection via Mutual Information (MI) to isolate critical indicators such as risk scores, transaction amounts, failed transaction counts, and transaction distance. The dataset is temporally partitioned across 4 client nodes (quarterly distribution) to model realistic non-IID data heterogeneity.
+- **Federated AI with Dynamic Regularization ($\psi_2$)**: Employs a 3-layer Multilayer Perceptron (MLP) binary classifier (64 and 32 hidden neurons with ReLU and 30% dropout regularization). Dynamic regularization via FedDyn augments the local loss with memory-based client control vectors $h_i^t$ and a regularization parameter ($\alpha = 0.01$), mitigating client drift across heterogeneous financial institutions during communication rounds.
+- **Quantum Cryptographic Security Sublayer**: Integrates Continuous-Variable Quantum Key Distribution (CV-QKD) where Gaussian quadrature pairs $(q_i, p_i) \sim \mathcal{N}(0, \sigma^2)$ are sampled into coherent optical pulses and measured via homodyne detection. Classical post-processing (sifting, excess noise estimation, error correction, and privacy-amplification hashing) distills secret keys used as one-time pads to symmetrically encrypt model updates. Any eavesdropping introduces detectable excess noise, aborting the protocol to ensure end-to-end confidentiality.
 
 ## Results
 
-FedDyn significantly outperforms the baseline algorithms under non-IID data: **97.74% detection accuracy**, compared to FedAvg's lower performance under distribution shift. The CV-QKD channel achieves a **secure key ratio exceeding 98%** and **key rates above 250,000 bits/second** — sufficient to encrypt full gradient batches within federated round timelines. t-SNE visualization confirms strong class separation, and ROC analysis validates robust generalization across client distributions. The unlearning module achieves near-chance accuracy on revoked training samples while retaining model performance on retained data.
+Experimental results confirm the effectiveness of the FIDES architecture:
+- **Model Performance**: FedDyn achieved the highest overall detection accuracy of **97.74%**, outperforming FedAvg, FedAdagrad, and FedAMP on non-IID client partitions.
+- **Classification Trade-offs & Generalization**: The ROC analysis yielded an outstanding **AUC of 99.86%**, showing optimal true positive vs. false positive rate trade-offs. The confusion matrix verified ~98% accuracy in separating legitimate and fraudulent transactions.
+- **Client-Wise Equity**: Evaluation across all 4 clients demonstrated balanced performance, with Client 1 and Client 4 attaining highest accuracies and Client 3 leading precision, confirming that dynamic regularization prevents individual client degradation.
+- **Quantum Cryptographic Advantage**: CV-QKD demonstrated a **~98% secure bit extraction ratio** (compared to ~48% for BB84) and converged rapidly to a throughput averaging **~258,000 bits/sec** (compared to BB84's 88,983 bits/sec).
+- **Class Separation & Privacy**: t-SNE dimensionality reduction confirmed distinct clustering between fraudulent and legitimate transaction representations without leaking raw transaction attributes.
 
 ## Implications
 
-FIDES demonstrates that quantum key distribution is practically applicable to federated learning at the gradient batch scale. The non-real-time nature of federated rounds (typically hours to days) makes CV-QKD's per-batch latency acceptable in a way it would not be for real-time V2X applications. The security guarantee shifts from "this encryption is computationally hard to break today" to "any eavesdropping attempt on this channel is physically detectable" — a qualitative strengthening of the federated learning privacy claim. The deployment assumptions and validation requirements identified post-Tampa are explicitly documented: hardware QKD latency characterization, graceful degradation when a client's QKD channel fails mid-round, and scalability under large federated node counts remain open validation work.
+FIDES demonstrates that combining Federated Deep Learning with Continuous-Variable Quantum Key Distribution establishes a scalable, mathematically secure foundation for multi-institution financial fraud detection. The high key generation rates of CV-QKD over standard telecom optical fiber accommodate batch model update encryption without degrading federated training cycles. Moving from computational hardness assumptions to physical-law quantum guarantees ensures that sensitive inter-bank intelligence and client transaction distributions remain invulnerable to both classical eavesdropping and future quantum-assisted attacks.
