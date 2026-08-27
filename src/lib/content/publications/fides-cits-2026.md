@@ -10,8 +10,8 @@ location: "Piraeus-Athens, Greece"
 publisher: "IEEE"
 dateAdded: "August 13, 2026"
 researchAreas: ["Federated Learning", "Quantum Security", "Financial AI"]
-order: 7
-abstract: "With the increasing sophistication of financial frauds, there is now a need for more advanced, secure, and scalable detection mechanisms. A fraud detection framework has been proposed that uses Federated Deep Learning (FDL) and Quantum Key Distribution (QKD) for non-IID financial data while carrying out secure communication. Using FL algorithms-FedAvg, FedAdagrad, FedAMP, and FedDyn-on partitioned client data, we demonstrate that FedDyn outperforms the other algorithms with an accuracy of 97.74%. Furthermore, we use Continuous-Variable QKD to encrypt the model updates to secure client-server communication, achieving a secure key ratio of above 98% and key rates of more than 250,000 bits/sec. Lastly, we implemented an elaborate suite of evaluations consisting of client-wise metrics, ROC curves, and t-SNE plots to validate the efficacy of our model implementation in terms of both performance and privacy preservation. Through our results, we address the brought-up importance of distributed intelligence powered by quantum encryption against advanced financial frauds."
+order: 2
+abstract: "A quantum-secured federated deep learning framework for multi-institution financial fraud detection, combining FedDyn regularization for non-IID data with Continuous-Variable QKD for secure gradient transmission."
 ---
 
 ## Problem

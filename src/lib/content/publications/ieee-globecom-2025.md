@@ -11,7 +11,7 @@ location: "Taipei, Taiwan"
 publisher: "IEEE"
 dateAdded: "July 7, 2026"
 relatedProjects: ["petbot"]
-order: 5
+order: 1
 abstract: "Q-PhishNet is a phishing-detection framework for IoT networks that combines deep learning, explainable AI, machine unlearning, and quantum cryptography. It uses deep learning for phishing URL classification and LIME for interpreting predictions. To support data revocation and counter poisoned data, it integrates three machine-unlearning techniques: KL Adversarial Unlearning, Fisher Regularization, and Reverse Distillation. The BBM92 quantum key distribution protocol secures data transmission during the unlearning process."
 ---
 

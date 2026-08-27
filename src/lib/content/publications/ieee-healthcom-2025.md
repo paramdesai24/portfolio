@@ -11,7 +11,7 @@ location: "Abu Dhabi, United Arab Emirates"
 publisher: "IEEE"
 dateAdded: "January 21, 2026"
 relatedProjects: ["petbot"]
-order: 4
+order: 7
 abstract: "Presents a quantum-assisted edge computing framework for real-time anomaly detection and secure data processing in IoT-enabled healthcare environments."
 ---
 

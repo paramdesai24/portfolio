@@ -58,13 +58,10 @@ export async function getProject(slug: string): Promise<Project & { content: Com
   };
 }
 
-// Get all publications sorted by year descending, then order ascending
+// Get all publications sorted by order ascending
 export async function getPublications(): Promise<Publication[]> {
   const list = await resolveModules<Publication>(publicationModules);
   return list.sort((a, b) => {
-    if (b.year !== a.year) {
-      return b.year - a.year;
-    }
     return (a.order || 0) - (b.order || 0);
   });
 }

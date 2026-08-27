@@ -8,16 +8,16 @@ export const load: PageLoad = async ({ params }) => {
 
     // Dynamic mapping for prev/next timeline navigation
     const uniqueOrder = [
-      { slug: 'pub-fides', title: 'CITS 2026' },
-      { slug: 'pub-globecom', title: 'IEEE GLOBECOM 2025' },
-      { slug: 'pub-vtc', title: 'IEEE VTC Spring 2025' },
-      { slug: 'pub-healthcom', title: 'IEEE HealthCom 2025' },
-      { slug: 'pub-icsc', title: 'IEEE ICSC 2025' },
-      { slug: 'pub-cml', title: 'Springer CML 2025' },
-      { slug: 'pub-tb', title: 'AI2M4RI 2026' }
+      { slug: 'ieee-globecom-2025', alias: 'pub-globecom', title: 'IEEE GLOBECOM 2025' },
+      { slug: 'fides-cits-2026', alias: 'pub-fides', title: 'IEEE CITS 2026' },
+      { slug: 'ieee-icsc-2025', alias: 'pub-icsc', title: 'IEEE ICSC 2025' },
+      { slug: 'ai2m4ri-2026', alias: 'pub-tb', title: 'AI2M4RI 2026' },
+      { slug: 'ieee-vtc-2025', alias: 'pub-vtc', title: 'IEEE VTC Spring 2025' },
+      { slug: 'springer-cml-2025', alias: 'pub-cml', title: 'Springer CML 2025' },
+      { slug: 'ieee-healthcom-2025', alias: 'pub-healthcom', title: 'IEEE HealthCom 2025' }
     ];
 
-    const currentIndex = uniqueOrder.findIndex(item => item.slug === params.slug);
+    const currentIndex = uniqueOrder.findIndex(item => item.slug === params.slug || item.alias === params.slug);
 
     const prev = currentIndex > 0 ? {
       slug: uniqueOrder[currentIndex - 1].slug,

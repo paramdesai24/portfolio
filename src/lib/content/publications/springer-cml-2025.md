@@ -7,7 +7,7 @@ researchAreas: ["XAI", "Quantum Security", "Cybersecurity"]
 status: "published"
 pdfUrl: "https://link.springer.com/chapter/10.1007/978-981-95-2878-3_23"
 relatedProjects: ["petbot"]
-order: 1
+order: 6
 abstract: "Combines explainable AI techniques with quantum cryptographic primitives for classifying and interpreting network attacks in smart home IoT environments."
 ---
 

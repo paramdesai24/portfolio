@@ -11,7 +11,7 @@ location: "Oslo, Norway"
 publisher: "IEEE"
 dateAdded: "September 30, 2025"
 relatedProjects: ["bhoomi"]
-order: 3
+order: 5
 abstract: "Introduces a continuous-variable quantum key distribution framework for securing V2X communications in autonomous vehicle networks against eavesdropping and quantum-level adversarial attacks."
 ---
 

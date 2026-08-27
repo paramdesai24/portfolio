@@ -12,7 +12,7 @@ location: "Tampa, FL, USA"
 publisher: "IEEE"
 dateAdded: "September 2, 2025"
 relatedProjects: ["bhoomi"]
-order: 2
+order: 3
 abstract: "Develops a deep learning pipeline with integrated SHAP-based explainability for detecting false data injection attacks in autonomous vehicle sensor networks, providing both accuracy and interpretable model decisions."
 ---
 
