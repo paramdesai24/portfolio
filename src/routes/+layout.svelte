@@ -32,7 +32,7 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" href="/avatar.png" type="image/png" />
+	<link rel="icon" href="/pixel-param.png" type="image/png" />
 </svelte:head>
 <PortfolioNav />
 {@render children()}
