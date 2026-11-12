@@ -1,409 +1,166 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { currentPageTitle } from '$lib/stores/workspace';
-  import { Mail, Download, ExternalLink } from '@lucide/svelte';
-  import TechLogo from '$lib/components/TechLogo.svelte';
+  import ArrowDown from '@lucide/svelte/icons/arrow-down';
+  import Download from '@lucide/svelte/icons/download';
+
+  type Entry = { title: string; meta?: string; body: string; href?: string; link?: string };
+  const chapters: { id: string; title: string; label: string; line: string; entries: Entry[] }[] = [
+    { id:'engineering', title:'Applied AI at DYU Labs', label:'Engineering', line:'Two solar problems: answering operators’ questions and forecasting what each inverter would generate.', entries:[
+      { title:'aALoK', meta:'Applied AI Engineering Intern · May–Jul 2026', body:'Built a conversational assistant for solar plant operators using LangGraph, retrieval, Whisper, pgvector and natural-language-to-SQL. End-to-end query latency was 2.5–5 seconds.' },
+      { title:'Per-inverter solar forecasting', body:'Built LightGBM forecasts from Copernicus ERA5/ECMWF weather data, with drift monitoring, feedback-driven retraining and AWS deployment. The résumé reports 3.15% Clean MAPE across 75+ active inverters.' }
+    ] },
+    { id:'research', title:'Trustworthy systems research', label:'Research', line:'At ST Lab, I worked on making intelligent systems easier to explain, secure and verify.', entries:[
+      { title:'ST Lab', meta:'Undergraduate Research Assistant · Oct 2024–Dec 2025', body:'Worked with Dr. Sudeep Tanwar and Dr. Rajesh Gupta on explainable AI, machine unlearning, federated learning, AI security, quantum key distribution and healthcare AI. Designed experiments and system architectures, implemented pipelines and authored manuscripts.' },
+      { title:'Seven published papers', meta:'Three first-author papers', body:'FIDES, Q-PhishNet, the Springer smart-home security chapter, Q-TBNet, the ICSC connected-vehicle detection paper, Q-ShielD and the HealthCom wearable IoT paper.', href:'/workspace/publications', link:'Browse publications' },
+      { title:'From Tampa to BHOOMI', body:'Presented the connected-vehicle research at IEEE ICSC 2025 in Tampa. Separately, submitted BHOOMI’s grid-based environmental forecasting and intervention-planning manuscript to ASME JCISE.' }
+    ] },
+    { id:'projects', title:'What I built', label:'Projects', line:'The projects answer very different questions, from replaying a market decision to simulating a World Cup.', entries:[
+      { title:'Xeroww', body:'Built deterministic market analysis for Indian equities, a Decision Workbench that preserves evidence, a candle-by-candle Replay Lab and point-in-time portfolio analytics benchmarked against the NIFTY 50.', href:'/workspace/projects/xeroww', link:'Explore Xeroww' },
+      { title:'FC Analytics', body:'Combined Poisson score modelling, Elo ratings and team-strength indicators with up to 10,000 simulations of the 48-team World Cup and a real-time fantasy auction.', href:'/workspace/projects/fc-analytics', link:'Explore FC Analytics' }
+    ] },
+    { id:'education', title:'Education', label:'Education', line:'Computer science is my foundation. Applied mathematics helps me ask better questions about the systems I build.', entries:[
+      { title:'Nirma University', meta:'B.Tech. Computer Science and Engineering · 2023–2027', body:'Minor in Applied Mathematics. CGPA 8.33/10.' }
+    ] },
+    { id:'community', title:'Leadership and service', label:'Community', line:'Some of the work I’m proudest of happened away from the code editor.', entries:[
+      { title:'Computer Society of India, Nirma University', meta:'Treasurer · Aug 2025–Sep 2026', body:'Helped organize HACKaMINeD 2026 with SUNY Binghamton University, with 2,000+ participants and 13 sponsors. Managed finance, logistics and organization for HackNUThon 6.0, which drew 1,200+ participants.' },
+      { title:'Vidhyadaan Foundation', meta:'Volunteer Teacher · Jun–Jul 2024', body:'Taught mathematics, English and science to 50 children in structured classroom sessions.' }
+    ] },
+    { id:'skills', title:'Tools I work with', label:'Skills', line:'I reach for different tools depending on whether I’m building a model, a service or a data pipeline.', entries:[
+      { title:'Languages', body:'Python, C++, C, TypeScript, JavaScript and SQL. English, French (academic), Hindi and Gujarati.' },
+      { title:'AI and engineering', body:'PyTorch, LangGraph, NLP, machine unlearning, explainable AI, FastAPI, Flask, React, Apache Iceberg, Spark, Kafka, Prometheus, Grafana and Docker.' },
+      { title:'Competitive programming', body:'300+ problems solved across platforms.', href:'/workspace/programming', link:'See programming activity' }
+    ] }
+  ];
+
+  let active = $state(-1);
+  let root: HTMLElement;
+  let walkStage: HTMLDivElement;
+  const pdf = '/Param_Desai%20RESUME.pdf';
 
   onMount(() => {
-    currentPageTitle.set('Resume');
+    const sections = Array.from(root.querySelectorAll('article'));
+    let frame = 0;
+    let previousScroll = scrollY;
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    function update() {
+      frame = 0;
+      active = sections.findLastIndex(section => section.getBoundingClientRect().top <= innerHeight * .55);
+      const bounds = root.getBoundingClientRect();
+      const distance = Math.max(0, -bounds.top);
+      const progress = Math.min(1, distance / Math.max(1, bounds.height - innerHeight));
+      const stride = Math.sin(distance / 15);
+      walkStage.style.setProperty('--travel', String(reducedMotion.matches ? 0 : progress));
+      walkStage.style.setProperty('--stride', String(reducedMotion.matches ? 0 : stride));
+      walkStage.style.setProperty('--bounce', String(reducedMotion.matches ? 0 : Math.abs(stride)));
+      if (reducedMotion.matches) walkStage.style.removeProperty('--facing');
+      else if (scrollY !== previousScroll) walkStage.style.setProperty('--facing', scrollY > previousScroll ? '1' : '-1');
+      previousScroll = scrollY;
+    }
+    function schedule() {
+      if (!frame) frame = requestAnimationFrame(update);
+    }
+    update();
+    addEventListener('scroll', schedule, { passive:true });
+    addEventListener('resize', schedule);
+    reducedMotion.addEventListener('change', schedule);
+    return () => {
+      removeEventListener('scroll', schedule);
+      removeEventListener('resize', schedule);
+      reducedMotion.removeEventListener('change', schedule);
+      cancelAnimationFrame(frame);
+    };
   });
-
-  interface SkillCategory {
-    category: string;
-    items: string[];
-  }
-
-  const skillGroups: SkillCategory[] = [
-    {
-      category: 'Frameworks',
-      items: ['FastAPI', 'React', 'LangChain', 'LangGraph', 'Flask', 'Express.js', 'Vite']
-    },
-    {
-      category: 'ML/AI',
-      items: ['Monte Carlo (MC)', 'RAG', 'NLP', 'Prophet', 'SARIMA', 'SQLAlchemy', 'LightGBM']
-    },
-    {
-      category: 'Tools',
-      items: ['PostgreSQL', 'DynamoDB', 'Docker', 'Git', 'AWS ECR & Lambda', 'WebSockets', 'Supabase']
-    },
-    {
-      category: 'Research Areas',
-      items: ['XAI', 'Adversarial ML', 'Machine Unlearning', 'Quantum Security']
-    }
-  ];
-
-  const publications = [
-    {
-      citation: "\"FIDES: A Federated Intelligence and Detection with Quantum Security for Financial Institutions.\" In Proceedings of the International Conference on Computer, Information and Telecommunication Systems (CITS 2026), Piraeus-Athens, Greece, 2026. DOI: 10.1109/CITS70307.2026.11637348."
-    },
-    {
-      citation: "\"Machine Unlearning-based Privacy-First Medical Imaging Framework for TB Detection.\" In Proceedings of the Scientific Workshop on AI for Medicine (AI2M4RI 2026), 2026. (Accepted)"
-    },
-    {
-      citation: "\"Q-PhishNet: Quantum-Secured Explainable Machine Unlearning for Phishing Detection in IoT Networks.\" In Proceedings of IEEE Globecom 2025, Taipei, Taiwan, 2025. DOI: 10.1109/GCWkshps68340.2025.11590920."
-    },
-    {
-      citation: "\"Q-ShielD: Quantum-Enhanced Secure Framework for Autonomous Vehicles Communication.\" In Proceedings of the IEEE 101st Vehicular Technology Conference (VTC Spring 2025), Oslo, Norway, 2025. DOI: 10.1109/VTC2025-Spring65109.2025.11174381."
-    },
-    {
-      citation: "\"Quantum-based Edge Intelligence Framework for Wearable Health IoT Device Networks.\" In Proceedings of the IEEE International Conference on E-health Networking, Application & Services (HealthCom 2025), Abu Dhabi, United Arab Emirates, 2025. DOI: 10.1109/HealthCom60686.2025.11342726."
-    },
-    {
-      citation: "\"Quantum-Assisted XAI-Driven DL Framework for FDI Detection in Connected Autonomous Electric Vehicles Underlying 6G.\" In Proceedings of the IEEE 5th Intelligent Cybersecurity Conference (ICSC 2025), Tampa, FL, USA, 2025. DOI: 10.1109/ICSC65596.2025.11139950."
-    },
-    {
-      citation: "\"Explainable AI and Quantum Security for Smart Homes Network Attack Classification.\" Springer Journal of Computational Machine Learning (CML 2025), 2025."
-    }
-  ];
 </script>
 
 <svelte:head>
-  <title>Resume | Param Desai</title>
-  <meta name="description" content="Param Desai's official resume, technical skills, publications, and professional experience." />
+  <title>Resume</title>
+  <meta name="description" content="A guided résumé covering applied AI engineering, research, projects, education and community work." />
 </svelte:head>
 
-<div class="resume-page flex flex-col items-center w-full min-h-screen py-4 select-text">
-  <div class="w-full max-w-[760px] bg-[--color-surface] border border-[--color-border] rounded-xl shadow-card p-8 md:p-12 print-container">
-    
-    <!-- Top Header Block -->
-    <header class="mb-10 text-center md:text-left border-b border-[--color-border] pb-8">
-      <div class="flex flex-col md:flex-row justify-between items-center md:items-start gap-6">
-        <div class="flex flex-col md:flex-row items-center md:items-start gap-5 flex-1 w-full">
-          <!-- Profile Photo -->
-          <img 
-            src="/avatar.png" 
-            alt="Param Desai" 
-            class="w-20 h-20 md:w-24 md:h-24 rounded-lg object-cover border border-[--color-border] shadow-2xs shrink-0 select-none"
-          />
-          <div class="flex-1 w-full">
-            <h1 class="font-serif text-[40px] text-[--color-text] leading-none tracking-tight font-medium">
-              Param Desai
-            </h1>
-            <p class="font-sans text-xs md:text-sm text-[--color-muted] mt-3 font-medium">
-              i do what i gotta do &bull; B.Tech CSE, Nirma University &bull; IIT Madras
-            </p>
-            
-            <!-- Contact Row -->
-            <div class="flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-2 mt-4 text-xs text-[--color-muted]">
-              <a href="mailto:desaiparam24@gmail.com" class="flex items-center gap-1.5 hover:text-[--color-accent] transition-colors">
-                <Mail size={13} />
-                <span>desaiparam24@gmail.com</span>
-              </a>
-              <span class="hidden sm:inline opacity-40">&bull;</span>
-              <a href="https://github.com/paramdesai24" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 hover:text-[--color-accent] transition-colors">
-                <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.137 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
-                </svg>
-                <span>github.com/paramdesai24</span>
-              </a>
-              <span class="hidden sm:inline opacity-40">&bull;</span>
-              <a href="https://linkedin.com/in/paramdesai7" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 hover:text-[--color-accent] transition-colors">
-                <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                </svg>
-                <span>linkedin.com/in/paramdesai7</span>
-              </a>
-            </div>
-          </div>
+<main id="main-content" class="resume" bind:this={root}>
+  <div class="layout">
+    <aside class="guide">
+      <div class="portrait" bind:this={walkStage} aria-hidden="true">
+        <div class="walker">
+          <img src="/pixel-param.png" alt="" width="64" height="64" />
+          <span class="shirt"></span>
+          <span class="leg"></span><span class="leg"></span>
         </div>
-
-        <!-- Download Button -->
-        <a 
-          href="https://efptwclmybikeaahtciz.supabase.co/storage/v1/object/public/Resume/PARAM_DESAI_Resume.pdf"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="no-print shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[--color-accent] text-[--color-surface] text-xs font-sans font-medium hover:bg-opacity-90 transition-all shadow-xs cursor-pointer select-none"
-        >
-          <Download size={14} />
-          <span>Download PDF Resume</span>
-        </a>
       </div>
-    </header>
+      <p aria-live="polite">{chapters[active]?.line ?? 'Hi! I’ll walk you through the work, research and people that shaped my profile.'}</p>
+      <nav aria-label="Resume chapters">
+        {#each chapters as chapter, index (chapter.id)}
+          <a href={'#' + chapter.id} aria-current={active === index ? 'location' : undefined}>{chapter.label}</a>
+        {/each}
+      </nav>
+    </aside>
 
-    <!-- Content Sections -->
-    <div class="flex flex-col gap-9">
-      
-      <!-- EDUCATION -->
-      <section id="education" class="resume-section">
-        <h2 class="font-mono text-[11px] tracking-widest text-[--color-muted] font-bold uppercase mb-1.5 select-none">Education</h2>
-        <div class="h-px bg-[--color-border] mb-4"></div>
-        
-        <div class="flex flex-col gap-6">
-          <div class="flex flex-col sm:flex-row sm:justify-between items-start gap-1">
-            <div>
-              <h3 class="font-sans font-semibold text-sm text-[--color-text]">Nirma University, Institute of Technology</h3>
-              <p class="font-sans text-xs text-[--color-muted] font-medium mt-0.5">B.Tech in Computer Science and Engineering</p>
-              <p class="font-sans text-xs text-[--color-muted] leading-relaxed mt-2">
-                <span class="font-medium text-[--color-text]">Courses:</span> OS, DSA, OOP, DBMS, Networks, DAA, SE, Distributed Computing, Cloud Computing, ML, Deep Learning, Full Stack, Compiler Design
-              </p>
-            </div>
-            <span class="font-mono text-xs text-[--color-muted] shrink-0 mt-0.5 select-none">2023 &ndash; Present</span>
-          </div>
-
-          <div class="flex flex-col sm:flex-row sm:justify-between items-start gap-1">
-            <div>
-              <h3 class="font-sans font-semibold text-sm text-[--color-text]">Indian Institute of Technology Madras</h3>
-              <p class="font-sans text-xs text-[--color-muted] font-medium mt-0.5">Diploma in Data Science <span class="font-normal italic">(In Progress) | Foundation & Programming Completed</span></p>
-              <p class="font-sans text-xs text-[--color-muted] leading-relaxed mt-2">
-                <span class="font-medium text-[--color-text]">Courses:</span> ML Foundations, ML Techniques, ML Practice, Business Analytics, Data Science Tools, MAD I & II, DBMS, DSA
-              </p>
-            </div>
-            <span class="font-mono text-xs text-[--color-muted] shrink-0 mt-0.5 select-none">2023 &ndash; Present</span>
-          </div>
+    <div class="story">
+      <header class="hero">
+        <h1>Resume</h1>
+        <p>Applied AI engineering, trustworthy systems research and the projects that connect them.</p>
+        <div class="actions">
+          <a href="#engineering">Start the walkthrough <ArrowDown size={17} /></a>
+          <a href={pdf} download>Download PDF <Download size={17} /></a>
         </div>
-      </section>
+      </header>
 
-      <!-- RESEARCH EXPERIENCE -->
-      <section id="research" class="resume-section">
-        <h2 class="font-mono text-[11px] tracking-widest text-[--color-muted] font-bold uppercase mb-1.5 select-none">Research Experience</h2>
-        <div class="h-px bg-[--color-border] mb-4"></div>
-        
-        <div class="flex flex-col sm:flex-row sm:justify-between items-start gap-1">
-          <div class="flex-1">
-            <h3 class="font-sans font-semibold text-sm text-[--color-text]">Research Assistant</h3>
-            <p class="font-sans text-xs text-[--color-accent] font-medium mt-0.5">Sudeep Tanwar's Research Group</p>
-            <ul class="font-sans text-xs text-[--color-muted] space-y-1.5 list-disc pl-4 mt-3 leading-relaxed">
-              <li>Undergraduate research focusing on Explainable AI (XAI), Adversarial Machine Learning, Cybersecurity, and IoT Systems under the guidance of Prof. Sudeep Tanwar and Prof. Rajesh Gupta.</li>
-              <li>Designed and evaluated ML/DL-based intrusion and false data injection attack detection frameworks for connected vehicle environments.</li>
-              <li>Applied model interpretability methods (SHAP, LIME) to analyze feature importances and audit decision metrics.</li>
-              <li>Contributed to modeling, experiment validation, and publishing of 5 peer-reviewed papers at IEEE and Springer venues.</li>
-            </ul>
-          </div>
-          <span class="font-mono text-xs text-[--color-muted] shrink-0 mt-0.5 select-none">Jan 2025 &ndash; Dec 2025</span>
-        </div>
-      </section>
-
-      <!-- INDUSTRY EXPERIENCE -->
-      <section id="experience" class="resume-section">
-        <h2 class="font-mono text-[11px] tracking-widest text-[--color-muted] font-bold uppercase mb-1.5 select-none">Industry Experience</h2>
-        <div class="h-px bg-[--color-border] mb-4"></div>
-        
-        <div class="flex flex-col sm:flex-row sm:justify-between items-start gap-1">
-          <div class="flex-1">
-            <h3 class="font-sans font-semibold text-sm text-[--color-text]">AI/ML Intern</h3>
-            <p class="font-sans text-xs text-[--color-accent] font-medium mt-0.5">DYU Labs</p>
-            <ul class="font-sans text-xs text-[--color-muted] space-y-1.5 list-disc pl-4 mt-3 leading-relaxed">
-              <li>Technical lead for a summer intern team building production solar forecasting pipelines and a conversational analytics assistant.</li>
-              <li>Developed end-to-end day-ahead time-series forecasting models using LightGBM for 75 production inverter devices across 15 solar plants.</li>
-              <li>Designed conversational AI workflows leveraging multi-agent LangGraph architectures, RAG (pgvector), and natural language databases.</li>
-              <li>Deployed automated ingestion and ML pipeline components on AWS (Lambda, Fargate, DynamoDB) for clients including ISRO, NTPC, and Aditya Birla Group.</li>
-            </ul>
-          </div>
-          <span class="font-mono text-xs text-[--color-muted] shrink-0 mt-0.5 select-none">May 2026 &ndash; Jul 2026</span>
-        </div>
-      </section>
-
-      <!-- PUBLICATIONS -->
-      <section id="publications" class="resume-section">
-        <h2 class="font-mono text-[11px] tracking-widest text-[--color-muted] font-bold uppercase mb-1.5 select-none">Publications</h2>
-        <div class="h-px bg-[--color-border] mb-4"></div>
-        
-        <ol class="font-sans text-[11px] md:text-xs text-[--color-muted] space-y-3 pl-4 list-decimal leading-relaxed">
-          {#each publications as pub}
-            <li class="pl-1 text-justify">
-              {@html pub.citation.replace(
-                /In Proceedings of the [^,]+/g, 
-                (match) => `<em class='text-[--color-text]'>${match}</em>`
-              ).replace(
-                /Springer Journal of [^,]+/g, 
-                (match) => `<em class='text-[--color-text]'>${match}</em>`
-              )}
-            </li>
+      {#each chapters as chapter, index (chapter.id)}
+        <article id={chapter.id} aria-labelledby={chapter.id + '-heading'}>
+          <div class="chapter-title"><span aria-hidden="true">{String(index + 1).padStart(2,'0')}</span><h2 id={chapter.id + '-heading'}>{chapter.title}</h2></div>
+          {#each chapter.entries as entry (entry.title)}
+            <section class="entry">
+              <h3>{entry.title}</h3>
+              {#if entry.meta}<p class="meta">{entry.meta}</p>{/if}
+              <p>{entry.body}</p>
+              {#if entry.href}<a href={entry.href}>{entry.link}</a>{/if}
+            </section>
           {/each}
-        </ol>
-      </section>
+        </article>
+      {/each}
 
-      <!-- PROJECTS -->
-      <section id="projects" class="resume-section">
-        <h2 class="font-mono text-[11px] tracking-widest text-[--color-muted] font-bold uppercase mb-1.5 select-none">Projects</h2>
-        <div class="h-px bg-[--color-border] mb-4"></div>
-        
-        <ul class="font-sans text-xs text-[--color-muted] space-y-2.5 list-none pl-0 leading-relaxed">
-          <li>
-            <a href="/workspace/projects/bhoomi" class="font-semibold text-xs text-[--color-text] hover:text-[--color-accent] hover:underline inline-flex items-center gap-1">
-              BHOOMI
-              <ExternalLink size={10} class="opacity-60" />
-            </a>
-            <span class="text-[--color-muted]">&mdash; An environmental intelligence platform integrating satellite datasets with multi-horizon forecasting models for climate monitoring and AI-assisted municipal reporting.</span>
-          </li>
-          <li>
-            <a href="/workspace/projects/fc-analytics" class="font-semibold text-xs text-[--color-text] hover:text-[--color-accent] hover:underline inline-flex items-center gap-1">
-              FC Analytics
-              <ExternalLink size={10} class="opacity-60" />
-            </a>
-            <span class="text-[--color-muted]">&mdash; A full-stack sports analytics platform featuring real-time match forecasting, Monte Carlo tournament simulations, and live multi-user auction systems.</span>
-          </li>
-          <li>
-            <a href="/workspace/projects/petbot" class="font-semibold text-xs text-[--color-text] hover:text-[--color-accent] hover:underline inline-flex items-center gap-1">
-              PetBot
-              <ExternalLink size={10} class="opacity-60" />
-            </a>
-            <span class="text-[--color-muted]">&mdash; An LLM-powered RAG system with natural language to SQL capabilities, revenue analytics pipelines, and voice-assisted conversational workflows.</span>
-          </li>
-          <li>
-            <a href="/workspace/projects/research-assistant" class="font-semibold text-xs text-[--color-text] hover:text-[--color-accent] hover:underline inline-flex items-center gap-1">
-              Research Assistant
-              <ExternalLink size={10} class="opacity-60" />
-            </a>
-            <span class="text-[--color-muted]">&mdash; An offline, local-first paper assistant that automatically extracts and processes PDFs to generate section-aware summaries, simplified drafts, PPT decks, and podcast audio.</span>
-          </li>
-          <li>
-            <a href="/workspace/projects/portfolio-website" class="font-semibold text-xs text-[--color-text] hover:text-[--color-accent] hover:underline inline-flex items-center gap-1">
-              Developer Portfolio
-              <ExternalLink size={10} class="opacity-60" />
-            </a>
-            <span class="text-[--color-muted]">&mdash; An interactive, high-performance academic and engineering portfolio website featuring smooth dark mode transitions, a custom Markdown blog, a command palette, Supabase realtime guestbook components, and reactive theme-based diagram rendering.</span>
-          </li>
-        </ul>
-      </section>
-
-      <!-- ACHIEVEMENTS -->
-      <section id="achievements" class="resume-section">
-        <h2 class="font-mono text-[11px] tracking-widest text-[--color-muted] font-bold uppercase mb-1.5 select-none">Achievements</h2>
-        <div class="h-px bg-[--color-border] mb-4"></div>
-        
-        <ul class="font-sans text-xs text-[--color-muted] space-y-1.5 list-disc pl-4 leading-relaxed">
-          <li>Runner-Up, HACKaMINeD 2026 (PetBot)</li>
-          <li>Runner-Up, AETRIX 2026 (BHOOMI)</li>
-          <li>Conference Presenter, IEEE ICSC 2025 &mdash; Tampa, Florida, USA</li>
-          <li>Gold Medalist, SOF International Mathematics Olympiad (IMO)</li>
-          <li>Silver Medalist, SOF National Science Olympiad (NSO)</li>
-          <li>National-Level Representative, Spell Bee Examination</li>
-          <li>Distinction in Communication Skills (Grades 1&ndash;3), Trinity College London</li>
-          <li>Represented Ahmedabad International School at MatheGon, IIT Gandhinagar</li>
-          <li>Representative at the PYP Exhibition</li>
-          <li>Cleared A1 and A2 levels of French Language Examination</li>
-        </ul>
-      </section>
-
-      <!-- LEADERSHIP -->
-      <section id="leadership" class="resume-section">
-        <h2 class="font-mono text-[11px] tracking-widest text-[--color-muted] font-bold uppercase mb-1.5 select-none">Leadership</h2>
-        <div class="h-px bg-[--color-border] mb-4"></div>
-        
-        <div class="flex flex-col gap-4">
-          <div class="flex flex-col sm:flex-row sm:justify-between items-start gap-1">
-            <div>
-              <h3 class="font-sans font-semibold text-sm text-[--color-text]">Treasurer, CSI Nirma University</h3>
-              <ul class="font-sans text-xs text-[--color-muted] list-disc pl-4 mt-1 leading-relaxed">
-                <li>Managed financial strategies and execution for HACKaMINeD 2026 (2500+ registrations, INR 4.5L prize pool, held in collaboration with SUNY Binghamton).</li>
-              </ul>
-            </div>
-            <span class="font-mono text-xs text-[--color-muted] shrink-0 mt-0.5 select-none">Aug 2025 &ndash; Present</span>
-          </div>
-
-          <div class="flex flex-col sm:flex-row sm:justify-between items-start gap-1">
-            <div>
-              <h3 class="font-sans font-semibold text-sm text-[--color-text]">Core Committee Member, CSI</h3>
-              <ul class="font-sans text-xs text-[--color-muted] list-disc pl-4 mt-1 leading-relaxed">
-                <li>Organized national-level hackathons and tech symposiums including HackNUThon 6.0 and CUBIX 2025.</li>
-              </ul>
-            </div>
-            <span class="font-mono text-xs text-[--color-muted] shrink-0 mt-0.5 select-none">Jan 2025 &ndash; Aug 2025</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- SKILLS -->
-      <section id="skills" class="resume-section">
-        <h2 class="font-mono text-[11px] tracking-widest text-[--color-muted] font-bold uppercase mb-1.5 select-none">Skills</h2>
-        <div class="h-px bg-[--color-border] mb-4"></div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-          {#each skillGroups as group}
-            <div>
-              <h3 class="font-sans font-semibold text-xs text-[--color-text] mb-2 uppercase tracking-wide select-none">
-                {group.category}
-              </h3>
-              <div class="flex flex-wrap gap-1.5 max-w-[200px]">
-                {#each group.items as item}
-                  <span class="px-2 py-0.5 rounded-sm text-[10px] font-mono bg-[--color-accent-dim] text-[--color-accent] border border-transparent font-medium flex items-center gap-1.5 transition-transform duration-200 hover:scale-105">
-                    <TechLogo tech={item} size={16} />
-                  </span>
-                {/each}
-              </div>
-            </div>
-          {/each}
-        </div>
-      </section>
-
-      <!-- COMMUNITY SERVICE -->
-      <section id="additional-details" class="resume-section">
-        <div>
-          <h2 class="font-mono text-[11px] tracking-widest text-[--color-muted] font-bold uppercase mb-1.5 select-none">Community Service</h2>
-          <div class="h-px bg-[--color-border] mb-4"></div>
-          <ul class="font-sans text-xs text-[--color-muted] space-y-1.5 list-disc pl-4 leading-relaxed">
-            <li>Volunteered in teaching and mentoring underprivileged children.</li>
-            <li>Participated in educational outreach and community engagement activities.</li>
-          </ul>
-        </div>
-      </section>
-
+      <footer><a href="https://github.com/paramdesai24">GitHub</a><a href="https://scholar.google.com/citations?user=qj1nZ4EAAAAJ">Google Scholar</a><a href="mailto:desaiparam2412@gmail.com">Email</a></footer>
     </div>
-
   </div>
-</div>
+</main>
 
 <style>
-  /* Academic Resume Formatting overrides */
-  .resume-section {
-    scroll-margin-top: 80px;
-  }
-
-  /* PRINT STYLESHEET */
-  @media print {
-    :global(aside), :global(header.lg\:hidden), :global(header.sticky), :global(footer), .no-print {
-      display: none !important;
-    }
-    
-    :global(body), :global(html), .resume-page {
-      background: #ffffff !important;
-      color: #000000 !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      font-size: 10pt !important;
-      line-height: 1.4 !important;
-    }
-
-    :global(.lg\:pl-64) {
-      padding-left: 0 !important;
-    }
-
-    :global(main) {
-      padding: 0 !important;
-      margin: 0 !important;
-      max-width: 100% !important;
-    }
-
-    .print-container {
-      border: none !important;
-      box-shadow: none !important;
-      padding: 0 !important;
-      background: transparent !important;
-      max-width: 100% !important;
-    }
-
-    .resume-section {
-      page-break-inside: avoid;
-      margin-bottom: 2rem !important;
-    }
-
-    h1 {
-      font-size: 26pt !important;
-    }
-
-    h2 {
-      font-size: 10pt !important;
-      margin-bottom: 0.25rem !important;
-    }
-
-    h3 {
-      font-size: 11pt !important;
-    }
-    
-    li, p, span {
-      font-size: 9.5pt !important;
-      color: #000000 !important;
-    }
+  .resume { background:#eaf1ed; color:#102b35; font-family:"Instrument Sans",system-ui,sans-serif; }
+  .layout { width:min(100%,1320px); margin:auto; display:grid; grid-template-columns:minmax(200px,.6fr) minmax(0,2fr); gap:clamp(2rem,7vw,7rem); padding:clamp(1rem,5vw,5rem); }
+  .guide { position:sticky; top:6.5rem; align-self:start; background:#173f50; color:#fff; border-radius:1.25rem; padding:clamp(1rem,2.5vw,1.7rem); }
+  .portrait { --sprite:64px; position:relative; height:94px; width:100%; border-radius:.75rem; background:#d9eddd; }
+  .walker { position:absolute; bottom:9px; left:calc(4px + (100% - var(--sprite) - 8px) * var(--travel,0)); width:var(--sprite); aspect-ratio:.82; transform:translateY(calc(-4px * var(--bounce,0))) scaleX(var(--facing,1)); }
+  .walker img { position:absolute; top:0; left:12%; z-index:2; width:76%; height:auto; image-rendering:pixelated; }
+  .shirt { position:absolute; z-index:1; top:50%; left:21%; width:58%; height:27%; border-radius:25% 25% 8% 8%; background:linear-gradient(115deg,#628eaa,#284e70); }
+  .leg { position:absolute; bottom:2%; left:32%; width:15%; height:27%; background:#24394b; border-bottom:4px solid #101d2a; transform-origin:top; transform:rotate(calc(var(--stride,0) * 34deg)); }
+  .leg + .leg { left:53%; transform:rotate(calc(var(--stride,0) * -34deg)); }
+  .guide p { margin:1rem 0; min-height:5lh; font-size:.95rem; line-height:1.45; }
+  nav { display:grid; gap:.25rem; }
+  nav a { padding:.5rem .6rem; min-height:44px; display:flex; align-items:center; text-decoration:none; border-radius:.4rem; }
+  nav a:is(:hover,[aria-current]) { background:#d9eddd; color:#102b35; }
+  .hero { padding:clamp(1rem,4vw,4rem) 0 clamp(3rem,8vw,7rem); }
+  h1 { font-size:clamp(3.5rem,10vw,9rem); font-weight:750; line-height:.88; letter-spacing:-.085em; margin:0 0 1.2rem; }
+  .hero p { font-size:clamp(1.2rem,2.5vw,1.7rem); max-width:34ch; }
+  .actions,footer { display:flex; flex-wrap:wrap; gap:.75rem 1rem; margin-top:1.5rem; }
+  .actions a { display:inline-flex; align-items:center; gap:.5rem; min-height:44px; padding:.55rem .85rem; border:1px solid #173f50; border-radius:99px; text-decoration:none; font-weight:650; }
+  .actions a:first-child { background:#173f50; color:#fff; }
+  article { border-top:1px solid #55707b70; padding:2rem 0 3rem; scroll-margin-top:7rem; }
+  .chapter-title { display:flex; align-items:baseline; gap:.9rem; }
+  .chapter-title span,.meta { color:#385c68; font-weight:650; }
+  h2 { font-size:clamp(1.8rem,4vw,3.5rem); font-weight:720; letter-spacing:-.055em; line-height:1; margin:0 0 1rem; }
+  .entry { padding:1rem 0; max-width:66ch; }
+  .entry + .entry { border-top:1px solid #55707b36; }
+  h3 { font-size:1.3rem; font-weight:700; margin:0 0 .3rem; }
+  .entry p { margin:.35rem 0; line-height:1.6; }
+  .entry a,footer a { color:#175773; text-decoration:underline; text-underline-offset:.2em; }
+  footer { border-top:1px solid #55707b70; padding:1rem 0 2rem; }
+  @media(max-width:740px) {
+    .layout { display:flex; flex-direction:column; gap:1.5rem; }
+    .guide { top:5.6rem; z-index:3; width:100%; display:grid; grid-template-columns:72px minmax(0,1fr); gap:.5rem .7rem; padding:.65rem; }
+    .portrait { --sprite:38px; height:58px; }
+    .guide p { margin:0; min-height:0; font-size:.83rem; align-self:center; }
+    nav { grid-column:1 / -1; display:flex; overflow-x:auto; }
+    nav a { white-space:nowrap; font-size:.83rem; }
+    article { scroll-margin-top:15rem; }
   }
 </style>

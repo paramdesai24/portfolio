@@ -40,7 +40,7 @@ graph TD
 ```
 
 ## Results
-BHOOMI was successfully deployed in two testing municipalities, validating real-time remote-sensing integrations. Model testing demonstrated a 14% improvement in soil moisture forecasting accuracy (MAPE) over traditional baseline models. The automated report generator was able to summarize district-level environmental changes within seconds, reducing regional assessment overhead.
+BHOOMI was built by the Cosmosapiens team and placed runner-up at AETRIX 2026. The project later informed a manuscript on grid-based urban forecasting and spatial intervention planning submitted to JCISE.
 
 ## Lessons Learned
 1. **Data Cleaning Overhead**: Satellite telemetry contains heavy cloud coverage noise; implementing temporal interpolations was essential before running neural architectures.

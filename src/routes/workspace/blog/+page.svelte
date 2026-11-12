@@ -1,4 +1,5 @@
 <script lang="ts">
+  import PortfolioGuide from '$lib/components/home/PortfolioGuide.svelte';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
   import { currentPageTitle } from '$lib/stores/workspace';
@@ -68,25 +69,17 @@
 </script>
 
 <svelte:head>
-  <title>Blog | Param Desai</title>
+  <title>Blog</title>
   <meta name="description" content="Writing on ML security, explainable AI, federated learning, and the gap between research correctness and real-world deployability." />
 </svelte:head>
 
 <div class="flex flex-col w-full" class:animate-in={mounted}>
 
   <!-- Header -->
-  <section class="anim-item delay-100 mb-8">
-    <h1 class="font-serif text-[32px] text-[--color-text] tracking-tight">Research Blog</h1>
-    <p class="font-sans text-sm text-[--color-muted] mt-1.5 max-w-[520px] leading-relaxed">
-      Technical essays at the intersection of ML security, explainability, and the gap between what a model proves and what a system can deploy.
-    </p>
-    <div class="mt-3.5 font-mono text-[10px] text-[--color-accent] uppercase tracking-wider font-semibold">
-      5 essays · ML security · XAI · Federated Learning
-    </div>
-  </section>
+  <PortfolioGuide title="Research Blog" description="Technical essays at the intersection of ML security, explainability, and the gap between what a model proves and what a system can deploy." message="This is where I think out loud about the work." />
 
   <!-- Core Philosophy Pillars -->
-  <section class="anim-item delay-200 mb-10">
+  <section class="anim-item delay-200 mb-10" data-guide-line="These are the questions I keep coming back to when I write.">
     <div class="flex items-center gap-2.5 mb-5">
       <span class="h-px flex-1 bg-[--color-border]"></span>
       <span class="font-mono text-[9px] uppercase tracking-widest text-[--color-muted] font-bold select-none">Core Philosophy</span>
@@ -96,7 +89,7 @@
       {#each pillars as pillar, i}
         {@const Icon = pillar.icon}
         <div
-          class="pillar-card group relative flex flex-col gap-3 p-5 bg-[--color-surface] border border-[--color-border] rounded-xl transition-all duration-300 hover:border-[--color-accent] hover:shadow-sm anim-item"
+          data-scroll-reveal class="pillar-card group relative flex flex-col gap-3 p-5 bg-[--color-surface] border border-[--color-border] rounded-xl transition-all duration-300 hover:border-[--color-accent] hover:shadow-sm anim-item"
           style="transition-delay: {150 + i * 60}ms"
           in:fade={{ duration: 200, delay: 150 + i * 60 }}
         >
@@ -122,7 +115,7 @@
   <div class="h-px bg-[--color-border] mb-8 anim-item delay-400"></div>
 
   <!-- Search + Filter -->
-  <section class="anim-item delay-400 flex flex-col gap-3 mb-7">
+  <section class="anim-item delay-400 flex flex-col gap-3 mb-7" data-guide-line="Pick an essay and follow the idea wherever it goes.">
     <input
       type="text"
       bind:value={searchQuery}
@@ -149,6 +142,7 @@
     <div class="flex flex-col gap-5 anim-item delay-500">
       {#each filteredPosts as post (post.id)}
         <article
+          data-scroll-reveal
           in:fade={{ duration: 150 }}
           class="group relative flex flex-col sm:flex-row gap-4 sm:gap-6 p-6 bg-[--color-surface] border border-[--color-border] rounded-xl transition-all duration-300 hover:shadow-xs hover:border-[--color-accent]"
         >
@@ -157,7 +151,7 @@
             <span class="font-mono text-[10px] text-[--color-muted] whitespace-nowrap">
               {formatDate(post.publishedDate)}
             </span>
-            <span class="px-2 py-0.5 rounded-full text-[8px] font-mono font-semibold uppercase tracking-wider {categoryColors[post.category] || 'bg-[--color-accent-dim] text-[--color-accent]'}">
+            <span class="px-2 py-0.5 rounded-full writing-category font-semibold {categoryColors[post.category] || 'bg-[--color-accent-dim] text-[--color-accent]'}">
               {post.category}
             </span>
             {#if post.featured}
@@ -217,6 +211,7 @@
 </div>
 
 <style>
+  .writing-category { font-family:var(--portfolio-font); font-size:var(--portfolio-label-size); }
   .anim-item {
     opacity: 0;
     transform: translateY(14px);
@@ -236,7 +231,7 @@
     padding: 0.25rem 0.75rem;
     border-radius: 9999px;
     font-family: var(--font-sans);
-    font-size: 10px;
+    font-size: var(--portfolio-label-size);
     transition: all 150ms ease;
     border: 1px solid var(--color-border);
     cursor: pointer;

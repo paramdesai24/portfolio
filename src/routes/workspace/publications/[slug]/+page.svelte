@@ -1,4 +1,5 @@
 <script lang="ts">
+  import PortfolioGuide from '$lib/components/home/PortfolioGuide.svelte';
   import { onMount, tick } from 'svelte';
   import { browser } from '$app/environment';
   import { currentPageTitle } from '$lib/stores/workspace';
@@ -81,14 +82,14 @@
 </script>
 
 <svelte:head>
-  <title>{metadata?.title ? `${metadata.title} | Param Desai` : 'Publication | Param Desai'}</title>
+  <title>{metadata?.title ? `${metadata.title}` : 'Publication'}</title>
 </svelte:head>
 
 <div class="flex flex-col w-full min-h-screen">
   <!-- Back Link -->
   <a 
     href="/workspace/publications" 
-    class="inline-flex items-center gap-1.5 text-xs font-mono text-[--color-muted] hover:text-[--color-text] transition-colors mb-6 group select-none"
+    class="paper-back inline-flex items-center gap-1.5 text-xs font-mono mb-6 group select-none"
   >
     <span class="transition-transform duration-200 group-hover:-translate-x-1">←</span>
     <span>Back to Publications</span>
@@ -96,7 +97,7 @@
 
   <!-- Header Block -->
   <header class="mb-8 select-none">
-    <div class="flex flex-wrap items-center gap-2 mb-3.5">
+    <div class="paper-metadata flex flex-wrap items-center gap-2 mb-3.5">
       <span class="px-2.5 py-0.5 rounded-full text-[9px] font-mono bg-[--color-accent-dim] text-[--color-accent] border border-transparent font-semibold uppercase tracking-wider">
         {metadata.venue}
       </span>
@@ -110,10 +111,7 @@
       {/if}
     </div>
 
-    <!-- Title -->
-    <h1 class="font-serif text-2xl md:text-[36px] text-[--color-text] tracking-tight leading-snug max-w-[760px] mb-3">
-      {metadata.title}
-    </h1>
+    <PortfolioGuide compact title={metadata.title} description={metadata.shortDescription || metadata.venue} message={shareMessage || 'Paper open. Let’s start with the question it was trying to answer.'} />
 
     <!-- Special Note -->
     {#if metadata.note}
@@ -124,20 +122,22 @@
     {/if}
 
     <!-- Actions Row -->
-    <div class="flex items-center gap-2 mt-4 pb-6 border-b border-[--color-border]">
+    <div class="paper-actions flex items-center gap-2 mt-4 pb-6 border-b border-[--color-border]">
+      {#if metadata.pdfUrl}
       <a 
-        href={metadata.pdfUrl || '#'}
+        href={metadata.pdfUrl}
         target="_blank"
         rel="noopener noreferrer"
         class="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-[--color-border] bg-transparent text-xs font-sans font-medium text-[--color-text] hover:bg-[--color-accent-dim] hover:text-[--color-accent] transition-colors focus:outline-hidden focus:ring-1 focus:ring-[--color-accent]"
       >
         <FileText size={13} />
-        <span>PDF</span>
+        <span>Read paper</span>
       </a>
 
+      {/if}
       <!-- Share Link -->
       <button 
-        onclick={handleShare}
+        onclick={sharePage}
         class="relative p-1.5 text-[--color-muted] hover:text-[--color-accent] hover:bg-[--color-accent-dim] rounded-lg border border-[--color-border] transition-colors focus:outline-hidden cursor-pointer"
         aria-label="Share citation"
       >
@@ -176,7 +176,7 @@
       {/if}
       {#if metadata.pdfUrl}
         <div class="flex flex-col gap-0.5">
-          <span class="text-[10px] font-mono text-[--color-muted] uppercase tracking-wider">IEEE Xplore</span>
+          <span class="text-[10px] font-mono text-[--color-muted] uppercase tracking-wider">Publisher link</span>
           <a href={metadata.pdfUrl} target="_blank" rel="noopener noreferrer" class="font-medium text-[--color-accent] hover:underline truncate">
             View Document
           </a>
@@ -193,7 +193,7 @@
 
   <!-- Abstract Block -->
   {#if metadata.abstract}
-    <div class="mb-10 max-w-[680px]">
+    <div data-scroll-reveal class="mb-10 max-w-[680px]">
       <h2 class="font-mono text-[11px] uppercase tracking-widest text-[--color-muted] font-bold mb-2.5">Abstract</h2>
       <p class="font-sans text-sm md:text-base text-[--color-text] leading-[1.8] text-justify font-light select-text">
         {metadata.abstract}
@@ -244,9 +244,12 @@
 </div>
 
 <style>
+  .paper-back,.paper-actions { color:white; }
+  .paper-metadata > span { color:white; background:transparent; border-color:#ffffff75; }
+  .paper-back:hover { text-decoration:underline; }
   /* Academic prose styling overrides for detail pages */
   :global(.prose h2) {
-    font-family: 'Instrument Serif', serif;
+    font-family: var(--portfolio-font);
     font-size: 24px;
     font-weight: 500;
     color: var(--color-text);
@@ -277,7 +280,7 @@
     line-height: 1.6;
   }
   :global(.prose code) {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--portfolio-font);
     font-size: 12px;
     background-color: var(--color-bg);
     padding: 0.15rem 0.35rem;

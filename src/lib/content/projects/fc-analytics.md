@@ -1,6 +1,6 @@
 ---
 title: "FC Analytics"
-shortDescription: "Football World Cup 2026 Platform with real-time forecasting, simulations, and live auctions."
+shortDescription: "Football World Cup 2026 match probabilities, tournament simulations, and multi-user draft auctions."
 techStack: ["React", "TypeScript", "Vite", "FastAPI", "WebSockets", "Supabase", "PostgreSQL", "SQLite", "SQLAlchemy", "Monte Carlo"]
 researchThemes: ["Probabilistic Modelling", "Simulation", "Sports Analytics"]
 status: "live"
@@ -20,7 +20,7 @@ Sports forecasting is often limited to static, pre-calculated probabilities that
 ## Approach
 Our prediction pipeline implements two core mathematical and probabilistic modules:
 1. **Double Poisson Distribution**: Models goals scored by each team as independent Poisson variables, parameterized by team-specific attack and defense strengths calibrated from historical match feeds.
-2. **Monte Carlo Simulations**: Simulates the entire World Cup tournament 10,000 times after each match update to calculate conditional probabilities for advanced stages (quarter-finals, semi-finals, and finals).
+2. **Monte Carlo Simulations**: Supports up to 10,000 simulations of the 48-team World Cup tournament to estimate probabilities of reaching later stages.
 
 ## Architecture
 ```mermaid
@@ -36,7 +36,7 @@ graph TD
 ```
 
 ## Results
-The Monte Carlo simulation pipeline achieves execution latency under 150 milliseconds for 10,000 full-tournament runs, enabling immediate database updates. The WebSocket server successfully handles concurrent multi-user live drafting sessions, showcasing strong horizontal scalability under high message frequency.
+The tournament view shows the distribution of outcomes across simulated runs. The draft auction uses WebSockets to share nominations and bids across participants operating under budget constraints.
 
 ## Lessons Learned
 1. **Parameter Calibration**: Goal distributions are highly sensitive to historical weight decays; older matches must be discounted exponentially to capture recent team form.

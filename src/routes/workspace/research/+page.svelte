@@ -1,10 +1,18 @@
 <script lang="ts">
+  import PortfolioGuide from "$lib/components/home/PortfolioGuide.svelte";
   import { onMount } from 'svelte';
   import { currentPageTitle } from '$lib/stores/workspace';
   import { ArrowRight, BookOpen, Award, Layers } from '@lucide/svelte';
 
   let { data } = $props();
-  const researchAreas = $derived(data.researchAreas || []);
+  const researchAreas = $derived(data.researchAreas
+    .filter(area => area.id !== 'quantum-security')
+    .map(area => area.id === 'cybersecurity' ? {
+      ...area,
+      title: 'Cybersecurity & Quantum Security',
+      description: 'Securing IoT gateways and connected vehicles through intrusion detection, alongside research on quantum key distribution for connected systems.',
+      tags: ['Intrusion Detection', 'V2X Security', 'Quantum Cryptography', 'CV-QKD']
+    } : area));
   const publications = $derived(data.publications || []);
 
   let mounted = $state(false);
@@ -18,88 +26,45 @@
     return () => clearTimeout(timer);
   });
 
-  // Sort publications by order for a linear timeline
-  let orderedPublications = $derived.by(() => {
-    return [...publications].sort((a, b) => (a.order || 99) - (b.order || 99));
-  });
-
-  let timelineContainer = $state<HTMLDivElement | null>(null);
-
-  // Autoscroll timeline back and forth (pauses on hover)
-  $effect(() => {
-    if (timelineContainer && orderedPublications.length > 0) {
-      let direction = 1;
-      const scrollSpeed = 1.2;
-      let scrollPosition = 0;
-      
-      const scrollTimeline = () => {
-        if (!timelineContainer) return;
-        
-        if (timelineContainer.matches(':hover')) {
-          scrollPosition = timelineContainer.scrollLeft;
-          return;
-        }
-        
-        scrollPosition += direction * scrollSpeed;
-        const maxScroll = timelineContainer.scrollWidth - timelineContainer.clientWidth;
-        
-        if (scrollPosition >= maxScroll) {
-          scrollPosition = maxScroll;
-          direction = -1;
-        } else if (scrollPosition <= 0) {
-          scrollPosition = 0;
-          direction = 1;
-        }
-        
-        timelineContainer.scrollLeft = scrollPosition;
-      };
-      
-      const interval = setInterval(scrollTimeline, 30);
-      return () => clearInterval(interval);
-    }
-  });
+  const publicationOrder = ['ai2m4ri-2026', 'fides-cits-2026', 'ieee-globecom-2025', 'ieee-healthcom-2025', 'ieee-vtc-2025', 'ieee-icsc-2025', 'springer-cml-2025'];
+  const orderedPublications = $derived(publicationOrder.flatMap(id => publications.filter(pub => pub.id === id)));
+  let timelinePaused = $state(false);
 </script>
 
 <svelte:head>
-  <title>Research Overview | Param Desai</title>
+  <title>Research Overview</title>
   <meta name="description" content="Explore Param Desai's active research fields, papers, and current research focus." />
 </svelte:head>
 
 <div class="flex flex-col gap-16 w-full" class:animate-in={mounted}>
-  <!-- Section 1: Header -->
-  <section class="anim-item delay-100 flex flex-col gap-2">
-    <h1 class="font-serif text-4xl font-normal text-[--color-text]">Research</h1>
-    <p class="text-[--color-muted] font-sans text-sm">
-      Areas of inquiry, open questions, and ongoing investigations.
-    </p>
-  </section>
+  <PortfolioGuide title="Research" description="Areas of inquiry, open questions, and ongoing investigations." message="What happens when we ask a model to show its work?" />
 
   <!-- Section 2: Research Activity Summary -->
   <section class="anim-item delay-200">
     <div class="flex items-center gap-4 text-xs font-mono text-[--color-muted] select-none border-b border-[--color-border] pb-6">
       <div class="flex items-center gap-1.5">
         <Award size={14} class="text-[--color-accent]" />
-        <span>7 Publications</span>
+        <span>{publications.length} Publications</span>
       </div>
       <span class="w-[1px] h-3 bg-[--color-border]"></span>
       <div class="flex items-center gap-1.5">
         <BookOpen size={14} class="text-[--color-accent]" />
-        <span>5 Active Projects</span>
+        <span>3 First-author papers</span>
       </div>
       <span class="w-[1px] h-3 bg-[--color-border]"></span>
       <div class="flex items-center gap-1.5">
         <Layers size={14} class="text-[--color-accent]" />
-        <span>5 Research Areas</span>
+        <span>{researchAreas.length} Research Areas</span>
       </div>
     </div>
   </section>
 
   <!-- Section 3: Research Area Cards -->
-  <section class="flex flex-col gap-6">
+  <section class="flex flex-col gap-6" data-guide-line="Four research areas, one question: how do we make intelligent systems more trustworthy?">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
       {#each researchAreas as area, idx}
         <div 
-          class="card research-card group flex flex-col justify-between anim-item"
+          data-scroll-reveal class="card research-card group flex flex-col justify-between anim-item"
           style="transition-delay: {100 + idx * 50}ms;"
         >
           <div>
@@ -114,17 +79,9 @@
               {/each}
             </div>
 
-            <!-- Description with expand on hover -->
-            <p class="text-sm text-[--color-muted] font-sans leading-relaxed clamp-desc mb-6">
+            <p class="text-sm text-[--color-muted] font-sans leading-relaxed mb-6">
               {area.description}
             </p>
-          </div>
-
-          <!-- Bottom Row -->
-          <div class="flex justify-between items-center text-xs font-mono border-t border-[--color-border]/60 pt-4 mt-auto">
-            <span class="text-[--color-muted]">
-              {area.publicationCount} publications &bull; {area.projectCount} projects
-            </span>
           </div>
         </div>
       {/each}
@@ -132,39 +89,38 @@
   </section>
 
   <!-- Section 4: Research Journey -->
-  <section class="anim-item delay-800 max-w-[680px]">
+  <section class="journey anim-item delay-800" data-guide-line="This started with smart-home security. The questions got bigger from there.">
+    <div data-scroll-reveal>
     <h3 class="font-serif text-2xl text-[--color-text] border-b border-[--color-border] pb-3 mb-5">Research Journey</h3>
     <p class="font-sans text-sm text-[--color-muted] leading-[1.85] text-justify">
-      My research began in early 2025 under the supervision of Prof. Sudeep Tanwar and Prof. Rajesh Gupta at Sudeep Tanwar's Research Group, initially exploring how explainability tools like LIME could make intrusion detection systems legible. What started as a question about smart-home security quickly expanded: if you could explain a prediction, could you also diagnose a poisoned training set? That forensic inversion became a thread connecting papers across cybersecurity, autonomous vehicles, and healthcare AI. At IEEE ICSC in Tampa, presenting in person to a room of practitioners taught me something no peer review ever had — that correctness and deployability are different standards. I came back asking the deployment engineer's questions about every paper I write. This led to exploring quantum security primitives like Continuous-Variable Quantum Key Distribution (CV-QKD) to secure resource-constrained edge nodes, moving beyond computational assumptions to physical-law security guarantees. The unlearning verification problem and quantum-secured telemetry streams are where that thinking has landed for now. Seven papers in eighteen months, and the questions are still getting harder.
+      As an undergraduate research assistant at ST Lab, I worked with Dr. Sudeep Tanwar and Dr. Rajesh Gupta, initially exploring how explainability tools like LIME could make intrusion detection systems legible. What started as a question about smart-home security quickly expanded: if you could explain a prediction, could you also diagnose a poisoned training set? That forensic inversion became a thread connecting papers across cybersecurity, autonomous vehicles, and healthcare AI. At IEEE ICSC in Tampa, presenting in person to a room of practitioners taught me something no peer review ever had — that correctness and deployability are different standards. I came back asking the deployment engineer's questions about every paper I write. This led to exploring quantum security primitives like Continuous-Variable Quantum Key Distribution (CV-QKD) to secure resource-constrained edge nodes, moving beyond computational assumptions to physical-law security guarantees. The unlearning verification problem and quantum-secured telemetry streams are where that thinking has landed for now. Seven published papers, three as first author, and the questions are still getting harder.
     </p>
+    </div>
+    <figure class="tampa" data-guide-line="That’s me in Tampa, talking about what happens when a vehicle’s sensors lie.">
+    <img src="/screenshots/research-screenshot1.jpg" alt="Param presenting connected-vehicle security research in Tampa" width="1280" height="699" loading="lazy" />
+    <figcaption>Presenting connected-vehicle security research at IEEE ICSC in Tampa, Florida.</figcaption>
+    </figure>
   </section>
 
-  <!-- Section 5: Research Timeline -->
-  <section class="flex flex-col gap-6 anim-item delay-800">
-    <h3 class="font-serif text-2xl text-[--color-text] border-b border-[--color-border] pb-3">Publication Timeline</h3>
-    <div class="relative w-full">
-      <!-- Horizontal line running behind cards -->
-      <div class="absolute top-[80px] left-0 right-0 h-[1.5px] bg-[--color-border] z-0 hidden md:block"></div>
-      
-      <div 
-        bind:this={timelineContainer}
-        class="flex overflow-x-auto gap-6 pb-4 scrollbar-none snap-x snap-mandatory relative z-10"
-      >
-        {#each orderedPublications as pub, idx}
-          <div class="flex-shrink-0 w-72 snap-align-start flex flex-col gap-3 bg-[--color-surface] border border-[--color-border] p-5 rounded-xl shadow-card hover:border-[--color-accent] transition-all duration-300">
-            <div class="flex justify-between items-center border-b border-[--color-border] pb-2">
-              <span class="font-serif text-lg font-semibold text-[--color-accent] inline-block transform rotate-[-2deg]">{pub.year}</span>
-              <span class="font-mono text-[10px] text-[--color-muted]">#{idx + 1}</span>
-            </div>
-            <div class="flex flex-col gap-2">
-              <span class="self-start text-[9px] font-mono bg-[--color-accent-dim] text-[--color-accent] px-1.5 py-0.5 rounded uppercase font-semibold">
-                {pub.venue}
-              </span>
-              <p class="text-xs text-[--color-text] font-sans font-medium leading-snug line-clamp-3">
-                {pub.title}
-              </p>
-            </div>
-          </div>
+  <section data-scroll-reveal class="timeline" data-guide-line="Here's where those questions turned into papers.">
+    <div class="timeline-heading">
+      <h3>Publication Timeline</h3>
+      <button type="button" class="timeline-control" aria-pressed={timelinePaused} onclick={() => timelinePaused = !timelinePaused}>
+        {timelinePaused ? 'Resume timeline' : 'Pause timeline'}
+      </button>
+    </div>
+    <div class="timeline-viewport">
+      <div class="timeline-track" class:paused={timelinePaused}>
+        {#each [false, true] as duplicate}
+          <ul class="timeline-group" class:duplicate aria-hidden={duplicate ? 'true' : undefined}>
+            {#each orderedPublications as pub (pub.id)}
+              <li class="timeline-card">
+                <span class="timeline-year">{pub.year}</span>
+                <span class="timeline-venue">{pub.venue}</span>
+                <p>{pub.title}</p>
+              </li>
+            {/each}
+          </ul>
         {/each}
       </div>
     </div>
@@ -174,6 +130,30 @@
 </div>
 
 <style>
+  .timeline { min-width:0; }
+  .timeline-heading { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:.6rem; padding-bottom:.7rem; margin-bottom:1rem; border-bottom:1px solid var(--color-border); }
+  .timeline-heading h3 { margin:0; font-size:1.5rem; }
+  .timeline-control { min-height:44px; padding:.4rem .8rem; border:1px solid #31516e; border-radius:99px; font-size:.8rem; cursor:pointer; }
+  .timeline-viewport { overflow:hidden; }
+  .timeline-track { display:flex; width:max-content; animation:publication-loop 40s linear infinite; }
+  .timeline-viewport:hover .timeline-track,.timeline-track.paused { animation-play-state:paused; }
+  .timeline-group { display:flex; gap:1rem; list-style:none; padding:0 1rem 0 0; margin:0; }
+  .timeline-card { width:clamp(14rem,27vw,18rem); display:grid; align-content:start; gap:.65rem; background:var(--color-surface); border:1px solid var(--color-border); border-radius:.8rem; padding:1rem; }
+  .timeline-year { font-weight:700; color:var(--color-accent); }
+  .timeline-venue { font-size:.75rem; color:var(--color-muted); }
+  .timeline-card p { font-size:.9rem; line-height:1.35; margin:0; }
+  @keyframes publication-loop { to { transform:translateX(-50%); } }
+  @media(prefers-reduced-motion:reduce) {
+    .timeline-track { animation:none; }
+    .timeline-control,.timeline-group.duplicate { display:none; }
+    .timeline-viewport { overflow-x:auto; }
+  }
+
+  .journey { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(1.5rem,4vw,4rem); align-items:center; }
+  .tampa { margin:0; }
+  @media(max-width:760px) { .journey { grid-template-columns:1fr; } }
+  .tampa img { width:100%; height:auto; border-radius:.85rem; }
+  .tampa figcaption { margin-top:.6rem; font-size:.875rem; }
   /* Base animation settings */
   .anim-item {
     opacity: 0;
@@ -202,29 +182,6 @@
     border-left-color: var(--color-accent);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.02);
-  }
-
-  /* Line clamp description with expand-on-hover */
-  .clamp-desc {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-  }
-  .research-card:hover .clamp-desc {
-    -webkit-line-clamp: unset;
-    line-clamp: unset;
-  }
-
-  /* Scrollbar hiding for timeline */
-  .scrollbar-none::-webkit-scrollbar {
-    display: none;
-  }
-  .scrollbar-none {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
   }
 
   /* Sticky note styling */

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import PortfolioGuide from '$lib/components/home/PortfolioGuide.svelte';
   import { onMount } from 'svelte';
   import { currentPageTitle } from '$lib/stores/workspace';
   import { Briefcase, Calendar, MapPin } from '@lucide/svelte';
@@ -18,14 +19,14 @@
 </script>
 
 <svelte:head>
-  <title>{metadata?.role ? `${metadata.role} | Param Desai` : 'Experience | Param Desai'}</title>
+  <title>{metadata?.role ? `${metadata.role}` : 'Experience'}</title>
 </svelte:head>
 
 <div class="flex flex-col w-full min-h-screen">
   <!-- Back Link -->
   <a 
     href="/workspace/experience" 
-    class="inline-flex items-center gap-1.5 text-xs font-mono text-[--color-muted] hover:text-[--color-text] transition-colors mb-6 group select-none"
+    class="role-back inline-flex items-center gap-1.5 text-xs font-mono mb-6 group select-none"
   >
     <span class="transition-transform duration-200 group-hover:-translate-x-1">←</span>
     <span>Back to Experience</span>
@@ -39,10 +40,7 @@
       </span>
     </div>
 
-    <!-- Title -->
-    <h1 class="font-serif text-3xl md:text-[38px] text-[--color-text] tracking-tight leading-tight mb-4">
-      {metadata.role}
-    </h1>
+    <PortfolioGuide compact title={metadata.role} description={metadata.shortDescription} message="Here’s what the work looked like day to day." />
 
     <!-- Metadata Rows -->
     <div class="flex flex-wrap gap-4 text-xs text-[--color-muted] font-sans">
@@ -63,7 +61,7 @@
   <div class="flex flex-col lg:flex-row gap-8 items-start w-full">
     <!-- Left Column: Main Markdown Content -->
     <div class="w-full lg:flex-1 min-w-0">
-      <div class="prose-academic">
+      <div class="prose-academic role-story">
         {#if Content}
           <Content />
         {/if}
@@ -112,3 +110,9 @@
     </aside>
   </div>
 </div>
+
+<style>
+  .role-back { color:white; }
+  .role-story { max-width:72ch; font-family:"Instrument Sans",system-ui,sans-serif; font-size:1.05rem; line-height:1.7; }
+  .role-story :global(p) { font-size:inherit; line-height:inherit; text-align:start; }
+</style>

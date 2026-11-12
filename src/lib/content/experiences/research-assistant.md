@@ -1,11 +1,11 @@
 ---
 role: "Research Assistant"
 company: "Sudeep Tanwar's Research Group"
-period: "Jan – Dec 2025"
+period: "Oct 2024 - Dec 2025"
 location: "Ahmedabad, India"
 skills: ["Explainable AI", "Cybersecurity", "IoT Systems", "SHAP", "LIME", "Intrusion Detection", "Machine Learning"]
 order: 2
-shortDescription: "Conducting research on Explainable AI, Adversarial Machine Learning, and Cybersecurity within V2X networks and IoT ecosystems. Applied SHAP and LIME to interpret complex model decisions for human security auditors. Co-authored 5 papers in IEEE and Springer venues."
+shortDescription: "Researched explainable AI, cybersecurity, and connected systems at ST Lab. Contributed to experimental pipelines and used SHAP and LIME to analyze model decisions. The resulting research record includes seven published papers, three as first author."
 ---
 
 ## Overview

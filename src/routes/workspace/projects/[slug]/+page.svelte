@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { onMount, tick } from 'svelte';
+  import PortfolioGuide from "$lib/components/home/PortfolioGuide.svelte";
+  import { projectPreviews } from '$lib/components/home/projectPreviews';
+  import { tick } from 'svelte';
   import { browser } from '$app/environment';
   import { ExternalLink, Star } from '@lucide/svelte';
   import TechLogo from '$lib/components/TechLogo.svelte';
-  import { theme } from '$lib/stores/theme';
 
   // Svelte 5 props
   let { data } = $props();
@@ -72,109 +73,72 @@
     };
   });
 
-  // Client-side Mermaid diagrams compilation
   $effect(() => {
-    const activeTheme = $theme;
-    if (contentContainer && data.content !== undefined) {
-      tick().then(() => {
-        renderMermaidDiagrams();
-      });
-    }
+    const container = contentContainer;
+    const content = data.content;
+    if (!container || !content) return;
+    let cancelled = false;
+    void tick().then(() => {
+      if (!cancelled) return renderMermaidDiagrams(container, () => cancelled);
+    });
+    return () => { cancelled = true; };
   });
 
-  async function renderMermaidDiagrams() {
-    if (!browser || !contentContainer) return;
+  async function renderMermaidDiagrams(container: HTMLDivElement, cancelled: () => boolean) {
+    const blocks = container.querySelectorAll('pre:has(code.language-mermaid), pre.language-mermaid');
+    if (!blocks.length) return;
     try {
       const mermaid = (await import('mermaid')).default;
-      const getCSSVar = (name: string, fallback: string) => {
-        if (typeof window !== 'undefined') {
-          return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
-        }
-        return fallback;
-      };
-
-      const surfaceColor = getCSSVar('--color-surface', '#FFFCF5');
-      const bgColor = getCSSVar('--color-bg', '#EEEAE2');
-      const textColor = getCSSVar('--color-text', '#222222');
-      const accentColor = getCSSVar('--color-accent', '#6B7FA5');
-      const mutedColor = getCSSVar('--color-muted', '#6B6357');
-
+      if (cancelled()) return;
       mermaid.initialize({
         startOnLoad: false,
         theme: 'base',
-        securityLevel: 'loose',
-        flowchart: {
-          htmlLabels: true,
-          useMaxWidth: true
-        },
+        securityLevel: 'strict',
         fontFamily: 'Instrument Sans, system-ui, sans-serif',
+        flowchart: { htmlLabels: false, useMaxWidth: true },
         themeVariables: {
-          fontSize: '11px',
-          primaryColor: bgColor,
-          primaryTextColor: textColor,
-          primaryBorderColor: accentColor,
-          lineColor: mutedColor,
-          nodeBorder: accentColor,
-          nodeTextColor: textColor,
-          mainBkg: bgColor,
-          edgeLabelBackground: surfaceColor,
-          clusterBkg: surfaceColor,
-          clusterBorder: accentColor
+          background: '#f4faf4',
+          primaryColor: '#d4e8ed',
+          primaryTextColor: '#101d2a',
+          primaryBorderColor: '#31516e',
+          lineColor: '#304b5d',
+          textColor: '#101d2a',
+          edgeLabelBackground: '#f4faf4',
+          clusterBkg: '#e0eff0',
+          clusterBorder: '#31516e'
         }
       });
 
-      // 1. Process new (unprocessed) code blocks
-      const codeBlocks = Array.from(contentContainer.querySelectorAll('pre.language-mermaid, pre:has(code.language-mermaid), code.language-mermaid'));
-      const processedElements = new Set<Element>();
-      
-      for (let i = 0; i < codeBlocks.length; i++) {
-        const block = codeBlocks[i];
-        const targetElement = block.closest('pre') || block;
-        if (processedElements.has(targetElement)) {
-          continue;
+      for (const block of blocks) {
+        if (cancelled()) return;
+        const code = block.textContent?.trim();
+        if (!code) continue;
+        try {
+          const { svg } = await mermaid.render('architecture-' + Math.random().toString(36).slice(2), code);
+          if (cancelled()) return;
+          const diagram = document.createElement('div');
+          diagram.className = 'mermaid-diagram';
+          diagram.innerHTML = svg;
+          block.replaceWith(diagram);
+        } catch (error) {
+          console.error('Could not render architecture diagram:', error);
         }
-
-        const code = block.textContent || '';
-        if (!code) continue;
-
-        processedElements.add(targetElement);
-        const uniqueId = `mermaid-render-${i}-${Math.random().toString(36).substring(2, 7)}`;
-        const { svg } = await mermaid.render(uniqueId, code.trim());
-
-        const container = document.createElement('div');
-        container.className = 'mermaid-diagram my-8 flex justify-center bg-[--color-surface] border border-[--color-border] rounded-xl p-6 overflow-x-auto shadow-2xs select-none w-full';
-        container.setAttribute('data-mermaid-code', code.trim());
-        container.innerHTML = `<div class="w-full flex justify-center">${svg}</div>`;
-
-        targetElement.replaceWith(container);
       }
-
-      // 2. Re-render existing diagrams on theme change
-      const existingContainers = Array.from(contentContainer.querySelectorAll('div.mermaid-diagram[data-mermaid-code]'));
-      for (let i = 0; i < existingContainers.length; i++) {
-        const container = existingContainers[i];
-        const code = container.getAttribute('data-mermaid-code') || '';
-        if (!code) continue;
-
-        const uniqueId = `mermaid-render-update-${i}-${Math.random().toString(36).substring(2, 7)}`;
-        const { svg } = await mermaid.render(uniqueId, code);
-        container.innerHTML = `<div class="w-full flex justify-center">${svg}</div>`;
-      }
-    } catch (err) {
-      console.error('Mermaid render error on projects slug page:', err);
+    } catch (error) {
+      console.error('Could not load Mermaid:', error);
     }
   }
 </script>
 
 <svelte:head>
-  <title>{metadata?.title ? `${metadata.title} | Param Desai` : 'Project | Param Desai'}</title>
+  <title>{metadata?.title ? `${metadata.title}` : 'Project'}</title>
 </svelte:head>
 
 <div class="flex flex-col w-full min-h-screen">
   <!-- Back Link -->
   <a 
     href="/workspace/projects" 
-    class="inline-flex items-center gap-1.5 text-xs font-mono text-[--color-muted] hover:text-[--color-text] transition-colors mb-6 group select-none"
+    class="project-back inline-flex items-center gap-1.5 text-xs font-mono mb-6 group select-none"
   >
     <span class="transition-transform duration-200 group-hover:-translate-x-1">←</span>
     <span>Back to Projects</span>
@@ -205,15 +169,7 @@
       {/if}
     </div>
 
-    <!-- Title -->
-    <h1 class="font-serif text-3xl md:text-[40px] text-[--color-text] tracking-tight leading-tight">
-      {metadata.title}
-    </h1>
-    
-    <!-- Short Description -->
-    <p class="font-serif italic text-base md:text-lg text-[--color-muted] mt-2 leading-relaxed">
-      {metadata.shortDescription}
-    </p>
+    <PortfolioGuide title={metadata.title} description={metadata.shortDescription} message={shareMessage || `You opened ${metadata.title}. Let’s see what makes it tick.`} />
 
     <!-- CTA Row -->
     <div class="flex items-center gap-3 mt-6 pb-6 border-b border-[--color-border]">
@@ -265,6 +221,17 @@
       </button>
     </div>
   </div>
+
+  {#if projectPreviews[metadata.id]}
+    <div class="case-previews" data-guide-line="Here’s what the project looks like in action.">
+      {#each projectPreviews[metadata.id] as preview (preview.file)}
+        <figure>
+          <img src={'/screenshots/' + preview.file} alt={preview.alt} width={preview.width} height={preview.height} loading="lazy" />
+          <figcaption>{preview.alt}</figcaption>
+        </figure>
+      {/each}
+    </div>
+  {/if}
 
   <!-- Column Layout -->
   <div class="flex flex-col lg:flex-row gap-8 relative items-start">
@@ -321,7 +288,7 @@
         class="prose-academic prose-sm max-w-none text-[--color-text] leading-[1.7] text-justify font-sans"
       >
         {#if Content}
-          {#key $theme}
+          {#key metadata.id}
             <Content />
           {/key}
         {/if}
@@ -368,9 +335,15 @@
 </div>
 
 <style>
+  .project-back { color:white; }
+  .project-back:hover { text-decoration:underline; }
+  .case-previews { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,23rem),1fr)); gap:1rem; margin-bottom:2rem; }
+  .case-previews figure { margin:0; }
+  .case-previews img { width:100%; height:auto; border-radius:.75rem; }
+  .case-previews figcaption { margin-top:.5rem; font-size:.85rem; }
   /* Academic prose styling overrides for detail pages */
   :global(.prose h2) {
-    font-family: 'Instrument Serif', serif;
+    font-family: var(--portfolio-font);
     font-size: 24px;
     font-weight: 500;
     color: var(--color-text);
@@ -401,7 +374,7 @@
     line-height: 1.6;
   }
   :global(.prose code:not(.language-mermaid)) {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--portfolio-font);
     font-size: 12px;
     background-color: var(--color-bg);
     padding: 0.15rem 0.35rem;
@@ -409,14 +382,6 @@
     border: 1px solid var(--color-border);
   }
 
-  /* Ensure Mermaid text doesn't inherit prose font size/family overrides */
-  :global(.mermaid-diagram, .mermaid-diagram *) {
-    font-family: 'Instrument Sans', system-ui, sans-serif !important;
-    font-size: 11px !important;
-    line-height: normal !important;
-  }
-  :global(.mermaid-diagram .nodeLabel, .mermaid-diagram .edgeLabel, .mermaid-diagram text) {
-    color: var(--color-text) !important;
-    fill: var(--color-text) !important;
-  }
+  :global(.mermaid-diagram) { margin:2rem 0; padding:clamp(.5rem,2vw,1.25rem); background:#f4faf4; border:1px solid #31516e45; border-radius:.75rem; overflow-x:auto; }
+  :global(.mermaid-diagram svg) { display:block; height:auto; margin-inline:auto; }
 </style>

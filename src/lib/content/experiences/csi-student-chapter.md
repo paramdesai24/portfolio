@@ -1,7 +1,7 @@
 ---
 role: "Treasurer & Core Committee"
 company: "Computer Society of India (CSI) student chapter, Nirma University"
-period: "Jan 2025 – Present"
+period: "Jan 2025 - Sep 2026"
 location: "Ahmedabad, India"
 skills: ["Leadership", "Financial Operations", "Event Management", "Project Coordination"]
 order: 3
@@ -9,7 +9,7 @@ shortDescription: "Managing financial operations and co-organizing national-leve
 ---
 
 ## Overview
-As the Treasurer (Aug 2025 – Present) and former Core Committee Member (Jan – Aug 2025) of the Computer Society of India (CSI) student chapter at Nirma University, I have been responsible for managing technical event operations, sponsorships, and budgeting. CSI is one of the most active student technical chapters on campus, organizing hackathons, workshops, and coding competitions.
+I served on the Core Committee (Jan–Aug 2025) and then as Treasurer (Aug 2025–Sep 2026) of the Computer Society of India student chapter at Nirma University. My responsibilities included event operations, sponsorship coordination, and budgeting for hackathons, workshops, and coding competitions.
 
 ## Leadership & Major Technical Deliverables
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import PortfolioGuide from '$lib/components/home/PortfolioGuide.svelte';
   import { onMount } from 'svelte';
   import { currentPageTitle } from '$lib/stores/workspace';
   import { PROGRAMMING_CONFIG } from '$lib/programming/config';
@@ -159,7 +160,7 @@
 </script>
 
 <svelte:head>
-  <title>Programming | Param Desai</title>
+  <title>Programming</title>
   <meta
     name="description"
     content="Competitive programming and development activity across LeetCode, Codeforces, and GitHub — contribution heatmap, stats, and rankings."
@@ -205,11 +206,9 @@
 <div class="flex flex-col w-full" class:animate-in={mounted}>
 
   <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <PortfolioGuide title="Programming" description="Competitive programming and development activity across LeetCode, Codeforces, and GitHub." message="A little code most days adds up. Here’s how it looks on a calendar." />
+
   <section class="anim-item delay-100 mb-8">
-    <h1 class="font-serif text-[32px] text-[--color-text] tracking-tight">Programming</h1>
-    <p class="font-sans text-sm text-[--color-muted] mt-1.5 max-w-[520px] leading-relaxed">
-      Competitive programming and development activity across LeetCode, Codeforces, and GitHub.
-    </p>
     <!-- Platform links -->
     <div class="flex items-center gap-4 mt-4">
       <a
@@ -267,7 +266,7 @@
   {/if}
 
   <!-- ── Activity Heatmap ───────────────────────────────────────────────── -->
-  <section class="anim-item delay-200 mb-10" aria-label="Activity heatmap">
+  <section class="anim-item delay-200 mb-10" data-scroll-reveal aria-label="Activity heatmap" data-guide-line="Each square is a day. Hover or tap to see what I worked on.">
     <div class="flex items-center justify-between mb-4">
       <h2 class="font-mono text-[10px] uppercase tracking-widest text-[--color-muted] font-bold">
         Activity · Jan 2026 → Today
@@ -352,14 +351,14 @@
   <div class="h-px bg-[--color-border] mb-8 anim-item delay-350"></div>
 
   <!-- ── Stat Cards ─────────────────────────────────────────────────────── -->
-  <section class="anim-item delay-400" aria-label="Programming statistics">
+  <section class="anim-item delay-400" aria-label="Programming statistics" data-guide-line="The platforms count different things, so each has its own stats.">
     <h2 class="font-mono text-[10px] uppercase tracking-widest text-[--color-muted] font-bold mb-5">
       Statistics
     </h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {#each stats as card}
         <div
-          class="stat-card group"
+          data-scroll-reveal class="stat-card group"
           class:stat-card--error={card.error !== null}
           id="stat-{card.id}"
         >
@@ -460,7 +459,7 @@
   .month-label {
     margin-top: 8px;
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: var(--portfolio-label-size);
     color: var(--color-muted);
     opacity: 0.75;
     user-select: none;
@@ -499,8 +498,7 @@
   }
 
   /* Empty / Inactive */
-  .intensity-0, .platform-empty { background-color: var(--color-bg); border: 1px solid var(--color-border); }
-  :global(.dark) .intensity-0, :global(.dark) .platform-empty { background-color: #221E1A; border: 1px solid #332D27; }
+  .intensity-0, .platform-empty { background-color: #edf5fb; border: 1px solid #59798f66; }
 
   /* ── 4 Distinct Platform Color Families (Green, Amber, Crimson, Purple) ──── */
 
@@ -510,10 +508,6 @@
   .platform-gh.intensity-3 { background-color: #059669; }
   .platform-gh.intensity-4 { background-color: #064E3B; }
 
-  :global(.dark) .platform-gh.intensity-1 { background-color: #064E3B; }
-  :global(.dark) .platform-gh.intensity-2 { background-color: #059669; }
-  :global(.dark) .platform-gh.intensity-3 { background-color: #34D399; }
-  :global(.dark) .platform-gh.intensity-4 { background-color: #A7F3D0; }
 
   /* 2. LeetCode (Warm Amber Gold) */
   .platform-lc.intensity-1 { background-color: #FDE68A; }
@@ -521,10 +515,6 @@
   .platform-lc.intensity-3 { background-color: #D97706; }
   .platform-lc.intensity-4 { background-color: #78350F; }
 
-  :global(.dark) .platform-lc.intensity-1 { background-color: #78350F; }
-  :global(.dark) .platform-lc.intensity-2 { background-color: #D97706; }
-  :global(.dark) .platform-lc.intensity-3 { background-color: #F59E0B; }
-  :global(.dark) .platform-lc.intensity-4 { background-color: #FDE68A; }
 
   /* 3. Codeforces (Crimson Red) */
   .platform-cf.intensity-1 { background-color: #FECACA; }
@@ -532,10 +522,6 @@
   .platform-cf.intensity-3 { background-color: #DC2626; }
   .platform-cf.intensity-4 { background-color: #7F1D1D; }
 
-  :global(.dark) .platform-cf.intensity-1 { background-color: #7F1D1D; }
-  :global(.dark) .platform-cf.intensity-2 { background-color: #DC2626; }
-  :global(.dark) .platform-cf.intensity-3 { background-color: #F87171; }
-  :global(.dark) .platform-cf.intensity-4 { background-color: #FECACA; }
 
   /* 4. Overlap (Royal Purple / Violet) */
   .platform-overlap.intensity-1 { background-color: #DDD6FE; }
@@ -543,10 +529,6 @@
   .platform-overlap.intensity-3 { background-color: #7C3AED; }
   .platform-overlap.intensity-4 { background-color: #4C1D95; }
 
-  :global(.dark) .platform-overlap.intensity-1 { background-color: #4C1D95; }
-  :global(.dark) .platform-overlap.intensity-2 { background-color: #7C3AED; }
-  :global(.dark) .platform-overlap.intensity-3 { background-color: #A78BFA; }
-  :global(.dark) .platform-overlap.intensity-4 { background-color: #DDD6FE; }
 
   /* Legend Swatches (Cumulative Intensity Scale 1 to 4) */
   .legend-swatch.intensity-1 { background-color: #D1D5DB; }
@@ -554,10 +536,6 @@
   .legend-swatch.intensity-3 { background-color: #4B5563; }
   .legend-swatch.intensity-4 { background-color: #111827; }
 
-  :global(.dark) .legend-swatch.intensity-1 { background-color: #374151; }
-  :global(.dark) .legend-swatch.intensity-2 { background-color: #6B7280; }
-  :global(.dark) .legend-swatch.intensity-3 { background-color: #9CA3AF; }
-  :global(.dark) .legend-swatch.intensity-4 { background-color: #F9FAFB; }
 
   /* Legend row */
   .calendar-legend {
@@ -581,14 +559,14 @@
   }
   .legend-label {
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: var(--portfolio-label-size);
     color: var(--color-muted);
-    opacity: 0.85;
+    font-weight: 550;
     user-select: none;
   }
   .legend-sep {
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: var(--portfolio-label-size);
     color: var(--color-muted);
     opacity: 0.4;
   }
@@ -604,10 +582,6 @@
   .cf      { background-color: #EF4444; }
   .overlap { background-color: #8B5CF6; }
 
-  :global(.dark) .gh      { background-color: #34D399; }
-  :global(.dark) .lc      { background-color: #FBBF24; }
-  :global(.dark) .cf      { background-color: #F87171; }
-  :global(.dark) .overlap { background-color: #A78BFA; }
 
   /* ── Tooltip ─────────────────────────────────────────────────────────── */
   .tooltip-card {
@@ -626,7 +600,7 @@
   .tooltip-date {
     display: block;
     font-family: var(--font-mono);
-    font-size: 9px;
+    font-size: var(--portfolio-label-size);
     color: var(--color-muted);
     margin-bottom: 6px;
     text-transform: uppercase;
@@ -641,7 +615,7 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 11px;
+    font-size: var(--portfolio-label-size);
     color: var(--color-muted);
     flex: 1;
   }
@@ -652,7 +626,7 @@
   .tooltip-count {
     margin-left: auto;
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: var(--portfolio-label-size);
     color: var(--color-text);
     font-weight: 600;
   }
@@ -661,7 +635,7 @@
     padding-top: 5px;
     border-top: 1px solid var(--color-border);
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: var(--portfolio-label-size);
     color: var(--color-muted);
     text-align: right;
   }

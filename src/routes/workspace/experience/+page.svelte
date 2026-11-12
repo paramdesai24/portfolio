@@ -1,10 +1,10 @@
 <script lang="ts">
+  import PortfolioGuide from '$lib/components/home/PortfolioGuide.svelte';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
   import { currentPageTitle } from '$lib/stores/workspace';
   import type { Experience } from '$lib/types';
   import { ArrowRight, MapPin } from '@lucide/svelte';
-  import TechLogo from '$lib/components/TechLogo.svelte';
 
   onMount(() => {
     currentPageTitle.set('Experience');
@@ -13,21 +13,20 @@
   // Svelte 5 props
   let { data } = $props();
   const experiences = $derived(data.experiences || []);
+  const commentary: Record<string, string> = {
+    'dyu-labs': 'Two workstreams, one summer: solar forecasting and a plant operator’s assistant.',
+    'research-assistant': 'This is where I started asking models to show their work.',
+    'csi-student-chapter': 'Turns out a hackathon also needs someone watching the budget.'
+  };
 </script>
 
 <svelte:head>
-  <title>Experience | Param Desai</title>
+  <title>Experience</title>
   <meta name="description" content="Param Desai's work experience, academic leadership, and AI research roles." />
 </svelte:head>
 
 <div class="flex flex-col w-full min-h-screen">
-  <!-- Page Header -->
-  <div class="mb-8">
-    <h1 class="font-serif text-[32px] text-[--color-text] tracking-tight">Work Experience</h1>
-    <p class="font-sans text-sm text-[--color-muted] mt-1.5">
-      My professional journey, academic leadership, and AI research roles.
-    </p>
-  </div>
+  <PortfolioGuide title="Work Experience" description="My professional journey, academic leadership, and AI research roles." message="Here’s what I’ve worked on with other people." />
 
   <!-- Experiences Grid -->
   {#if experiences.length > 0}
@@ -35,6 +34,7 @@
       {#each experiences as exp (exp.id)}
         <!-- Experience Card -->
         <div 
+          data-scroll-reveal data-guide-line={commentary[exp.id]}
           in:fade={{ duration: 180 }}
           class="group relative flex flex-col justify-between p-6 bg-[--color-surface] border border-[--color-border] rounded-xl hover:shadow-md hover:border-l-[3px] hover:border-l-[--color-accent] h-full transition-all duration-300"
         >
@@ -60,26 +60,12 @@
               </div>
             {/if}
 
-            <p class="text-xs text-[--color-muted] leading-relaxed mb-6 font-sans text-justify line-clamp-3">
+            <p class="role-description mb-6 ">
               {exp.shortDescription}
             </p>
           </div>
 
           <div>
-            <!-- Skills tags -->
-            <div class="flex flex-wrap gap-1.5 mb-5 select-none">
-              {#each exp.skills.slice(0, 4) as skill}
-                <span class="text-[9px] font-mono bg-[--color-bg] text-[--color-muted] border border-[--color-border] px-2 py-0.5 rounded flex items-center gap-1">
-                  <TechLogo tech={skill} size={14} />
-                </span>
-              {/each}
-              {#if exp.skills.length > 4}
-                <span class="text-[9px] font-mono bg-[--color-bg] text-[--color-muted] border border-[--color-border] px-2 py-0.5 rounded">
-                  +{exp.skills.length - 4} more
-                </span>
-              {/if}
-            </div>
-
             <!-- Read Details link -->
             <a 
               href="/workspace/experience/{exp.id}" 
@@ -97,3 +83,7 @@
     </div>
   {/if}
 </div>
+
+<style>
+  .role-description { font-family:"Instrument Sans",system-ui,sans-serif; font-size:clamp(1rem,1.4vw,1.15rem); color:var(--color-muted); line-height:1.55; }
+</style>

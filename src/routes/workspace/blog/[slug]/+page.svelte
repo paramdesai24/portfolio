@@ -1,9 +1,9 @@
 <script lang="ts">
+  import PortfolioGuide from '$lib/components/home/PortfolioGuide.svelte';
   import { onMount, tick } from 'svelte';
   import { browser } from '$app/environment';
   import { currentPageTitle } from '$lib/stores/workspace';
   import { Share2 } from '@lucide/svelte';
-  import { theme } from '$lib/stores/theme';
 
   let { data } = $props();
 
@@ -86,14 +86,14 @@
 </script>
 
 <svelte:head>
-  <title>{metadata?.title ? `${metadata.title} | Param Desai` : 'Blog | Param Desai'}</title>
+  <title>{metadata?.title ? `${metadata.title}` : 'Blog'}</title>
 </svelte:head>
 
 <div class="flex flex-col w-full min-h-screen">
   <!-- Back Link -->
   <a
     href="/workspace/blog"
-    class="inline-flex items-center gap-1.5 text-xs font-mono text-[--color-muted] hover:text-[--color-text] transition-colors mb-6 group select-none"
+    class="article-back inline-flex items-center gap-1.5 text-xs font-mono mb-6 group select-none"
   >
     <span class="transition-transform duration-200 group-hover:-translate-x-1">←</span>
     <span>Back to Writing</span>
@@ -103,7 +103,7 @@
   <header class="mb-8 select-none">
     <div class="flex flex-wrap items-center gap-2 mb-3.5">
       {#if metadata.category}
-        <span class="px-2.5 py-0.5 rounded-full text-[9px] font-mono font-semibold uppercase tracking-wider {categoryColors[metadata.category] || 'bg-[--color-accent-dim] text-[--color-accent]'}">
+        <span class="px-2.5 py-0.5 rounded-full writing-category font-semibold {categoryColors[metadata.category] || 'bg-[--color-accent-dim] text-[--color-accent]'}">
           {metadata.category}
         </span>
       {/if}
@@ -119,16 +119,7 @@
       {/if}
     </div>
 
-    <!-- Title -->
-    <h1 class="font-serif text-2xl md:text-[36px] text-[--color-text] tracking-tight leading-snug max-w-[760px] mb-3">
-      {metadata.title}
-    </h1>
-
-    {#if metadata.description}
-      <p class="font-sans text-sm text-[--color-muted] leading-relaxed max-w-[600px] mb-4">
-        {metadata.description}
-      </p>
-    {/if}
+    <PortfolioGuide compact title={metadata.title} description={metadata.description || ""} message={shareMessage || "Grab a coffee. Let’s unpack this one."} />
 
     <!-- Actions Row -->
     <div class="flex items-center gap-2 mt-4 pb-6 border-b border-[--color-border]">
@@ -171,7 +162,7 @@
       class="prose-academic prose-sm max-w-none text-[--color-text] leading-[1.7] text-justify font-sans"
     >
       {#if Content}
-        {#key $theme}
+        {#key metadata.id}
           <Content />
         {/key}
       {/if}
@@ -181,7 +172,7 @@
     <div class="h-px bg-[--color-border] my-10"></div>
 
     <!-- Navigation Footer -->
-    <nav class="flex items-center justify-between text-xs font-mono text-[--color-muted] select-none" aria-label="Essay navigation">
+    <nav class="essay-navigation text-xs font-mono text-[--color-muted] select-none" aria-label="Essay navigation">
       <div>
         {#if prev}
           <a href="/workspace/blog/{prev.slug}" class="hover:text-[--color-accent] transition-colors flex items-center gap-1 group max-w-[200px]">
@@ -207,8 +198,13 @@
 </div>
 
 <style>
+  .writing-category { font-family:var(--portfolio-font); font-size:var(--portfolio-label-size); }
+  .article-back { color:white; }
+  .essay-navigation { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-items:center; gap:1rem; }
+  .essay-navigation > div { min-width:0; }
+  .essay-navigation > div:last-child { justify-self:end; max-width:100%; }
   :global(.prose h2) {
-    font-family: 'Instrument Serif', serif;
+    font-family: var(--portfolio-font);
     font-size: 24px;
     font-weight: 500;
     color: var(--color-text);
@@ -247,7 +243,7 @@
     color: var(--color-muted);
   }
   :global(.prose code) {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--portfolio-font);
     font-size: 12px;
     background-color: var(--color-bg);
     padding: 0.15rem 0.35rem;

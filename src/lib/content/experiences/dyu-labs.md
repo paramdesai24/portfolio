@@ -1,16 +1,16 @@
 ---
-role: "AI/ML Intern"
+role: "Applied AI Engineering Intern"
 company: "DYU Labs"
 period: "May – Jul 2026"
 location: "Ahmedabad, India"
 skills: ["Python", "LightGBM", "Pandas", "NumPy", "XArray", "LangGraph", "LangChain", "OpenAI GPT Models", "OpenAI Whisper", "pgvector", "LangSmith", "AWS Lambda", "AWS Fargate", "AWS EventBridge", "AWS ECR", "DynamoDB", "PostgreSQL", "Supabase", "RAG", "Time-Series Forecasting", "Copernicus ERA5"]
 order: 1
-shortDescription: "Technical lead for a summer intern team at DYU Labs (clients: ISRO, NTPC, Aditya Birla Group), building production solar forecasting pipelines and a LangGraph-powered conversational analytics assistant across 75 inverter devices and 15 solar plants."
+shortDescription: "Built a solar generation forecasting pipeline and developed aALoK, a LangGraph-based assistant that lets plant operators ask questions about telemetry in natural language."
 ---
 
 ## Overview
 
-As an AI/ML Intern at DYU Labs (Ahmedabad, India), I served as technical lead for a summer intern team developing production-grade renewable energy intelligence systems. Our work was deployed for enterprise and government clients including ISRO, NTPC, and Aditya Birla Group.
+As an Applied AI Engineering Intern at DYU Labs in Ahmedabad, I worked on solar generation forecasting and a conversational assistant for plant operators.
 
 ## Solar Forecasting & MLOps
 
@@ -25,7 +25,7 @@ Key responsibilities:
 
 ## LangGraph-Powered Conversational AI Assistant
 
-Led development of a LangGraph-powered assistant enabling solar plant operators to interact with telemetry systems using natural language and voice.
+Developed a LangGraph-powered assistant that lets solar plant operators query telemetry using natural language and voice.
 
 Key responsibilities:
 

@@ -38,7 +38,7 @@ graph TD
 ```
 
 ## Results
-PetBot won Runner-Up at HACKaMINeD 2026. In benchmarks, the NL-to-SQL pipeline achieved a 91.4% execution success rate on standard business schema query sets. By implementing parallel vector lookups and stream formatting, average query response latency was kept under 1.8 seconds.
+PetBot placed runner-up at HACKaMINeD 2026. The current repository also documents a Twilio voice-ordering flow and a revenue dashboard alongside the conversational analytics module.
 
 ## Lessons Learned
 1. **Schema Minimization**: Feeding the entire database schema to the LLM increases token overhead and hallucinations. Providing a minimal mapping of relevant tables and descriptions yields better accuracy.
