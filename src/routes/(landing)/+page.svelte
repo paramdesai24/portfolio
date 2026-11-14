@@ -227,10 +227,14 @@
   <link rel="canonical" href="https://paramdesai24.me/" />
   <meta property="og:title" content="Param Desai's Portfolio" />
   <meta property="og:description" content="Explore Xeroww, published research, BHOOMI and FC Analytics." />
-  <meta property="og:image" content="https://paramdesai24.me/avatar.png" />
+  <meta property="og:image" content="https://paramdesai24.me/pixel-param.png?v=2" />
+  <meta property="og:image:alt" content="Pixel avatar for Param Desai's portfolio" />
   <meta property="og:url" content="https://paramdesai24.me/" />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Param Desai's Portfolio" />
+  <meta name="twitter:description" content="Explore Xeroww, published research, BHOOMI and FC Analytics." />
+  <meta name="twitter:image" content="https://paramdesai24.me/pixel-param.png?v=2" />
 </svelte:head>
 
 {#snippet guide(id: string, walking = false)}

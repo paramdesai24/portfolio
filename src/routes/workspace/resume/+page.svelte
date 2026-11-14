@@ -149,7 +149,7 @@
   h1 { font-size:clamp(3.5rem,10vw,9rem); font-weight:750; line-height:.88; letter-spacing:-.085em; margin:0 0 1.2rem; }
   footer { display:flex; flex-wrap:wrap; gap:.75rem 1rem; margin-top:1.5rem; }
   .open-books { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1.5rem; }
-  article { padding:clamp(1rem,2.5vw,2rem); scroll-margin-top:7rem; border:1px solid #55707b70; border-bottom:5px double #8ba59e; border-radius:.9rem .9rem .4rem .4rem; background:linear-gradient(90deg,#f4faf4 47%,#dce8df 50%,#f4faf4 53%); box-shadow:0 4px #385c68; }
+  article { padding:clamp(1rem,2.5vw,2rem); scroll-margin-top:7rem; border:1px solid #55707b70; border-bottom:5px double #8ba59e; border-radius:.9rem .9rem .4rem .4rem; background:#f4faf4; box-shadow:0 4px #385c68; }
   .meta { color:#385c68; font-weight:650; }
   h2 { font-size:clamp(1.8rem,4vw,3.5rem); font-weight:720; letter-spacing:-.055em; line-height:1; margin:0 0 1rem; }
   .entry { padding:1rem 0; max-width:66ch; }
